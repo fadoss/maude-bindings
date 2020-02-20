@@ -1,0 +1,25 @@
+mod EXAMPLE is
+	protecting NAT .
+
+	sort Symbol SymbolList SymbolSet .
+	subsort Symbol < SymbolList SymbolSet .
+
+	ops a b c : -> Symbol [ctor] .
+
+	op f : Symbol Symbol -> Symbol [ctor] .
+	op g : Symbol -> Symbol [ctor] .
+
+	op nil : -> SymbolList [ctor] .
+	op __ : SymbolList SymbolList -> SymbolList [ctor assoc id: nil] .
+
+	op none : -> SymbolSet [ctor] .
+	op _;_ : SymbolSet SymbolSet -> SymbolSet [ctor assoc comm id: nil] .
+
+	var X Y : Symbol .
+
+	rl [ab] : a => b .
+	rl [bc] : b => c .
+	rl [ac] : a => c .
+
+	rl [swap] : f(X, Y) => f(Y, X) [nonexec] .
+endm

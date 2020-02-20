@@ -1,0 +1,4 @@
+[submodule "subprojects/maudesmc"]
+	path = subprojects/maudesmc
+	url = https://github.com/fadoss/maudesmc
+	branch = branching
