@@ -11,9 +11,9 @@ libmaude_dep = maude_proj.get_variable('libmaude_dep')
 swig = find_program('swig')
 swig_gen = generator(swig,
 	output: ['@BASENAME@_wrap.cxx'],
-	arguments: ['-c++', '-python', '-outdir', '.',
+	arguments: ['-c++', '-doxygen', '-python', '-outdir', '.',
 		    '-o', '@OUTPUT@', '-MMD', '@INPUT@'],
-	depfile: '@BASENAME@.d'
+	depfile: '@BASENAME@_wrap.d'
 )
 
 # Python 3 (https://www.python.org/)
@@ -36,6 +36,12 @@ pybind_source = [
 	'src/maude_wrappers.cc',
 	'src/easyTerm.cc'
 ]
-pybind = shared_module('_maude', pybind_source, pybind_swig,
-		       include_directories: include_directories('src'),
-		       dependencies: [python, libmaude_dep], name_prefix: '')
+
+pybind = shared_module('_maude',
+	pybind_source,
+	pybind_swig,
+	include_directories: include_directories('src'),
+	dependencies: [python, libmaude_dep],
+	name_prefix: '',
+	install: true
+)

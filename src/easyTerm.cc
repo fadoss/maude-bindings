@@ -20,6 +20,7 @@
 #include "rewriteSequenceSearch.hh"
 #include "pattern.hh"
 #include "extensionInfo.hh"
+#include "dagArgumentIterator.hh"
 
 using namespace std;
 
@@ -66,7 +67,19 @@ EasyTerm::leq(const Sort* sort) const {
 
 Sort*
 EasyTerm::getSort() const {
-	return is_dag ? dagNode->getSort() : term->getSort();
+
+	if (is_dag) {
+		if (dagNode->getSort() == nullptr) {
+			RewritingContext* context = new RewritingContext(dagNode);
+			dagNode->computeTrueSort(*context);
+			delete context;
+		}
+		return dagNode->getSort();
+	}
+
+	if (term->getSort() == nullptr)
+		term->symbol()->fillInSortInfo(term);
+	return term->getSort();
 }
 
 void
@@ -134,7 +147,7 @@ EasyTerm::reduce() {
 	if (!is_dag)
 		dagify();
 
-	RewritingContext* context = new RewritingContext(dagNode);
+	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
 	startUsingModule(module);
 	context->reduce();
 
@@ -256,7 +269,7 @@ EasyTerm::match(EasyTerm* target, const Vector<ConditionFragment*>& condition, b
 		dagify();
 
 	Pattern* pattern = new Pattern(target->termCopy(), withExtension, condition);
-	RewritingContext* context = new RewritingContext(dagNode);
+	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
 	dagNode->computeTrueSort(*context);
 
 	MatchSearchState* state = new MatchSearchState(context,
@@ -293,6 +306,14 @@ EasyTerm::search(SearchType type,
 				  depth);
 
 	return state;
+}
+
+DagArgumentIterator*
+EasyTerm::arguments() {
+	if (!is_dag)
+		dagify();
+
+	return new DagArgumentIterator(dagNode);
 }
 
 void

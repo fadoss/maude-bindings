@@ -118,6 +118,17 @@ public:
 		const char* getParameterName(int index) const {
 			return Token::name($self->getParameterName(index));
 		}
+
+		/**
+		 * Finds a sort by its name in the module.
+		 *
+		 * @param name The name of the sort.
+		 *
+		 * @return The sort or null if it does not exists.
+		 */
+		Sort* findSort(const char* name) const {
+			return $self->findSort(Token::encode(name));
+		}
 	}
 
 	//

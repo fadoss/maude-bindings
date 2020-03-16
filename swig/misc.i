@@ -80,6 +80,17 @@ public:
 	 */
 	const Vector<Sort*>& getSupersorts() const;
 
+	%extend {
+		/**
+		 * Check if this sort is a subsort of the given sort.
+		 *
+		 * @param rhs The right-hand side of the comparison.
+		 */
+		bool leq(Sort* rhs) const {
+			return leq($self, rhs);
+		}
+	}
+
 	%namedEntityPrint;
 };
 
@@ -136,7 +147,19 @@ public:
 	 */
 	int arity() const;
 
-	%namedEntityShow;
+	/**
+	 * Get the kind for the given argument.
+	 *
+	 * @param argNr The argument number.
+	 */
+	const ConnectedComponent* domainComponent(int argNr) const;
+
+	/**
+	 * Get the range sort of the symbol.
+	 */
+	Sort* getRangeSort() const;
+
+	%namedEntityPrint;
 };
 
 /**
@@ -207,6 +230,7 @@ public:
 	 */
 	int arity() const;
 
+	%namedEntityGetName;
 	%streamBasedPrint;
 };
 

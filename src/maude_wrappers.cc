@@ -31,6 +31,7 @@
 #include "maude_wrappers.hh"
 
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -175,4 +176,62 @@ VisibleModule* getModule(const char* name) {
 
 	VisibleModule* module = premodule->getFlatModule();
 	return module->isBad() ? nullptr : module;
+}
+
+// Dirty hacks to access some private members
+// (not to modify Maude for the moment)
+
+template<typename Tag, typename Tag::type M>
+struct PrivateHack {
+	friend typename Tag::type get(Tag) {
+		return M;
+	}
+};
+
+struct HackModuleMap {
+	typedef std::map<int, PreModule*> ModuleDatabase::* type;
+	friend type get(HackModuleMap);
+};
+
+template struct PrivateHack<HackModuleMap, &ModuleDatabase::moduleMap>;
+
+struct HackViewMap {
+	typedef std::map<int, View*> ViewDatabase::* type;
+	friend type get(HackViewMap);
+};
+
+template struct PrivateHack<HackViewMap, &ViewDatabase::viewMap>;
+
+vector<ModuleHeader>
+getModules() {
+	const auto &moduleMap = interpreter.*get(HackModuleMap());
+
+	auto it = moduleMap.begin();
+	size_t nrModules = moduleMap.size();
+
+	vector<ModuleHeader> modules(nrModules);
+
+	for (size_t i = 0; i < nrModules; i++, it++)
+		modules[i] = {it->second->getModuleType(), Token::name(it->second->id())};
+
+	return modules;
+}
+
+ostream &operator<<(ostream &out, ModuleHeader* mh) {
+	return out << MixfixModule::moduleTypeString(mh->type) << " " << mh->name;
+}
+
+vector<View*>
+getViews() {
+	const auto &viewMap = interpreter.*get(HackViewMap());
+
+	auto it = viewMap.begin();
+	size_t nrViews = viewMap.size();
+
+	vector<View*> views(nrViews);
+
+	for (size_t i = 0; i < nrViews; i++, it++)
+		views[i] = it->second;
+
+	return views;
 }

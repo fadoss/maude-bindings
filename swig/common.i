@@ -42,6 +42,18 @@ std::string printBuffer;
 	#endif
 %enddef
 
+// Extend the class with name getter
+// for named entities
+%define %namedEntityGetName
+	#if defined(REPR_METHOD)
+	%extend {
+		const char * getName() {
+			return Token::name($self->id());
+		}
+	}
+	#endif
+%enddef
+
 // Extend the class with getters for the left and right hand side
 // terms of a two sided object
 %define %twoSidedObject

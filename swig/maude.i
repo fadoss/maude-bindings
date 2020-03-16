@@ -17,6 +17,7 @@
 #include "higher.hh"
 
 #include "visibleModule.hh"
+#include "view.hh"
 
 #include "maude_wrappers.hh"
 #include "easyTerm.hh"
@@ -26,7 +27,11 @@
 %include vector.i
 %include common.i
 
-namespace std { %template(TokenVector) vector<Token>; }
+namespace std {
+	%template(TokenVector) vector<Token>;
+	%template(ModuleHeaderVector) vector<ModuleHeader>;
+	%template(ViewVector) vector<View*>;
+}
 
 //
 //	High-level functions
@@ -39,7 +44,17 @@ bool input(const char* text);
 VisibleModule* getCurrentModule();
 VisibleModule* getModule(const char* name);
 std::vector<Token> tokenize(const char* str);
+std::vector<ModuleHeader> getModules();
+std::vector<View*> getViews();
+
+struct ModuleHeader {
+	VisibleModule::ModuleType type;
+	const char* name;
+
+	%streamBasedPrint;
+};
 
 %include misc.i
 %include term.i
 %include module.i
+%include view.i

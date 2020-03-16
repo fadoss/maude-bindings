@@ -132,15 +132,15 @@ public:
 				  bool depth = false);
 
 	/**
-	 * Match a given term into this term.
+	 * Match this term into a given pattern.
 	 *
-	 * @param lhs Term to be matched against this term.
+	 * @param pattern Pattern term where to match this term.
 	 * @param condition Equational condition to be checked.
 	 * @param withExtension Whether the matching should be done with extension modulo axioms.
 	 *
 	 * @returns An object to iterate among matchings.
 	 */
-	MatchSearchState* match(EasyTerm* lhs,
+	MatchSearchState* match(EasyTerm* pattern,
 			        const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				bool withExtension = false);
 
@@ -156,6 +156,11 @@ public:
 	RewriteSequenceSearch* search(SearchType type, EasyTerm* target,
 				      const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				      int depth = -1);
+
+	/**
+	 * Iterates through the arguments of this term.
+	 */
+	DagArgumentIterator* arguments();
 
 	/**
 	 * Pretty prints the term.

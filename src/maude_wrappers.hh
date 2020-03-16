@@ -60,3 +60,23 @@ VisibleModule* getModule(const char* name);
  * Get the current module, like in the Maude interpreter.
  */
 VisibleModule* getCurrentModule();
+
+/**
+ * Module header information.
+ */
+struct ModuleHeader {
+	VisibleModule::ModuleType type;
+	const char * name;
+};
+
+std::ostream &operator<<(std::ostream &out, ModuleHeader* mh);
+
+/**
+ * Get the list of loaded modules.
+ */
+std::vector<ModuleHeader> getModules();
+
+/**
+ * Get the list of loaded views.
+ */
+std::vector<View*> getViews();

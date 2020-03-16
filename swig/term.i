@@ -6,6 +6,7 @@
 #include "strategicSearch.hh"
 #include "rewriteSequenceSearch.hh"
 #include "pattern.hh"
+#include "dagArgumentIterator.hh"
 %}
 
 //
@@ -47,12 +48,15 @@ public:
 				      const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				      int depth = -1);
 
+	DagArgumentIterator* arguments();
+
 	EasyTerm* copy() const;
 	static const Vector<ConditionFragment*> NO_CONDITION;
 
 	%newobject match;
 	%newobject srewrite;
 	%newobject search;
+	%newobject arguments;
 	%newobject copy;
 
 	%streamBasedPrint;
@@ -271,6 +275,49 @@ public:
 			if term is None:
 				raise StopIteration
 			return term, self.getSubstitution(), lambda: self.pathTo(self.getStateNr()), self.getRewriteCount()
+	%}
+	#endif
+};
+
+%rename (ArgumentIterator) DagArgumentIterator;
+
+/**
+ * An iterator through the arguments of a term
+ */
+class DagArgumentIterator {
+public:
+	DagArgumentIterator() = delete;
+
+	/**
+	 * Is this iterator pointing to a valid argument?
+	 */
+	bool valid() const;
+
+	/**
+	 * Advance the iterator to the next argument.
+	 */
+	void next();
+
+	%extend {
+		/**
+		 * Get the argument pointed by this iterator
+		 */
+		EasyTerm* argument() {
+			return new EasyTerm($self->argument());
+		}
+	}
+
+	#if defined(SWIGPYTHON)
+	%pythoncode %{
+		def __iter__(self):
+			return self
+
+		def __next__(self):
+			if not self.valid():
+				raise StopIteration
+			term = self.argument()
+			self.next()
+			return term
 	%}
 	#endif
 };
