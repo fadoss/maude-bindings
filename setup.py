@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='maude',
-    version='0.1',
+    version='0.2',
     author='ningit',
     author_email='ningit@users.noreply.github.com',
     description='Experimental Python bindings for Maude',

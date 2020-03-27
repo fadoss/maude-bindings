@@ -22,7 +22,9 @@
 #include "directoryManager.hh"
 
 // To retrieve the module path (dladdr, non-standard)
-#ifdef __APPLE__
+#if defined(_WIN32)
+#include <windows.h>
+#elif defined(__APPLE__)
 #include <dlfcn.h>
 #else
 #include <link.h>
@@ -80,10 +82,16 @@ init(bool readPrelude)
 	directoryManager.initialize();
 
 	// Take the path of the binary as a search directory
+	#ifdef _WIN32
+	char buffer[FILENAME_MAX];
+	GetModuleFileName(GetModuleHandle("libmaude.dll"), buffer, FILENAME_MAX);
+	string executable(buffer);
+	#else
 	Dl_info dlinfo;
 	dladdr((void*) &tokenizeRope, &dlinfo);
-
 	string executable(dlinfo.dli_fname);
+	#endif
+
 	findExecutableDirectory(executableDirectory, executable);
 
 	if (readPrelude) {
