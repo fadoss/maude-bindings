@@ -9,16 +9,25 @@ class View {
 public:
 	View() = delete;
 
-	/**
-	 * Get the <i>from</i> theory of the view.
-	 */
+	%extend {
+		/**
+		 * Get the <i>from</i> theory of the view.
+		 */
+		VisibleModule* getFromTheory() const {
+			VisibleModule* mod = safeCast(VisibleModule*, $self->getFromTheory());
+			mod->protect();
+			return mod;
+		}
 
-	VisibleModule* getFromTheory() const;
-
-	/**
-	 * Get the <i>to</i> module of the view.
-	 */
-	VisibleModule* getToModule() const;
+		/**
+		 * Get the <i>to</i> module of the view.
+		 */
+		VisibleModule* getToModule() const {
+			VisibleModule* mod = safeCast(VisibleModule*, $self->getToModule());
+			mod->protect();
+			return mod;
+		}
+	}
 
 	%namedEntityPrint;
 };

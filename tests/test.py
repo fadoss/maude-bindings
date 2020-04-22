@@ -29,7 +29,7 @@ print(ans)
 #####
 
 fbb = example.parseTerm('f(b, b)')
-ans, nrew = ans.erewrite()
+ans, nrew = fbb.erewrite()
 print(fbb, '->', ans, 'in', nrew, 'rewrites')
 
 #####

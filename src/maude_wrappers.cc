@@ -13,6 +13,7 @@
 #include "interface.hh"
 #include "mixfix.hh"
 #include "higher.hh"
+#include "meta.hh"
 #include "module.hh"
 #include "interpreter.hh"
 #include "global.hh"
@@ -20,6 +21,9 @@
 #include "visibleModule.hh"
 #include "userLevelRewritingContext.hh"
 #include "directoryManager.hh"
+#include "metaLevel.hh"
+#include "metaLevelOpSymbol.hh"
+#include "randomOpSymbol.hh"
 
 // To retrieve the module path (dladdr, non-standard)
 #if defined(_WIN32)
@@ -69,7 +73,7 @@ tokenize(const char* str)
 }
 
 bool
-init(bool readPrelude)
+init(bool readPrelude, int randomSeed, bool advise)
 {
 	bool includeFile(const string& directory, const string& fileName, bool silent, int lineNr);
 	void createRootBuffer(FILE* fp, bool forceInteractive);
@@ -77,6 +81,10 @@ init(bool readPrelude)
 
 	// The root buffer is the null file
 	FILE* fp = fopen("/dev/null", "r");
+
+	// Set the random seed and the advisory flag
+	RandomOpSymbol::setGlobalSeed(randomSeed);
+	globalAdvisoryFlag = advise;
 
 	createRootBuffer(fp, false);
 	directoryManager.initialize();
@@ -173,7 +181,12 @@ VisibleModule* getCurrentModule() {
 		return nullptr;
 
 	VisibleModule* module = premodule->getFlatModule();
-	return module->isBad() ? nullptr : module;
+
+	if (module->isBad())
+		return nullptr;
+
+	module->protect();
+	return module;
 }
 
 VisibleModule* getModule(const char* name) {
@@ -183,7 +196,12 @@ VisibleModule* getModule(const char* name) {
 		return nullptr;
 
 	VisibleModule* module = premodule->getFlatModule();
-	return module->isBad() ? nullptr : module;
+
+	if (module->isBad())
+		return nullptr;
+
+	module->protect();
+	return module;
 }
 
 // Dirty hacks to access some private members
@@ -242,4 +260,26 @@ getViews() {
 		views[i] = it->second;
 
 	return views;
+}
+
+MetaLevel*
+getMetaLevel(VisibleModule* mod) {
+	// Finds an operator of type MetaLevelOpSymbol for which to obtain
+	// the MetaLevel instance. Finding a specific function would be more
+	// efficient, but would fail in case or renaming.
+
+	const Vector<Symbol*> &symbols = mod->getSymbols();
+	int symbolIndex = mod->getNrUserSymbols() - 1;
+
+	MetaLevelOpSymbol* metaSymbol = nullptr;
+
+	while (metaSymbol == nullptr && symbolIndex >= 0)
+		metaSymbol = dynamic_cast<MetaLevelOpSymbol*>(symbols[symbolIndex--]);
+
+	if (metaSymbol == nullptr) {
+		IssueWarning("the module does not include the META-LEVEL module.");
+		return nullptr;
+	}
+
+	return metaSymbol->getMetaLevel();
 }

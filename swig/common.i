@@ -7,10 +7,17 @@
 std::string printBuffer;
 %}
 
+#define GETTER_METHOD __getitem__
+#define SETTER_METHOD __setitem__
+
 #if defined(SWIGPYTHON)
 #define REPR_METHOD __repr__
 #elif defined(SWIGJAVA)
 #define REPR_METHOD toString
+#elif defined(SWIGLUA)
+#define REPR_METHOD __str__
+#elif defined(SWIGR)
+#define REPR_METHOD show
 #else
 #warning Unsupported language
 #endif
@@ -45,13 +52,11 @@ std::string printBuffer;
 // Extend the class with name getter
 // for named entities
 %define %namedEntityGetName
-	#if defined(REPR_METHOD)
 	%extend {
 		const char * getName() {
 			return Token::name($self->id());
 		}
 	}
-	#endif
 %enddef
 
 // Extend the class with getters for the left and right hand side
@@ -80,9 +85,40 @@ std::string printBuffer;
 // Extend the class with the getLabel function for preequations
 %define %labeledObject
 	%extend {
+		/**
+		 * Get the label attribute.
+		 */
 		const char* getLabel() const {
 			int label = $self->getLabel().id();
 			return label != NONE ? Token::name(label) : nullptr;
 		}
 	}
+%enddef
+
+%define %vectorPrint
+	#if defined(REPR_METHOD)
+	%extend Vector {
+		const char* REPR_METHOD() {
+			std::ostringstream stream;
+			stream << "$parentclasssymname with " << $self->size() << " elements";
+			printBuffer = stream.str();
+			return printBuffer.c_str();
+		}
+	}
+	#endif
+%enddef
+
+%define %substitutionPrint
+	#if defined(REPR_METHOD)
+	%extend EasySubstitution {
+		const char* REPR_METHOD() {
+			int size = $self->size();
+			std::ostringstream stream;
+			for (int i = 0; i < size; i++)
+				stream << ", " << $self->variable(i) << "=" << self->value(i) << endl;
+			printBuffer = stream.str();
+			return printBuffer.c_str() + 2;
+		}
+	}
+	#endif
 %enddef

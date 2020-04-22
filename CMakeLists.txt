@@ -17,17 +17,53 @@ if (POLICY CMP0086)
 cmake_policy(SET CMP0086 NEW)
 endif()
 
-find_package(PythonExtensions REQUIRED)
+#
+## Build script options
+
+option(BUILD_LIBMAUDE "build libmaude before building the extension" YES)
+set(EXTRA_INCLUDE_DIRS "" CACHE PATH "Additional include paths")
+set(EXTRA_INSTALL_FILES "" CACHE PATH "Additional files to be installed")
+set(EXTRA_SWIG_OPTIONS "" CACHE STRING "Additional options passed to swig")
+set(LANGUAGE "python" CACHE STRING "Generate wrappers for that language")
+
 find_package(SWIG REQUIRED)
 include(ExternalProject)
 include(UseSWIG)
 
 #
-## Build script options
+## Language-specific actions
 
-option(BUILD_LIBMAUDE "build libmaude before building the extension")
-set(EXTRA_INCLUDE_DIRS "" CACHE PATH "Additional include paths")
-set(EXTRA_INSTALL_FILES "" CACHE PATH "Additional files to be installed")
+if (${LANGUAGE} STREQUAL python)
+	find_package(PythonExtensions REQUIRED)
+	list(APPEND EXTRA_SWIG_OPTIONS -doxygen)
+elseif (${LANGUAGE} STREQUAL java)
+	find_package(Java REQUIRED)
+	find_package(JNI REQUIRED)
+	include_directories(${JNI_INCLUDE_DIRS})
+	list(APPEND EXTRA_SWIG_OPTIONS -doxygen)
+elseif (${LANGUAGE} STREQUAL go)
+	math(EXPR GOINTSIZE "8 * ${CMAKE_SIZEOF_VOID_P}")
+	list(APPEND EXTRA_SWIG_OPTIONS -intgosize ${GOINTSIZE})
+elseif (${LANGUAGE} STREQUAL guile)
+	find_package(Guile)
+	include_directories(${GUILE_INCLUDE_DIRS})
+	list(APPEND EXTRA_SWIG_OPTIONS -doxygen)
+elseif (${LANGUAGE} STREQUAL lua)
+	find_package(Lua REQUIRED)
+	include_directories(${LUA_INCLUDE_DIR})
+elseif (${LANGUAGE} STREQUAL php)
+	find_package(PHP4 REQUIRED)
+	include_directories(${PHP4_INCLUDE_PATH})
+elseif (${LANGUAGE} STREQUAL r)
+	find_package(R REQUIRED)
+	include_directories(${R_INCLUDEDIR})
+elseif (${LANGUAGE} STREQUAL ruby)
+	find_package(Ruby REQUIRED)
+	include_directories(${RUBY_INCLUDE_DIRS})
+elseif (${LANGUAGE} STREQUAL tcl)
+	find_package(TCL REQUIRED)
+	include_directories(${TCL_INCLUDE_DIRS})
+endif()
 
 #
 ## Build libmaude.so using Meson
@@ -51,7 +87,7 @@ ExternalProject_Add(maudesmc
 		"-Dcpp_args=-O2 -fno-stack-protector -fstrict-aliasing"
 		-Db_lto=true
 		-Dwith-ltsmin=disabled
-		-Dwith-smt=no
+		-Dwith-smt=yices2
 		-Dstrip=true
 		-Dlibdir=lib
 		-Dprefix=/
@@ -60,8 +96,6 @@ ExternalProject_Add(maudesmc
 	INSTALL_COMMAND "DESTDIR=${MAUDESMC_PATH}/installdir" ninja install
 	INSTALL_DIR "${MAUDESMC_PATH}/installdir"
 )
-
-add_dependencies(_maude maudesmc)
 
 endif()
 
@@ -91,6 +125,8 @@ include_directories(
 	"${MAUDESMC_PATH}/src/Parser"
 	"${MAUDESMC_PATH}/src/ObjectSystem"
 	"${MAUDESMC_PATH}/src/S_Theory"
+	"${MAUDESMC_PATH}/src/Temporal"
+	"${MAUDESMC_PATH}/src/3rdParty"
 	${EXTRA_INCLUDE_DIRS}
 )
 
@@ -98,15 +134,22 @@ set_property(SOURCE swig/maude.i PROPERTY CPLUSPLUS ON)
 
 swig_add_library(_maude
 	TYPE MODULE
-	LANGUAGE python
-	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc
+	LANGUAGE ${LANGUAGE}
+	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc src/model_checking.cc
 )
 
-set_property(TARGET _maude PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
+set_property(TARGET _maude PROPERTY SWIG_COMPILE_OPTIONS ${EXTRA_SWIG_OPTIONS})
 set_property(TARGET _maude PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H)
 set_property(TARGET _maude PROPERTY SWIG_COMPILE_DEFINITIONS HAVE_CONFIG_H)
 set_property(TARGET _maude PROPERTY SWIG_GENERATED_COMPILE_DEFINITIONS HAVE_CONFIG_H)
-python_extension_module(_maude)
+
+if (BUILD_LIBMAUDE)
+	add_dependencies(_maude maudesmc)
+endif()
+
+if (${LANGUAGE} STREQUAL python)
+	python_extension_module(_maude)
+endif()
 
 swig_link_libraries(_maude libmaude)
 
@@ -128,5 +171,9 @@ install(FILES
 	${EXTRA_INSTALL_FILES}
 	DESTINATION maude
 )
-get_property(wrapper_file TARGET _maude PROPERTY SWIG_SUPPORT_FILES)
-install(FILES "${wrapper_file}" RENAME __init__.py DESTINATION maude)
+
+if (${LANGUAGE} STREQUAL python)
+	# The SWIG_SUPPORT_FILES property is only accurate for Python
+	get_property(wrapper_file TARGET _maude PROPERTY SWIG_SUPPORT_FILES)
+	install(FILES "${wrapper_file}" RENAME __init__.py DESTINATION maude)
+endif()

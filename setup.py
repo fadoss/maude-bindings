@@ -1,11 +1,11 @@
 from skbuild import setup
 
-with open("README.md", "r") as fh:
+with open("build/PythonPkgDescription.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='maude',
-    version='0.2',
+    version='0.3',
     author='ningit',
     author_email='ningit@users.noreply.github.com',
     description='Experimental Python bindings for Maude',

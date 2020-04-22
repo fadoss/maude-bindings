@@ -30,23 +30,17 @@ for match in t.match(pattern):
 
 #####
 
-cond = maude.Condition()
-
-cond.append(maude.EqualityCondition(m.parseTerm('X:Symbol'), m.parseTerm('Y:Symbol')))
-
 pattern = m.parseTerm('X:Symbol ; Y:Symbol')
 t = m.parseTerm('b ; c')
 
 print(pattern, '<=?', t)
 
-for match in t.match(pattern, cond):
+for match in t.match(pattern, [maude.EqualityCondition(m.parseTerm('X:Symbol'), m.parseTerm('Y:Symbol'))]):
 	print(match)
 
 #####
 
-cond = maude.Condition()
-
-cond.append(maude.EqualityCondition(m.parseTerm('X:Symbol'), m.parseTerm('Y:Symbol')))
+cond = [maude.EqualityCondition(m.parseTerm('X:Symbol'), m.parseTerm('Y:Symbol'))]
 
 pattern = m.parseTerm('f(X:Symbol, g(Y:Symbol))')
 t = m.parseTerm('f(a, g(a))')

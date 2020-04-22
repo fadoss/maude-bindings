@@ -2,14 +2,10 @@
 //	Interface to Maude modules
 //
 
-%template(SortVector) Vector<Sort*>;
-%template(SymbolVector) Vector<Symbol*>;
-%template(KindVector) Vector<ConnectedComponent*>;
-%template(SubsortVector) Vector<SortConstraint*>;
-%template(EquationVector) Vector<Equation*>;
-%template(RuleVector) Vector<Rule*>;
-%template(StratVector) Vector<RewriteStrategy*>;
-%template(StratDefVector) Vector<StrategyDefinition*>;
+%{
+#include "metaLevel.hh"
+#include "metaModule.hh"
+%}
 
 %rename (Module) VisibleModule;
 
@@ -18,23 +14,40 @@
  */
 class VisibleModule {
 public:
-	Module() = delete;
+	VisibleModule() = delete;
+
+	%extend {
+		~VisibleModule() {
+			// Modules are protected so that they are not deleted
+			// by Maude while they are still accesible by an object
+			// in the target language (if another module with the
+			// same name is introduced)
+			$self->unprotect();
+			delete $self;
+		}
+	}
 
 	/**
 	 * Module or theory type (function, system or strategy).
 	 */
 	enum ModuleType
 	{
-		FUNCTIONAL_MODULE = 0,				///< Functional module (fmod)
-		SYSTEM_MODULE = SYSTEM,				///< System module (mod)
-		STRATEGY_MODULE = SYSTEM | STRATEGY,		///< Strategy module (smod)
-		FUNCTIONAL_THEORY = THEORY,			///< Functional theory (fth)
-		SYSTEM_THEORY = SYSTEM | THEORY,		///< System module (th)
-		STRATEGY_THEORY = SYSTEM | STRATEGY | THEORY	///< Strategy module (sth)
+		FUNCTIONAL_MODULE = 0,				///< Functional module (<code>fmod</code>)
+		SYSTEM_MODULE = SYSTEM,				///< System module (<code>mod</code>)
+		STRATEGY_MODULE = SYSTEM | STRATEGY,		///< Strategy module (<code>smod</code>)
+		FUNCTIONAL_THEORY = THEORY,			///< Functional theory (<code>fth</code>)
+		SYSTEM_THEORY = SYSTEM | THEORY,		///< System module (<code>th</code>)
+		STRATEGY_THEORY = SYSTEM | STRATEGY | THEORY	///< Strategy module (<code>sth</code>)
 	};
+
+	%rename (getKinds) getConnectedComponents;
+	%rename (getMembershipAxioms) getSortConstraints;
 
 	/**
 	 * Get the module type.
+	 *
+	 * This allows distinguishing modules from theories, and the
+	 * functional, system and strategy variants within them.
 	 */
 	ModuleType getModuleType();
 	/**
@@ -48,12 +61,10 @@ public:
 	/**
 	 * Get the kinds defined in the module.
 	 */
-	%rename (getKinds) getConnectedComponents;
 	const Vector<ConnectedComponent*>& getConnectedComponents() const;
 	/**
 	 * Get the membership axioms defined in the module.
 	 */
-	%rename (getMembershipAxioms) getSortConstraints;
 	const Vector<SortConstraint*>& getSortConstraints() const;
 	/**
 	 * Get the equations defined in the module.
@@ -77,7 +88,7 @@ public:
 	 */
 	int getNrParameters() const;
 	/**
-	 * Does the module have free parameters?
+	 * Is this a parameterized module with free parameters?
 	 */
 	bool hasFreeParameters() const;
 	/**
@@ -104,12 +115,17 @@ public:
 	 * Number of strategy definitions from this module.
 	 */
 	int getNrOriginalStrategyDefinitions() const;
-	/**
-	 * Get the theory of the given parameter.
-	 */
-	VisibleModule* getParameterTheory(int index) const;
 
 	%extend {
+		/**
+		 * Get the theory of the given parameter.
+		 */
+		VisibleModule* getParameterTheory(int index) const {
+			VisibleModule* mod = safeCast(VisibleModule*, $self->getParameterTheory(index));
+			mod->protect();
+			return mod;
+		}
+
 		/**
 		 * Get the name of a module parameter.
 		 *
@@ -124,10 +140,25 @@ public:
 		 *
 		 * @param name The name of the sort.
 		 *
-		 * @return The sort or null if it does not exists.
+		 * @return The sort or null if it does not exist.
 		 */
 		Sort* findSort(const char* name) const {
 			return $self->findSort(Token::encode(name));
+		}
+
+		/**
+		 * Find a symbol by its name and signature in the module.
+		 *
+		 * @param name The name of the sort.
+		 * @param domainKinds Kinds of the symbol domain.
+		 * @param rangeKind Range kind of the symbol.
+		 *
+		 * @return The symbol or null if it does not exist.
+		 */
+		Symbol* findSymbol(const char* name,
+				 const Vector<ConnectedComponent*>& domainKinds,
+				 ConnectedComponent* rangeKind) {
+			return $self->findSymbol(Token::encode(name), domainKinds, rangeKind);
 		}
 	}
 
@@ -140,15 +171,15 @@ public:
 		 * Parse a term.
 		 *
 		 * @param bubble Tokenized term.
-		 * @param component Kind.
+		 * @param kind Restrict parsing to terms of the given kind.
 		 */
-		EasyTerm* parseTerm(std::vector<Token> &bubble, ConnectedComponent* component = nullptr) {
+		EasyTerm* parseTerm(std::vector<Token> &bubble, ConnectedComponent* kind = nullptr) {
 			Vector<Token> bubbleV(bubble.size());
 
 			for (size_t i = 0; i < bubble.size(); i++)
 				bubbleV[i] = bubble[i];
 
-			return new EasyTerm($self->parseTerm(bubbleV, component));
+			return new EasyTerm($self->parseTerm(bubbleV, kind));
 
 		}
 
@@ -156,12 +187,12 @@ public:
 		 * Parse a term.
 		 *
 		 * @param term_str A term represented as a string.
-		 * @param component Kind.
+		 * @param kind Restrict parsing to terms of the given kind.
 		 */
-		EasyTerm* parseTerm(const char* term_str, ConnectedComponent* component = nullptr) {
+		EasyTerm* parseTerm(const char* term_str, ConnectedComponent* kind = nullptr) {
 			Vector<Token> tokens;
 			tokenize(term_str, tokens);
-			Term* term = $self->parseTerm(tokens, component);
+			Term* term = $self->parseTerm(tokens, kind);
 			return term != nullptr ? new EasyTerm(term) : nullptr;
 		}
 
@@ -174,6 +205,51 @@ public:
 			Vector<Token> tokens;
 			tokenize(strat_str, tokens);
 			return $self->parseStrategyExpr(tokens);
+		}
+
+		/**
+		 * Get a strategy expression from its metarepresentation in
+		 * this module, which must include the @c META-LEVEL module.
+		 *
+		 * @param term The metarepresentation of a strategy, that is,
+		 * a valid element of the @c Strategy sort in @c META-STRATEGY.
+		 * The term will be reduced.
+		 */
+		StrategyExpression* downStrategy(EasyTerm* term) {
+			MetaLevel* metaLevel = getMetaLevel($self);
+
+			if (metaLevel == nullptr)
+				return nullptr;
+
+			UserLevelRewritingContext context(term->getDag());
+			context.reduce();
+			return metaLevel->downStratExpr(context.root(), $self);
+		}
+
+		/**
+		 * Get a module object from its metarepresentation in this
+		 * module, which must include the @c META-LEVEL module.
+		 *
+		 * @param term The metarepresentation of a module, that is,
+		 * a valid element of the @c Module sort in @c META-MODULE.
+		 * The term will be reduced.
+		 */
+		VisibleModule* downModule(EasyTerm* term) {
+			MetaLevel* metaLevel = getMetaLevel($self);
+
+			if (metaLevel == nullptr)
+				return nullptr;
+
+			UserLevelRewritingContext context(term->getDag());
+			context.reduce();
+
+			VisibleModule* mod = metaLevel->downModule(context.root());
+
+			if (mod == nullptr)
+				return nullptr;
+
+			mod->protect();
+			return mod;
 		}
 	}
 

@@ -53,12 +53,12 @@ public:
 	~EasyTerm();
 
 	/**
-	 * Get the top symbol of the term.
+	 * Get the top symbol of this term.
 	 */
 	Symbol* symbol() const;
 
 	/**
-	 * Is the term ground?
+	 * Is this term ground?
 	 *
 	 * @note This function is not accurate (false negatives).
 	 */
@@ -72,14 +72,14 @@ public:
 	bool equal(const EasyTerm* other) const;
 
 	/**
-	 * Check whether the sort of the term is a subtype of the given sort.
+	 * Check whether the sort of this term is a subtype of the given sort.
 	 *
 	 * @param sort The pretended supertype.
 	 */
 	bool leq(const Sort* sort) const;
 
 	/**
-	 * Get the sort of the term.
+	 * Get the sort of this term.
 	 */
 	Sort* getSort() const;
 
@@ -91,9 +91,9 @@ public:
 	int reduce();
 
 	/**
-	 * Rewrite a term following the semantics of the @c srewrite command.
+	 * Rewrite a term following the semantics of the @c rewrite command.
 	 *
-	 * @param bound A bound to the number of rule rewrites.
+	 * @param bound An upper bound on the number of rule rewrites.
 	 *
 	 * @return The total number of rewrites.
 	 */
@@ -102,23 +102,23 @@ public:
 	/**
 	 * Rewrite a term following the semantics of the @c frewrite command.
 	 *
-	 * @param bound A bound to the number of rule rewrites.
-	 * @param gas A bound to the number of rule rewrites per position.
+	 * @param bound An upper bound on the number of rule rewrites.
+	 * @param gas An upper bound on the number of rule rewrites per position.
 	 *
 	 * @return The total number of rewrites.
 	 */
-	int frewrite(int limit = -1, int gas = -1);
+	int frewrite(int bound = -1, int gas = -1);
 
 	/**
 	 * Rewrite a term following the semantics of the @c erewrite command.
 	 *
-	 * @param bound A bound to the number of rule rewrites.
-	 * @param gas A bound to the number of rule rewrites by position.
+	 * @param bound An upper bound on the number of rule rewrites.
+	 * @param gas An upper bound on the number of rule rewrites by position.
 	 *
-	 * @return The result of the rewriting and the total number of rewrites.
-	 * The original term is not modified.
+	 * @return The result and the total number of rewrites (the original
+	 * term is not modified).
 	 */
-	std::pair<EasyTerm*, int> erewrite(int limit = -1, int gas = -1);
+	std::pair<EasyTerm*, int> erewrite(int bound = -1, int gas = -1);
 
 	/**
 	 * Rewrite a term following a strategy.
@@ -134,43 +134,45 @@ public:
 	/**
 	 * Match this term into a given pattern.
 	 *
-	 * @param pattern Pattern term where to match this term.
-	 * @param condition Equational condition to be checked.
+	 * @param pattern Pattern term.
+	 * @param condition Equational condition that solutions must satisfy.
 	 * @param withExtension Whether the matching should be done with extension modulo axioms.
 	 *
-	 * @returns An object to iterate among matchings.
+	 * @returns An object to iterate through matches.
 	 */
 	MatchSearchState* match(EasyTerm* pattern,
 			        const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				bool withExtension = false);
 
 	/**
-	 * Search states matching in target and satisfying condition by rewriting from this term.
+	 * Search states that match into a given pattern and satisfy a given
+	 * condition by rewriting from this term.
 	 *
 	 * @param type Type of search (number of steps).
-	 * @param target Term that found states must match.
-	 * @param cond Condition that found states must satisfy.
-	 * @param limit Limit to the number of solution.
+	 * @param target Patterm term.
+	 * @param condition Condition that solutions must satisfy.
 	 * @param depth Depth bound.
+	 *
+	 * @return An object to iterate through matches.
 	 */
 	RewriteSequenceSearch* search(SearchType type, EasyTerm* target,
 				      const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				      int depth = -1);
 
 	/**
-	 * Iterates through the arguments of this term.
+	 * Iterate over the arguments of this term.
 	 */
 	DagArgumentIterator* arguments();
 
 	/**
-	 * Pretty prints the term.
+	 * Pretty prints this term.
 	 *
 	 * @param out The stream where to print.
 	 */
 	void print(std::ostream &out) const;
 
 	/**
-	 * Get a copy of the term
+	 * Get a copy of this term.
 	 */
 	EasyTerm* copy() const;
 

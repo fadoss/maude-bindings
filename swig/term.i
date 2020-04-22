@@ -14,12 +14,25 @@
 //	(defined and documented in easyTerm.cc/hh)
 //
 
-%include std_pair.i
-namespace std { %template (TermIntPair) pair<EasyTerm*, int>; }
+%rename (Term) EasyTerm;
+%rename (Substitution) EasySubstitution;
+%rename (ArgumentIterator) DagArgumentIterator;
+%rename (NarrowingSequenceSearch) NarrowingSequenceSearch3;
 
-enum SearchType { ONE_STEP, AT_LEAST_ONE_STEP, ANY_STEPS, NORMAL_FORM };
 
-%rename(Term) EasyTerm;
+/**
+ * Search types (number of steps).
+ */
+enum SearchType {
+	ONE_STEP,		///< ->1
+	AT_LEAST_ONE_STEP,	///< ->+
+	ANY_STEPS,		///< ->*
+	NORMAL_FORM		///< ->!
+};
+
+/**
+ * Maude term with its associated operations.
+ */
 class EasyTerm {
 public:
 	EasyTerm() = delete;
@@ -27,30 +40,127 @@ public:
 
 	// Information about the term
 
+	/**
+	 * Get the top symbol of this term.
+	 */
 	Symbol* symbol() const;
+
+	/**
+	 * Is this term ground?
+	 *
+	 * @note This function is not accurate (false negatives).
+	 */
 	bool ground() const;
+
+	/**
+	 * Compare two terms for equality.
+	 *
+ 	 * @param other The second term to be compared.
+	 */
 	bool equal(const EasyTerm* other) const;
+
+	/**
+	 * Check whether the sort of this term is a subtype of the given sort.
+	 *
+	 * @param sort The pretended supertype.
+	 */
 	bool leq(const Sort* sort) const;
+
+	/**
+	 * Get the sort of this term.
+	 */
 	Sort* getSort() const;
 
 	// Maude operations following Maude commands
 
+	/**
+	 * Reduce this term.
+	 *
+	 * @return The total number of rewrites.
+	 */
 	int reduce();
-	int rewrite(int limit = -1);
-	int frewrite(int limit = -1, int gas = -1);
-	std::pair<EasyTerm*, int> erewrite(int limit = -1, int gas = -1);
 
-	MatchSearchState* match(EasyTerm* right,
+	/**
+	 * Rewrite a term following the semantics of the @c rewrite command.
+	 *
+	 * @param bound An upper bound on the number of rule rewrites.
+	 *
+	 * @return The total number of rewrites.
+	 */
+	int rewrite(int bound = -1);
+
+	/**
+	 * Rewrite a term following the semantics of the @c frewrite command.
+	 *
+	 * @param bound An upper bound on the number of rule rewrites.
+	 * @param gas An upper bound on the number of rule rewrites per position.
+	 *
+	 * @return The total number of rewrites.
+	 */
+	int frewrite(int bound = -1, int gas = -1);
+
+	/**
+	 * Rewrite a term following the semantics of the @c erewrite command.
+	 *
+	 * @param bound An upper bound on the number of rule rewrites.
+	 * @param gas An upper bound on the number of rule rewrites by position.
+	 *
+	 * @return The result and the total number of rewrites (the original
+	 * term is not modified).
+	 */
+	std::pair<EasyTerm*, int> erewrite(int bound = -1, int gas = -1);
+
+	/**
+	 * Match this term into a given pattern.
+	 *
+	 * @param pattern Pattern term.
+	 * @param condition Equational condition that solutions must satisfy.
+	 * @param withExtension Whether the matching should be done with extension modulo axioms.
+	 *
+	 * @returns An object to iterate through matches.
+	 */
+	MatchSearchState* match(EasyTerm* pattern,
 				const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				bool withExtension = false);
+
+	/**
+	 * Rewrite a term following a strategy.
+	 *
+	 * @param expr A strategy expression.
+	 * @param depth Whether to perform a depth-first search. By default, a fair search is used.
+	 *
+	 * @return An object to iterate through strategy solutions.
+	 */
 	StrategicSearch* srewrite(StrategyExpression* expr, bool depth = false);
+
+	/**
+	 * Search states that match into a given pattern and satisfy a given
+	 * condition by rewriting from this term.
+	 *
+	 * @param type Type of search (number of steps).
+	 * @param target Patterm term.
+	 * @param condition Condition that solutions must satisfy.
+	 * @param depth Depth bound.
+	 *
+	 * @return An object to iterate through matches.
+	 */
 	RewriteSequenceSearch* search(SearchType type, EasyTerm* target,
 				      const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				      int depth = -1);
 
+	/**
+	 * Iterate over the arguments of this term.
+	 */
 	DagArgumentIterator* arguments();
 
+	/**
+	 * Get a copy of this term.
+	 */
 	EasyTerm* copy() const;
+
+	/**
+	 * An empty condition to be used as a placeholder.
+	 */
 	static const Vector<ConditionFragment*> NO_CONDITION;
 
 	%newobject match;
@@ -67,7 +177,7 @@ public:
 //
 
 /**
- * An iterator through the solutions of a strategy search
+ * An iterator through the solutions of a strategy search.
  */
 class StrategicSearch {
 public:
@@ -81,6 +191,12 @@ public:
 			return $self->getContext()->getTotalCount();
 		}
 
+		/**
+		 * Get the next solution for the strategic search.
+		 *
+		 * @return That solution or null pointer if the end has
+		 * been reached.
+		 */
 		EasyTerm* __next() {
 			DagNode* d = $self->findNextSolution();
 			return d == nullptr ? nullptr : new EasyTerm(d);
@@ -88,68 +204,57 @@ public:
 	}
 
 	%newobject __next;
-
-	#if defined(SWIGPYTHON)
-	%pythoncode %{
-		def __iter__(self):
-			return self
-
-		def __next__(self):
-			v = self.__next()
-			if v is None:
-				raise StopIteration
-
-			return v, self.getRewriteCount()
-
-	%}
-	#endif
 };
 
-%rename (Substitution) EasySubstitution;
+/**
+ * Substitution (mapping from variables to terms).
+ */
 class EasySubstitution {
 public:
 	EasySubstitution() = delete;
 
+	/**
+	 * Get the number of variables in the substitution.
+	 */
 	int size() const;
+
+	/**
+	 * Get the variable at the given index.
+	 *
+	 * @param index The index of the variable.
+	 */
 	EasyTerm* variable(int index) const;
+
+	/**
+	 * Get the value of the variable at the given index.
+	 *
+	 * @param index The index of the variable.
+	 */
 	EasyTerm* value(int index) const;
+
+	/**
+	 * Get the matched portion when matching with extension.
+	 *
+	 * @return The matched portion or null if the
+	 * whole term matched.
+	 */
 	EasyTerm* matchedPortion() const;
-
-	#if defined(SWIGPYTHON)
-	%pythoncode %{
-		def __getitem__(self, index):
-			return self.variable(index), self.value(index)
-
-		def __len__(self):
-			return self.size()
-
-		def __iter__(self):
-			return VectorIterator(self, self.size())
-
-		def __repr__(self):
-			return 'Subtitution with {} variables'.format(self.size())
-
-		def __str__(self):
-			if len(self) == 0:
-				return 'empty'
-
-			vector_str = str(self.variable(0)) + '=' + str(self.value(0))
-			for i in range(1, len(self)):
-				vector_str = vector_str + ', ' + str(self.variable(i)) + '=' + str(self.value(i))
-
-			return vector_str
-	%}
-	#endif
 };
 
 /**
- * An iterator through the matching a term into a pattern
+ * An iterator through the matching a term into a pattern.
  */
 class MatchSearchState {
 public:
 	MatchSearchState() = delete;
 
 	%extend {
+		/**
+		 * Get the next match.
+		 *
+		 * @return A matching substitution or null pointer if
+		 * there is no more matches.
+		 */
 		EasySubstitution* __next() {
 			bool nextMatch = $self->findNextMatch();
 			return nextMatch ? new EasySubstitution($self->getContext(),
@@ -160,23 +265,10 @@ public:
 	}
 
 	%newobject __next;
-
-	#if defined(SWIGPYTHON)
-	%pythoncode %{
-		def __iter__(self):
-			return self
-
-		def __next__(self):
-			nxt = self.__next()
-			if nxt is None:
-				raise StopIteration
-			return nxt
-	%}
-	#endif
 };
 
 /**
- * An iterator through the solutions of a search
+ * An iterator through the solutions of a search.
  */
 class RewriteSequenceSearch {
 public:
@@ -191,8 +283,8 @@ public:
 		}
 
 		/**
-		 * Get the substitution that make the found term match
-		 * into the pattern.
+		 * Get the substitution the matching substitution of the
+		 * solution into the pattern.
 		 */
 		EasySubstitution* getSubstitution() {
 			return new EasySubstitution($self->getSubstitution(),
@@ -201,19 +293,14 @@ public:
 		}
 
 		/**
-		 * Get the rule leading to this term.
-		 */
-		Rule* getRule() {
-			return $self->getStateRule($self->getStateNr());
-		}
-
-		/**
 		 * Get the rule leading to the given state.
 		 * 
-		 * @param stateNr The number of a state in the search graph.
+		 * @param stateNr The number of a state in the search graph
+		 * or -1 for the current one.
 		 */
-		Rule* getRule(int stateNr) {
-			return $self->getStateRule(stateNr);
+		Rule* getRule(int stateNr = -1) {
+			return $self->getStateRule(stateNr == -1
+				? $self->getStateNr() : stateNr);
 		}
 
 		/**
@@ -225,6 +312,12 @@ public:
 			return new EasyTerm($self->getStateDag(stateNr));
 		}
 
+
+		/**
+		 * Get the next match.
+		 *
+		 * @return A term or a null pointer if there is no more matches.
+		 */
 		EasyTerm* __next() {
 			bool hasNext = $self->findNextMatch();
 			return hasNext ? new EasyTerm($self->getStateDag($self->getStateNr())) : nullptr;
@@ -249,40 +342,10 @@ public:
 	 * @return The number of the parent or -1 for the root.
 	 */
 	int getStateParent(int stateNr) const;
-
-	#if defined(SWIGPYTHON)
-	%pythoncode %{
-		def __iter__(self):
-			return self
-
-		def pathTo(self, stateNr):
-			parent = self.getStateParent(stateNr)
-
-			if parent < 0:
-				path = [self.getStateTerm(stateNr)]
-			else:
-				path = self.pathTo(parent)
-
-				path.append(self.getRule(stateNr))
-				path.append(self.getStateTerm(stateNr))
-
-			return path
-
-		def __next__(self):
-			"""Get term found, the substitution, a function to retrieve"""
-			"""the rewriting path to the term, and the rewrite count"""
-			term = self.__next()
-			if term is None:
-				raise StopIteration
-			return term, self.getSubstitution(), lambda: self.pathTo(self.getStateNr()), self.getRewriteCount()
-	%}
-	#endif
 };
 
-%rename (ArgumentIterator) DagArgumentIterator;
-
 /**
- * An iterator through the arguments of a term
+ * An iterator through the arguments of a term.
  */
 class DagArgumentIterator {
 public:
@@ -293,6 +356,8 @@ public:
 	 */
 	bool valid() const;
 
+	%rename(__next) next;
+
 	/**
 	 * Advance the iterator to the next argument.
 	 */
@@ -300,24 +365,12 @@ public:
 
 	%extend {
 		/**
-		 * Get the argument pointed by this iterator
+		 * Get the argument pointed by this iterator.
 		 */
-		EasyTerm* argument() {
+		EasyTerm* argument() const {
 			return new EasyTerm($self->argument());
 		}
 	}
 
-	#if defined(SWIGPYTHON)
-	%pythoncode %{
-		def __iter__(self):
-			return self
-
-		def __next__(self):
-			if not self.valid():
-				raise StopIteration
-			term = self.argument()
-			self.next()
-			return term
-	%}
-	#endif
+	%newobject argument;
 };

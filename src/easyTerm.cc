@@ -70,7 +70,7 @@ EasyTerm::getSort() const {
 
 	if (is_dag) {
 		if (dagNode->getSort() == nullptr) {
-			RewritingContext* context = new RewritingContext(dagNode);
+			RewritingContext* context = new UserLevelRewritingContext(dagNode);
 			dagNode->computeTrueSort(*context);
 			delete context;
 		}
@@ -242,9 +242,8 @@ EasyTerm::srewrite(StrategyExpression* expr, bool depthSearch) {
 
 	TermSet nothing;
 	VariableInfo vinfo;
-	if (!strategy->check(vinfo, nothing)) {
-		return 0;
-	}
+	if (!strategy->check(vinfo, nothing))
+		return nullptr;
 
 	strategy->process();
 
@@ -288,19 +287,17 @@ EasyTerm::search(SearchType type,
 		 int depth)
 {
 	if (this == target) {
-		cerr << "The term of the search cannot be the initial term itself." << endl;
+		cerr << "The target of the search cannot be the initial term itself." << endl;
 		return nullptr;
 	}
 
-	if (!is_dag)
-		dagify();
 	if (target->is_dag)
 		target->termify();
 
 	Pattern* pattern = new Pattern(target->term, false, condition);
 
 	RewriteSequenceSearch* state =
-		new RewriteSequenceSearch(new UserLevelRewritingContext(dagNode),
+		new RewriteSequenceSearch(new UserLevelRewritingContext(getDag()),
 				  static_cast<RewriteSequenceSearch::SearchType>(type),
 				  pattern,
 				  depth);

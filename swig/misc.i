@@ -14,8 +14,8 @@
 #include "sortTestConditionFragment.hh"
 #include "stateTransitionGraph.hh"
 #include "strategyTransitionGraph.hh"
+#include "userLevelRewritingContext.hh"
 %}
-
 
 //
 //	Module items
@@ -27,10 +27,17 @@
 class ModuleItem {
 public:
 	ModuleItem() = delete;
-	/**
-	 * Get the module where this item is defined.
-	 */
-	VisibleModule* getModule() const;
+
+	%extend {
+		/**
+		 * Get the module where this item is defined.
+		 */
+		VisibleModule* getModule() const {
+			VisibleModule* mod = safeCast(VisibleModule*, $self->getModule());
+			mod->protect();
+			return mod;
+		}
+	}
 };
 
 /**
@@ -66,10 +73,11 @@ class Sort : public ModuleItem {
 public:
 	Sort() = delete;
 
+	%rename (kind) component;
+
 	/**
 	 * Get the kind this sort belongs to.
 	 */
-	%rename (kind) component;
 	ConnectedComponent* component() const;
 	/**
 	 * Get the subsorts of this sort.
@@ -87,7 +95,7 @@ public:
 		 * @param rhs The right-hand side of the comparison.
 		 */
 		bool leq(Sort* rhs) const {
-			return leq($self, rhs);
+			return $self->component() == rhs->component() && leq($self, rhs);
 		}
 	}
 
@@ -102,6 +110,18 @@ public:
 class ConnectedComponent {
 public:
 	ConnectedComponent() = delete;
+
+	/**
+	 * Get the number of sorts in this kind.
+	 */
+	int nrSorts() const;
+
+	/**
+	 * Get the sort with a given index in this kind.
+	 *
+	 * @param index Sort index.
+	 */
+	Sort* sort(int index) const;
 
 	%streamBasedPrint;
 };
@@ -136,11 +156,13 @@ public:
 };
 
 /**
- * A Maude system (operator at the kind level).
+ * A Maude symbol (operator at the kind level).
  */
 class Symbol : public ModuleItem {
 public:
 	Symbol() = delete;
+
+	%rename (domainKind) domainComponent;
 
 	/**
 	 * Get the number of arguments.
@@ -150,7 +172,7 @@ public:
 	/**
 	 * Get the kind for the given argument.
 	 *
-	 * @param argNr The argument number.
+	 * @param argNr The argument index.
 	 */
 	const ConnectedComponent* domainComponent(int argNr) const;
 
@@ -159,7 +181,46 @@ public:
 	 */
 	Sort* getRangeSort() const;
 
+	%extend {
+		/**
+		 * Get the declarations of the symbol.
+		 */
+		Vector<const OpDeclaration*> getOpDeclarations() const {
+			const Vector<OpDeclaration> &decls = $self->getOpDeclarations();
+			Vector<const OpDeclaration*> declsp(decls.size());
+			for (size_t i = 0; i < decls.size(); ++i)
+				declsp[i] = &decls[i];
+			return declsp;
+		}
+
+		/**
+		 * Build a term with this symbol and the given terms as arguments.
+		 */
+		EasyTerm* makeTerm(const std::vector<EasyTerm*> &args) {
+			Vector<DagNode*> dargs(args.size());
+			for (size_t i = 0; i < args.size(); ++i)
+				dargs[i] = args[i]->getDag();
+			return new EasyTerm($self->makeDagNode(dargs));
+		}
+	}
+
 	%namedEntityPrint;
+};
+
+/**
+ * Syntactical operator declaration.
+ */
+class OpDeclaration {
+public:
+	/**
+	 * Get domain and range sorts (range is last).
+	 */
+	const Vector<Sort*>& getDomainAndRange() const;
+
+	/**
+	 * Is the declared operator marked as a data constructor?
+	 */
+	 bool isConstructor() const;
 };
 
 /**
@@ -176,6 +237,10 @@ public:
 	 * Whether the rule has the @c narrowing attribute.
 	 */
 	bool isNarrowing() const;
+	/**
+	 * Whether the rule has the @c nonexec attribute.
+	 */
+	bool isNonexec() const;
 	/**
 	 * Whether the rule has a condition.
 	 */
@@ -243,7 +308,7 @@ public:
 
 	%extend {
 		/**
-		 * Get the left-hand side of the strategy definition as a Maude term.
+		 * Get the left-hand side of the strategy definition as a term.
 		 */
 		EasyTerm* getLhs() const {
 			return new EasyTerm($self->getLhs(), false);
@@ -259,6 +324,11 @@ public:
 	 * Get the named strategy being defined.
 	 */
 	RewriteStrategy* getStrategy() const;
+
+	/**
+	 * Whether the strategy definition has the @c nonexec attribute.
+	 */
+	bool isNonexec() const;
 
 	%newobject getLhs;
 
@@ -293,8 +363,6 @@ public:
 //
 //	Conditions
 //
-
-%template(Condition) Vector<ConditionFragment*>;
 
 %rename (EqualityCondition) EqualityConditionFragment;
 %rename (AssignmentCondition) AssignmentConditionFragment;
@@ -389,6 +457,16 @@ public:
 };
 
 /**
+ * Result of LTL model checking.
+ */
+struct ModelCheckResult {
+	%immutable;
+	bool holds;			///< Whether the property holds.
+	std::vector<int> leadIn;	///< The counterexample path to the cycle.
+	std::vector<int> cycle;		///< The counterexample cycle.
+};
+
+/**
  * Complete rewriting graph from an initial state.
  */
 class StateTransitionGraph {
@@ -399,10 +477,11 @@ public:
 		/**
 		 * Construct a state transition graph.
 		 *
-		 * @param term Initial state.
+		 * @param term Initial state term (it will be reduced).
 		 */
 		StateTransitionGraph(EasyTerm* term) {
-			RewritingContext* context = new RewritingContext(term->getDag());
+			RewritingContext* context = new UserLevelRewritingContext(term->getDag());
+			context->reduce();
 			return new StateTransitionGraph(context);
 		}
 
@@ -416,12 +495,12 @@ public:
 		}
 
 		/**
-		 * Get a rule that connectes two states.
+		 * Get a rule that connects two states.
 		 *
 		 * @param origin Origin state number.
 		 * @param dest Destination state number.
 		 *
-		 * @return A rule that connects the two states.
+		 * @return A rule that connects the two states or null if none.
 		 */
 		Rule* getRule(int origin, int dest) const {
 			auto it = $self->getStateFwdArcs(origin).find(dest);
@@ -429,9 +508,21 @@ public:
 				return nullptr;
 			return it->second.empty() ? nullptr : *it->second.begin();
 		}
+
+		/**
+		 * Model check a given LTL formula.
+		 *
+		 * @param formula Term of the @c Formula sort.
+		 *
+		 * @return The result of model checking.
+		 */
+		ModelCheckResult* modelCheck(EasyTerm* formula) {
+			return modelCheck(*$self, formula->getDag());
+		}
 	}
 
 	%newobject getStateTerm;
+	%newobject modelCheck;
 
 	/**
 	 * Get the number of states in the graph.
@@ -456,8 +547,6 @@ public:
 	int getStateParent(int stateNr) const;
 };
 
-namespace std { %template (StringVector) vector<const char*>; }
-
 /**
  * Complete rewriting graph under the control of a strategy from an initial state.
  */
@@ -465,21 +554,60 @@ class StrategyTransitionGraph {
 public:
 	StrategyTransitionGraph() = delete;
 
+	/**
+	 * Cause of the transition in the graph.
+	 */
+	enum TransitionType {
+		RULE_APPLICATION,	///< rule application
+		OPAQUE_STRATEGY,	///< opaque strategy
+		SOLUTION		///< self-loops for solutions
+	};
+
+	%rename (StrategyGraphTransition) Transition;
+
+	/**
+	 * Structure describing a transition in the graph.
+	 */
+	struct Transition {
+		Transition() = delete;
+
+		/**
+		 * Get the transition type (rule application, opaque strategy,
+		 * or solution).
+		 */
+		TransitionType getType() const;
+		/**
+		 * Get the rule applied, in case the transition is a rule application.
+		 *
+		 * @return That rule or a null pointer if the transition is not
+		 * a rule application.
+		 */
+		Rule* getRule() const;
+		/**
+		 * Get the strategy executed, in case of an opaque transition.
+		 *
+		 * @return That strategy or a null pointer if the transition
+		 * is not an opaque strategy.
+		 */
+		RewriteStrategy* getStrategy() const;
+	};
+
 	%extend {
 		/**
 		 * Construct a strategy transition graph.
 		 *
-		 * @param initial Initial state.
+		 * @param initial Initial state term (it will be reduced).
 		 * @param strat A strategy expression.
 		 * @param opaques A list of strategy names to be considered opaque.
 		 * @param biased Whether the matchrews should be biased.
 		 */
 		StrategyTransitionGraph(EasyTerm* initial, StrategyExpression* strat,
-					const std::vector<const char*> &opaques = {}, bool biased=false) {
-			RewritingContext* context = new RewritingContext(initial->getDag());
+					const std::vector<std::string> &opaques = {}, bool biased=false) {
+			RewritingContext* context = new UserLevelRewritingContext(initial->getDag());
+			context->reduce();
 			set<int> opaqueIds;
-			for (const char* name : opaques)
-				opaqueIds.insert(Token::encode(name));
+			for (auto &name : opaques)
+				opaqueIds.insert(Token::encode(name.c_str()));
 			return new StrategyTransitionGraph(context, strat, opaqueIds, biased);
 		}
 
@@ -491,9 +619,49 @@ public:
 		EasyTerm* getStateTerm(int stateNr) const {
 			return new EasyTerm($self->getStateDag(stateNr));
 		}
+
+		/**
+		 * Get the strategy that will be executed next
+		 * from the given state.
+		 *
+		 * @param stateNr A state number.
+		 *
+		 * @return That strategy expression or null if there is
+		 * no pending strategy in the current call or subsearch frame.
+		 */
+		StrategyExpression* getStateStrategy(int stateNr) const {
+			return $self->getStrategyContinuation(stateNr);
+		}
+
+		/**
+		 * Get the transition that connects two states (if any).
+		 *
+		 * @param origin Origin state number.
+		 * @param dest Destination state number.
+		 *
+		 * @return That transition if exists or a null pointer.
+		 */
+		const Transition* getTransition(int origin, int dest) const {
+			auto it = $self->getStateFwdArcs(origin).find(dest);
+			if (it == $self->getStateFwdArcs(origin).end())
+				return nullptr;
+			return it->second.empty() ? nullptr : &*it->second.begin();
+		}
+
+		/**
+		 * Model check a given LTL formula.
+		 *
+		 * @param formula Term of the @c Formula sort.
+		 *
+		 * @return The result of model checking.
+		 */
+		ModelCheckResult* modelCheck(EasyTerm* formula) {
+			return modelCheck(*$self, formula->getDag());
+		}
 	}
 
 	%newobject getStateTerm;
+	%newobject modelCheck;
 
 	/**
 	 * Get the number of states in the graph.

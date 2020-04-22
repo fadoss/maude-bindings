@@ -6,27 +6,6 @@
 #include <vector.hh>
 %}
 
-// Since the iterator defined by Python in the presence of __getitem__
-// and __len__ does not stop, VectorIterator is defined to substitute it
-#if defined(SWIGPYTHON)
-%pythoncode %{
-class VectorIterator:
-	def __init__(self, vect, length):
-		self.vect = vect
-		self.i = 0
-		self.length = length
-
-	def __iter__(self):
-		return self
-
-	def __next__(self):
-		if self.i >= self.length:
-			raise StopIteration
-		self.i = self.i + 1
-		return self.vect[self.i - 1]
-%}
-#endif
-
 /**
  * Internal Maude vector.
  */
@@ -67,52 +46,35 @@ public:
 	 */
 	void swap(Vector& other);
 
+	%apply SWIGTYPE *DISOWN {_Tp value};
 	%extend {
-		_Tp __getitem__(size_type n) const {
+		/**
+		 * Get a vector position value.
+		 *
+		 * @param n Vector position from zero.
+		 */
+		_Tp GETTER_METHOD(size_type n) const {
 			return (*$self)[n];
 		}
 
-		void __setitem(size_type n, _Tp value) {
+		/**
+		 * Set a vector position value.
+		 *
+		 * @param n Vector position from zero.
+		 * @param value Value to be set.
+		 */
+		void SETTER_METHOD(size_type n, _Tp value) {
 			(*$self)[n] = value;
 		}
 
-		size_type __len__() const {
-			return $self->size();
+		/**
+		 * Append a new element to the vector.
+		 */
+		void append(_Tp value) {
+			$self->append(value);
 		}
 	}
-
-	%rename (__append) append;
-	void append(const _Tp& item);
-
-	// __setitem__ and append disassociate the Python object from the
-	// underlying C++ object, since the latter must survive in the vector
-	#if defined(SWIGPYTHON)
-	%pythoncode %{
-		def __setitem__(self, n, v):
-			v.thisown = 0
-			self.__setitem(n, v)
-
-		def __iter__(self):
-			return VectorIterator(self, len(self))
-
-		def __repr__(self):
-			return '{} with {} elements'.format(type(self).__name__, len(self))
-
-		def __str__(self):
-			if len(self) == 0:
-				return 'empty'
-
-			vector_str = str(self[0])
-			for i in range(1, len(self)):
-				vector_str = vector_str + ', ' + str(self[i])
-
-			return vector_str
-
-		def append(self, v):
-			v.thisown = 0
-			self.__append(v)
-	%}
-	#endif
+	%clear _Tp value;
 
 	/**
 	 * Set the vector length to zero.
