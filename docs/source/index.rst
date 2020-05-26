@@ -8,7 +8,7 @@ Maude bindings documentation
 
 .. currentmodule:: maude
 
-The experimental :mod:`maude` package allows manipulating terms, modules, and other entities of the Maude_ specification language as Python objects, whose methods expose the operations available as commands in the Maude interpreter. This documentation describes the Python bindings, but most of the API is available for other languages supported by SWIG_. These bindings are based on the latest Maude release extended with a `model checker`_ for systems controlled by the Maude `strategy language`_, which is accessible via the :py:meth:`StrategyTransitionGraph.modelCheck` method.
+The experimental :mod:`maude` package allows manipulating terms, modules, and other entities of the Maude_ specification language as Python objects, whose methods expose the operations available as commands in the Maude interpreter. This documentation describes the Python bindings, but most of the API is available for other languages supported by SWIG_. These bindings are based on the latest Maude release extended with a `model checker`_ for systems controlled by the Maude `strategy language`_, which is accessible via the :py:meth:`StrategyRewriteGraph.modelCheck` method.
 
 .. seealso:: `Maude 3.0 manual <http://maude.lcc.uma.es/maude30-manual-html/maude-manual.html>`_ · `Source code <https://github.com/fadoss/maude-bindings>`_ ·  `Package at PyPI <https://pypi.org/project/maude>`_
 
@@ -19,7 +19,7 @@ The experimental :mod:`maude` package allows manipulating terms, modules, and ot
 First steps
 -----------
 
-After loading the :py:mod:`maude` module, the first step should be calling the :py:func:`init` function to initialize Maude and load its prelude. Other modules can be loaded from file with the :py:func:`load` function or inserted verbatim with :py:func:`input`. Any loaded module can be obtained as a :py:class:`Module` object with :py:func:`getModule` or :py:func:`getCurrentModule`, which allow parsing terms with their :py:meth:`~Module.parseTerm` method. The usual Maude commands are represented as homonym methods of the :py:class:`Term` class.
+After loading the :py:mod:`maude` module, the first step should be calling the :py:func:`init` function to initialize Maude and load its prelude. Other modules can be loaded from file with the :py:func:`load` function or inserted verbatim with :py:func:`input`. Any loaded module can be obtained as a :py:class:`Module` object with :py:func:`getModule` or :py:func:`getCurrentModule`, which allow parsing terms with their :py:meth:`~Module.parseTerm` method. The usual Maude commands are represented as homonym methods of the :py:class:`Term` class, except :py:meth:`~Module.unify` and :py:meth:`~Module.variant_unify` that belong to the :py:class:`Module` class.
 
 
 ::
@@ -99,6 +99,32 @@ The following classes can be used as usual Python iterators, albeit some offer a
    number of rewrites until it has been found. The third coordinate is a
    function that returns, when called without arguments, a path to the
    solution, as described in :py:meth:`pathTo`.
+
+.. autoclass:: NarrowingSequenceSearch
+   :members:
+   :undoc-members:
+
+   It iterates over (:py:class:`Term`, :py:class:`Substitution`, :py:class:`Substitution`)
+   tuples, consisting of the solution, the accumulated substitution, and the variant unifer.
+
+.. autoclass:: VariantSearch
+   :members:
+   :undoc-members:
+
+   It iterates over (:py:class:`Term`, :py:class:`Substitution`) pairs
+   describing the variants.
+
+.. autoclass:: UnificationProblem
+   :members:
+   :undoc-members:
+
+   It iterates over unifiers of type :py:class:`Substitution`.
+
+.. autoclass:: VariantUnifierSearch
+   :members:
+   :undoc-members:
+
+   It iterates over unifiers of type :py:class:`Substitution`.
 
 .. autoclass:: ArgumentIterator
    :undoc-members:
@@ -185,16 +211,16 @@ Rewriting graphs and model checking
 
 These two classes give access to the reachable rewriting graphs from an initial
 term. Their nodes are terms indexed by integers and their edges are essentially
-rule applications. In :py:class:`StrategyTransitionGraph`, rewriting is
+rule applications. In :py:class:`StrategyRewriteGraph`, rewriting is
 controlled by a strategy expression. LTL formulae can be model checked on these
 graphs using their ``modelCheck`` methods, obtaining the state indices of the
 counterexample in case the property is not satisfied.
 
-.. autoclass:: StateTransitionGraph
+.. autoclass:: RewriteGraph
    :members:
    :undoc-members:
 
-.. autoclass:: StrategyTransitionGraph
+.. autoclass:: StrategyRewriteGraph
    :members:
    :undoc-members:
 

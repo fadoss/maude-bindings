@@ -51,6 +51,11 @@ elseif (${LANGUAGE} STREQUAL guile)
 elseif (${LANGUAGE} STREQUAL lua)
 	find_package(Lua REQUIRED)
 	include_directories(${LUA_INCLUDE_DIR})
+elseif (${LANGUAGE} STREQUAL node)
+	find_package(Node REQUIRED)
+	include_directories(${NODEJS_INCLUDE_DIRS})
+	set(EXTRA_SWIG_OPTIONS "${EXTRA_SWIG_OPTIONS};-node")
+	set(LANGUAGE javascript)
 elseif (${LANGUAGE} STREQUAL php)
 	find_package(PHP4 REQUIRED)
 	include_directories(${PHP4_INCLUDE_PATH})
@@ -135,7 +140,7 @@ set_property(SOURCE swig/maude.i PROPERTY CPLUSPLUS ON)
 swig_add_library(_maude
 	TYPE MODULE
 	LANGUAGE ${LANGUAGE}
-	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc src/model_checking.cc
+	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc src/model_checking.cc src/narrowing.cc
 )
 
 set_property(TARGET _maude PROPERTY SWIG_COMPILE_OPTIONS ${EXTRA_SWIG_OPTIONS})

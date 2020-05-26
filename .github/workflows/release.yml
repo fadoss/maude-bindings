@@ -4,8 +4,8 @@ on:
     tags:
       - 'v*'
 jobs:
-  manylinux:
-    name: Linux packages
+  manylinux2010:
+    name: Linux packages (manylinux2010)
     runs-on: ubuntu-latest
     steps:
 
@@ -18,7 +18,31 @@ jobs:
       run: |
         docker run dockcross/manylinux2010-x64 > ./dockcross
         chmod +x dockcross
-        ./dockcross ./build/build_manylinux.sh
+        ./dockcross ./build/build_manylinux.sh 2010
+
+    - name: Upload Python wheels
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        body: "Python wheels"
+        files: dist/*.whl
+
+  manylinux1:
+    name: Linux packages (manylinux1)
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out repository code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Build Python packages
+      run: |
+        docker run dockcross/manylinux1-x64 > ./dockcross
+        chmod +x dockcross
+        ./dockcross ./build/build_manylinux.sh 1
 
     - name: Upload Python wheels
       uses: softprops/action-gh-release@v1

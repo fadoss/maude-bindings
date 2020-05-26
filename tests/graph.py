@@ -16,12 +16,12 @@ def exploreAndGraph(graph, stateNr):
 		index = index + 1
 		nextState = graph.getNextState(stateNr, index)
 
-maude.init()
+maude.init(advise=False)
 maude.load(os.path.join(os.path.dirname(__file__), 'example.maude'))
 
 example = maude.getModule('EXAMPLE')
 initial = example.parseTerm('f(a, a)')
-graph = maude.StateTransitionGraph(initial)
+graph = maude.RewriteGraph(initial)
 
 print('digraph {')
 exploreAndGraph(graph, 0)

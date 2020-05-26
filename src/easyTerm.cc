@@ -18,9 +18,13 @@
 #include "fairStrategicSearch.hh"
 #include "importTranslation.hh"
 #include "rewriteSequenceSearch.hh"
+#include "narrowingSequenceSearch.hh"
+#include "narrowingSequenceSearch3.hh"
+#include "freshVariableSource.hh"
 #include "pattern.hh"
 #include "extensionInfo.hh"
 #include "dagArgumentIterator.hh"
+#include "variableDagNode.hh"
 
 using namespace std;
 
@@ -51,7 +55,11 @@ EasyTerm::symbol() const {
 
 bool
 EasyTerm::ground() const {
-	return is_dag ? dagNode->isGround() : term->ground();
+	if (!is_dag)
+		return term->ground();
+
+	dagNode->computeBaseSortForGroundSubterms(false);
+	return dagNode->isGround();
 }
 
 bool
@@ -131,37 +139,47 @@ EasyTerm::getDag() {
 }
 
 void
-EasyTerm::startUsingModule(VisibleModule* module) {
+EasyTerm::setDag(DagNode* other) {
+	if (!is_dag && is_own) {
+		term->deepSelfDestruct();
+		term = nullptr;
+		is_dag = true;
+	}
+	dagNode = other;
+}
+
+void
+EasyTerm::startUsingModule(VisibleModule* vmod) {
 	UserLevelRewritingContext::clearTrialCount();
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_MEMO))
-		module->clearMemo();
+		vmod->clearMemo();
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_PROFILE))
-		module->clearProfile();
-	module->protect();
+		vmod->clearProfile();
+	vmod->protect();
 }
 
 int
 EasyTerm::reduce() {
-	VisibleModule* module = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
 
 	if (!is_dag)
 		dagify();
 
 	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
-	startUsingModule(module);
+	startUsingModule(vmod);
 	context->reduce();
 
 	int rewrites = context->getTotalCount();
 
 	delete context;
-	(void) module->unprotect();
+	(void) vmod->unprotect();
 
 	return rewrites;
 }
 
 int
 EasyTerm::rewrite(int limit) {
-	VisibleModule* module = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
 
 	if (!is_dag)
 		dagify();
@@ -169,8 +187,8 @@ EasyTerm::rewrite(int limit) {
 	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
 
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
-		module->resetRules();
-	startUsingModule(module);
+		vmod->resetRules();
+	startUsingModule(vmod);
 
 	context->ruleRewrite(limit);
 
@@ -178,14 +196,14 @@ EasyTerm::rewrite(int limit) {
 	dagNode = context->root();
 
 	delete context;
-	(void) module->unprotect();
+	(void) vmod->unprotect();
 
 	return rewrites;
 }
 
 int
 EasyTerm::frewrite(int limit, int gas) {
-	VisibleModule* module = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
 
 	if (!is_dag)
 		dagify();
@@ -193,22 +211,22 @@ EasyTerm::frewrite(int limit, int gas) {
 	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
 	context->setObjectMode(ObjectSystemRewritingContext::FAIR);
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
-		module->resetRules();
-	startUsingModule(module);
+		vmod->resetRules();
+	startUsingModule(vmod);
 	context->fairRewrite(limit, (gas == NONE) ? 1 : gas);
 
 	int rewrites = context->getTotalCount();
 	dagNode = context->root();
 
 	delete context;
-	(void) module->unprotect();
+	(void) vmod->unprotect();
 
 	return rewrites;
 }
 
 pair<EasyTerm*, int>
 EasyTerm::erewrite(int limit, int gas) {
-	VisibleModule* module = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
 
 	if (!is_dag)
 		dagify();
@@ -216,8 +234,8 @@ EasyTerm::erewrite(int limit, int gas) {
 	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
 	context->setObjectMode(ObjectSystemRewritingContext::EXTERNAL);
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
-		module->resetRules();
-	startUsingModule(module);
+		vmod->resetRules();
+	startUsingModule(vmod);
 	context->fairStart(limit, (gas == NONE) ? 1 : gas);
 	context->externalRewrite();
 
@@ -225,19 +243,19 @@ EasyTerm::erewrite(int limit, int gas) {
 	EasyTerm* result = new EasyTerm(context->root());
 
 	delete context;
-	(void) module->unprotect();
+	(void) vmod->unprotect();
 
 	return {result, rewrites};
 }
 
 StrategicSearch*
 EasyTerm::srewrite(StrategyExpression* expr, bool depthSearch) {
-	ImportModule* module = dynamic_cast<ImportModule*>(symbol()->getModule());
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
 
 	if (!is_dag)
 		dagify();
 
-	ImportTranslation dummy(module);
+	ImportTranslation dummy(vmod);
 	StrategyExpression* strategy = ImportModule::deepCopyStrategyExpression(&dummy, expr);
 
 	TermSet nothing;
@@ -250,8 +268,8 @@ EasyTerm::srewrite(StrategyExpression* expr, bool depthSearch) {
 	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
 	context->setObjectMode(ObjectSystemRewritingContext::EXTERNAL);
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
-		module->resetRules();
-	// startUsingModule(module);
+		vmod->resetRules();
+	startUsingModule(vmod);
 	context->reduce();
 
 	StrategicSearch* state = depthSearch ? new DepthFirstStrategicSearch(context, strategy)
@@ -287,7 +305,7 @@ EasyTerm::search(SearchType type,
 		 int depth)
 {
 	if (this == target) {
-		cerr << "The target of the search cannot be the initial term itself." << endl;
+		IssueWarning("the target of the search cannot be the initial term itself.");
 		return nullptr;
 	}
 
@@ -303,6 +321,49 @@ EasyTerm::search(SearchType type,
 				  depth);
 
 	return state;
+}
+
+VariantSearch*
+EasyTerm::get_variants(bool irredundant, const std::vector<EasyTerm*> &irreducible) {
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
+
+	size_t nrIrredTerm = irreducible.size();
+	Vector<DagNode*> blockerDags(nrIrredTerm);
+
+	for (size_t i = 0; i < nrIrredTerm; i++)
+		blockerDags[i] = irreducible[i]->getDag();
+
+	startUsingModule(vmod);
+
+	VariantSearch* search = new VariantSearch(new UserLevelRewritingContext(getDag()),
+						  blockerDags,
+						  new FreshVariableSource(vmod),
+						  false,
+						  irredundant);
+
+	return search;
+}
+
+NarrowingSequenceSearch3*
+EasyTerm::vu_narrow(SearchType type,
+		    EasyTerm* target,
+		    int depth,
+		    bool fold)
+{
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
+
+	if (this == target) {
+		IssueWarning("the target of the search cannot be the initial term itself.");
+		return nullptr;
+	}
+
+	return new NarrowingSequenceSearch3(new UserLevelRewritingContext(getDag()),
+			static_cast<NarrowingSequenceSearch::SearchType>(type),
+			target->getDag(),
+			depth,
+			fold,
+			false,
+			new FreshVariableSource(vmod));
 }
 
 DagArgumentIterator*
@@ -323,20 +384,38 @@ EasyTerm::markReachableNodes() {
 //	EasySubstitution
 //
 
-EasySubstitution::EasySubstitution(const Substitution* subs, const VariableInfo* vinfo,
+EasySubstitution::EasySubstitution(const Substitution* subs,
+				   const VariableInfo* vinfo,
 				   const ExtensionInfo* extension)
- : subs(subs), vinfo(vinfo), extension(extension) {
+ : subs(subs), vinfo(vinfo), extension(extension), flags(0) {
 
+}
+
+EasySubstitution::EasySubstitution(const Substitution* subs,
+				   const NarrowingVariableInfo* nvinfo,
+				   bool ownsSubstitution)
+ : subs(subs), nvinfo(nvinfo), extension(nullptr), flags(NARROWING) {
+	if (ownsSubstitution)
+		flags |= OWNS_SUBSTITUTION;
+}
+
+EasySubstitution::~EasySubstitution() {
+	if (flags & OWNS_SUBSTITUTION)
+		delete subs;
 }
 
 int
 EasySubstitution::size() const {
-	return vinfo->getNrRealVariables();
+	return (flags & NARROWING)
+			? subs->nrFragileBindings()
+			: vinfo->getNrRealVariables();
 }
 
 EasyTerm*
 EasySubstitution::variable(int index) const {
-	return new EasyTerm(vinfo->index2Variable(index), false);
+	return (flags & NARROWING)
+			? new EasyTerm(nvinfo->index2Variable(index))
+			: new EasyTerm(vinfo->index2Variable(index), false);
 }
 
 EasyTerm*
@@ -349,4 +428,63 @@ EasySubstitution::matchedPortion() const {
 	return (extension != nullptr && !extension->matchedWhole())
 		? new EasyTerm(extension->buildMatchedPortion())
 		: nullptr;
+}
+
+EasyTerm*
+EasySubstitution::find(const char* name, Sort* sort) const {
+	int code = Token::encode(name);
+	int nrRealVariables = size();
+
+	for (int i = 0; i < nrRealVariables; i++) {
+		int varId;
+		Sort* varSort;
+
+		if (flags & NARROWING) {
+			VariableDagNode* var = nvinfo->index2Variable(i);
+			varId = var->id();
+			varSort = var->getSort();
+		}
+		else {
+			VariableTerm* var = dynamic_cast<VariableTerm*>(vinfo->index2Variable(i));
+			varId = var->id();
+			varSort = var->getSort();
+		}
+
+		if (varId == code && (sort == nullptr || varSort == sort))
+			return new EasyTerm(subs->value(i));
+	}
+
+	return nullptr;
+}
+
+EasyTerm*
+EasySubstitution::instantiate(EasyTerm* term) const {
+	// This implementation could be more efficient
+
+	EasyTerm* result;
+
+	// Index variables
+	if (flags & NARROWING) {
+		DagNode* dagNode = term->getDag();
+		NarrowingVariableInfo vinfoCopy;
+		vinfoCopy.copy(*nvinfo);
+		dagNode->indexVariables(vinfoCopy, 0);
+		result = new EasyTerm(dagNode);
+	}
+	else {
+		Term* termCopy = term->termCopy();
+		VariableInfo vinfoCopy = *vinfo;
+		termCopy->indexVariables(vinfoCopy);
+		result = new EasyTerm(termCopy);
+		termCopy->dagify();
+	}
+
+	// Set ground flags
+	result->getDag()->computeBaseSortForGroundSubterms(false);
+
+	DagNode* instantiated = result->getDag()->instantiate(*subs);
+	if (instantiated != nullptr)
+		result->setDag(instantiated);
+
+	return result;
 }

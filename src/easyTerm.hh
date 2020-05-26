@@ -19,6 +19,7 @@
 #include "vector.hh"
 
 #include <iostream>
+#include <vector>
 
 /**
  * Search types (number of steps).
@@ -59,8 +60,6 @@ public:
 
 	/**
 	 * Is this term ground?
-	 *
-	 * @note This function is not accurate (false negatives).
 	 */
 	bool ground() const;
 
@@ -160,6 +159,29 @@ public:
 				      int depth = -1);
 
 	/**
+	 * Compute the most general variants of this term.
+	 *
+	 * @param irredundant Whether to obtain irredundant variants
+	 * (for theories with the finite variant property).
+	 * @param irreducible Irreducible terms constraint.
+	 *
+ 	 * @return An object to iterate through variants.
+	 */
+	VariantSearch* get_variants(bool irredundant = false,
+	                            const std::vector<EasyTerm*> &irreducible = {});
+
+	/**
+	 * Narrowing-based search of terms that unify with the given target.
+	 *
+	 * @param type Type of the search (number of steps).
+	 * @param target Term that found states must unify with.
+	 * @param depth Depth bound (@c -1 for unbounded)
+	 * @param fold Whether to activate folding (@c fvu-narrow command).
+	 */
+	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
+					    int depth = -1, bool fold = false);
+
+	/**
 	 * Iterate over the arguments of this term.
 	 */
 	DagArgumentIterator* arguments();
@@ -186,6 +208,11 @@ public:
 	 */
 	DagNode* getDag();
 
+	/*
+	 * Set the internal DAG node.
+	 */
+	void setDag(DagNode* node);
+
 	/**
 	 * An empty condition to be used as a placeholder.
 	 */
@@ -193,10 +220,11 @@ public:
 
 	void markReachableNodes();
 
+	static void startUsingModule(VisibleModule* vmod);
+
 private:
 	void dagify();
 	void termify();
-	void startUsingModule(VisibleModule* module);
 
 	bool is_dag;
 	bool is_own;
@@ -211,8 +239,16 @@ private:
  */
 class EasySubstitution {
 public:
-	EasySubstitution(const Substitution* subs, const VariableInfo* vinfo,
+	EasySubstitution(const Substitution* subs,
+			 const VariableInfo* vinfo,
 			 const ExtensionInfo* extension = nullptr);
+
+	EasySubstitution(const Substitution* subs,
+			 const NarrowingVariableInfo* vinfo,
+			 bool ownsSubstitution = true);
+
+
+	~EasySubstitution();
 
 	/**
 	 * Get the number of variables in the substitution.
@@ -238,10 +274,40 @@ public:
 	 */
 	EasyTerm* matchedPortion() const;
 
+	/**
+	 * Find the value of a given variable by name.
+	 *
+	 * @param name Variable name (without sort).
+	 * @param sort Sort of the variable (optional).
+	 *
+	 * @return The value of the variable or null if not found.
+	 * If the sort of the variable is not given, multiple results
+	 * are possible.
+	 */
+	EasyTerm* find(const char* name, Sort* sort = nullptr) const;
+
+	/**
+	 * Instantiate a term with this substitution.
+	 *
+	 * @param term The term to be instantiated.
+	 *
+	 * @return The instantiated term.
+	 */
+	EasyTerm* instantiate(EasyTerm* term) const;
+
 private:
 	const Substitution* subs;
-	const VariableInfo* vinfo;
+	union {
+		const VariableInfo* vinfo;
+		const NarrowingVariableInfo* nvinfo;
+	};
 	const ExtensionInfo* extension;
+
+	enum Flags {
+		OWNS_SUBSTITUTION = 0x1,
+		NARROWING = 0x2
+	};
+	int flags;
 };
 
 inline

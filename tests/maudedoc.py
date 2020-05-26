@@ -25,7 +25,7 @@ MODULE_TYPE_NAMES = {
 
 if __name__ == "__main__":
 
-	maude.init()
+	maude.init(advise=False)
 
 	# Get the current module if a module name has not been
 	# given in the first argument

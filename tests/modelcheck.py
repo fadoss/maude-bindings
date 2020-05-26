@@ -12,9 +12,9 @@ RESET_FMT   = '\033[0m'			# Reset format
 
 def print_smc_trans(trans):
 	return {
-		maude.StrategyTransitionGraph.RULE_APPLICATION: trans.getRule(),
-		maude.StrategyTransitionGraph.OPAQUE_STRATEGY : trans.getStrategy(),
-		maude.StrategyTransitionGraph.SOLUTION: ''
+		maude.StrategyRewriteGraph.RULE_APPLICATION: trans.getRule(),
+		maude.StrategyRewriteGraph.OPAQUE_STRATEGY : trans.getStrategy(),
+		maude.StrategyRewriteGraph.SOLUTION: ''
 	}[trans.getType()]
 
 def print_smc(sgraph, result):
@@ -38,14 +38,14 @@ def print_smc(sgraph, result):
 			next_state = result.cycle[i+1] if i+1 < len(result.cycle) else result.cycle[0]
 			trans = sgraph.getTransition(result.cycle[i], next_state)
 
-			if trans.getType() == maude.StrategyTransitionGraph.SOLUTION:
+			if trans.getType() == maude.StrategyRewriteGraph.SOLUTION:
 				print(SOLUTION, sgraph.getStateTerm(result.cycle[i]))
 			else:
 				print(CYCLE_BAR, sgraph.getStateTerm(result.cycle[i]))
 				print(CYCLE_ARR, EDGE_FMT, print_smc_trans(trans), RESET_FMT)
 
 		if (sgraph.getTransition(result.cycle[-1], result.cycle[0]).getType()
-			!= maude.StrategyTransitionGraph.SOLUTION):
+			!= maude.StrategyRewriteGraph.SOLUTION):
 			print(CYCLE_END)
 
 
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
 	filename, initial, formula = sys.argv[1:4]
 
-	maude.init()
+	maude.init(advise=False)
 	if not maude.load(filename):
 		print('Error loading file.')
 		sys.exit(1)
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
 		print('Model checking', f, 'from', initial, 'using', s, 'in module', mod)
 
-		sgraph = maude.StrategyTransitionGraph(t, s)
+		sgraph = maude.StrategyRewriteGraph(t, s)
 		result = sgraph.modelCheck(f)
 
 		print_smc(sgraph, result)
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 	else:
 		print('Model checking', f, 'from', initial, 'in module', mod)
 
-		graph = maude.StateTransitionGraph(t)
+		graph = maude.RewriteGraph(t)
 		result = graph.modelCheck(f)
 
 		print_mc(graph, result)

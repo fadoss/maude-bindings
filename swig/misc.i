@@ -21,6 +21,9 @@
 //	Module items
 //
 
+%rename (RewriteGraph) StateTransitionGraph;
+%rename (StrategyRewriteGraph) StrategyTransitionGraph;
+
 /**
  * An item that belongs to a module.
  */

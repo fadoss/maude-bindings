@@ -6,6 +6,27 @@
 #error Python-specific bindings
 #endif
 
+%define %makeIterable(CLASS)
+%extend CLASS {
+%pythoncode %{
+	def __iter__(self):
+		return self
+
+	def __next__(self):
+		nxt = self.__next()
+		if nxt is None:
+			raise StopIteration
+		return nxt
+%}
+}
+%enddef
+
+//
+// Defined in module.i
+
+%makeIterable(UnificationProblem);
+%makeIterable(VariantUnifierSearch);
+
 //
 // Defined in term.i
 
@@ -22,18 +43,7 @@
 %}
 }
 
-%extend MatchSearchState {
-%pythoncode %{
-	def __iter__(self):
-		return self
-
-	def __next__(self):
-		nxt = self.__next()
-		if nxt is None:
-			raise StopIteration
-		return nxt
-%}
-}
+%makeIterable(MatchSearchState);
 
 %extend RewriteSequenceSearch {
 %pythoncode %{
@@ -108,6 +118,31 @@
 %}
 }
 
+%extend VariantSearch {
+%pythoncode %{
+	def __iter__(self):
+		return self
+
+	def __next__(self):
+		nxt = self.__next()
+		if nxt is None:
+			raise StopIteration
+		return nxt.first, nxt.second
+%}
+}
+
+%extend NarrowingSequenceSearch3 {
+%pythoncode %{
+	def __iter__(self):
+		return self
+
+	def __next__(self):
+		nxt = self.__next()
+		if nxt is None:
+			raise StopIteration
+		return nxt, self.getSubstitution(), self.getUnifier()
+%}
+}
 
 //
 // Defined in misc.i
@@ -122,6 +157,13 @@
 
 	def __len__(self):
 		return self.nrSorts()
+%}
+}
+
+%extend Symbol {
+%pythoncode %{
+	def __call__(self, *args):
+		return self.makeTerm(args)
 %}
 }
 

@@ -37,13 +37,13 @@ public:
 };
 
 bool
-FormulaeBuilder::loadSymbols(VisibleModule* mod, ConnectedComponent* stateKind) {
+FormulaeBuilder::loadSymbols(VisibleModule* vmod, ConnectedComponent* stateKind) {
 	Vector<ConnectedComponent*> domain(2);
 
 	// Finds any of the modelCheck symbols to import its attachments
 
-	Sort* modelCheckSort = mod->findSort(Token::encode("ModelCheckResult"));
-	Sort* ltlSort = mod->findSort(Token::encode("Formula"));
+	Sort* modelCheckSort = vmod->findSort(Token::encode("ModelCheckResult"));
+	Sort* ltlSort = vmod->findSort(Token::encode("Formula"));
 
 	// First, we try to find them by name and domain
 	if (modelCheckSort != nullptr && ltlSort != nullptr) {
@@ -55,7 +55,7 @@ FormulaeBuilder::loadSymbols(VisibleModule* mod, ConnectedComponent* stateKind) 
 		domain[0] = stateKind;
 		domain[1] = ltlKind;
 
-		Symbol* modelCheckSymb = mod->findSymbol(Token::encode("modelCheck"),
+		Symbol* modelCheckSymb = vmod->findSymbol(Token::encode("modelCheck"),
 							 domain, modelCheckSort->component());
 
 		if (modelCheckSymb != nullptr) {
@@ -67,14 +67,14 @@ FormulaeBuilder::loadSymbols(VisibleModule* mod, ConnectedComponent* stateKind) 
 
 		domain.expandBy(3);
 
-		Sort* qidSort = mod->findSort(Token::encode("Qid"));
-		Sort* boolSort = mod->findSort(Token::encode("Bool"));
+		Sort* qidSort = vmod->findSort(Token::encode("Qid"));
+		Sort* boolSort = vmod->findSort(Token::encode("Bool"));
 
 		domain[2] = qidSort->component();
 		domain[3] = qidSort->component();
 		domain[4] = boolSort->component();
 
-		modelCheckSymb = mod->findSymbol(Token::encode("modelCheck"),
+		modelCheckSymb = vmod->findSymbol(Token::encode("modelCheck"),
 						 domain, modelCheckSort->component());
 
 		if (modelCheckSymb != nullptr) {
@@ -86,8 +86,8 @@ FormulaeBuilder::loadSymbols(VisibleModule* mod, ConnectedComponent* stateKind) 
 	// As a second chance, we try to find the symbol by dynamic-casting all
 	// of them in the module (in case modelCheck has been renamed)
 
-	const Vector<Symbol*> &symbols = mod->getSymbols();
-	int symbolIndex = mod->getNrUserSymbols() - 1;
+	const Vector<Symbol*> &symbols = vmod->getSymbols();
+	int symbolIndex = vmod->getNrUserSymbols() - 1;
 
 	TemporalSymbol* modelCheckSymb = nullptr;
 
@@ -113,8 +113,25 @@ struct BaseSystemAutomaton : public ModelChecker2::System
 	DagNodeSet propositions;
 	Symbol* satisfiesSymbol;
 	RewritingContext* parentContext;
-	DagNode* trueTerm;
+	DagRoot trueTerm;
+
+	inline bool checkProposition(DagNode* stateDag, int propositionIndex) const;
 };
+
+inline bool
+BaseSystemAutomaton::checkProposition(DagNode* stateDag, int propositionIndex) const { 
+	Vector<DagNode*> args(2);
+	args[0] = stateDag;
+	args[1] = propositions.index2DagNode(propositionIndex);
+	RewritingContext* testContext =
+	parentContext->makeSubcontext(satisfiesSymbol->makeDagNode(args));
+	testContext->reduce();
+	bool result = trueTerm.getNode()->equal(testContext->root());
+	parentContext->addInCount(*testContext);
+	delete testContext;
+
+	return result;
+}
 
 struct SystemAutomaton : public BaseSystemAutomaton
 {
@@ -146,24 +163,13 @@ SystemAutomaton::getNextState(int stateNr, int transitionNr) {
 int
 StrategySystemAutomaton::getNextState(int stateNr, int transitionNr)
 {
-  return systemStates->getNextState(stateNr, transitionNr);
+	return systemStates->getNextState(stateNr, transitionNr);
 }
-
-#define CHECK_PROPOSITION(stateDag) \
-	Vector<DagNode*> args(2); \
-	args[0] = stateDag; \
-	args[1] = propositions.index2DagNode(propositionIndex); \
-	RewritingContext* testContext = \
-	parentContext->makeSubcontext(satisfiesSymbol->makeDagNode(args)); \
-	testContext->reduce(); \
-	bool result = trueTerm->equal(testContext->root()); \
-	parentContext->addInCount(*testContext); \
-	delete testContext;
 
 bool
 SystemAutomaton::checkProposition(int stateNr, int propositionIndex) const {
-	CHECK_PROPOSITION(systemStates->getStateDag(stateNr));
-	return result;
+	return BaseSystemAutomaton::checkProposition(systemStates->getStateDag(stateNr),
+						     propositionIndex);
 }
 
 bool
@@ -181,7 +187,7 @@ StrategySystemAutomaton::checkProposition(int stateNr, int propositionIndex) con
   if (cached != propositionCache.end())
     return cached->second;
 
-  CHECK_PROPOSITION(stateDag);
+  bool result = BaseSystemAutomaton::checkProposition(stateDag, propositionIndex);
   propositionCache[make_pair(stateDag, propositionIndex)] = result;
   return result;
 }
@@ -233,7 +239,7 @@ prepareModelChecker(BaseSystemAutomaton &system, RewritingContext* context, DagN
 	domain.resize(0);
 
 	if (Symbol* symbol = mod->findSymbol(Token::encode("true"), domain, boolSort->component()))
-		system.trueTerm = symbol->makeDagNode();
+		system.trueTerm.setNode(symbol->makeDagNode());
 	else
 		return false;
 

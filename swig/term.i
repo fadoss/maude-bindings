@@ -5,8 +5,10 @@
 %{
 #include "strategicSearch.hh"
 #include "rewriteSequenceSearch.hh"
+#include "variantSearch.hh"
 #include "pattern.hh"
 #include "dagArgumentIterator.hh"
+#include "narrowingSequenceSearch3.hh"
 %}
 
 //
@@ -47,8 +49,6 @@ public:
 
 	/**
 	 * Is this term ground?
-	 *
-	 * @note This function is not accurate (false negatives).
 	 */
 	bool ground() const;
 
@@ -149,6 +149,31 @@ public:
 				      int depth = -1);
 
 	/**
+	 * Compute the most general variants of this term.
+	 *
+	 * @param irredundant Whether to obtain irredundant variants
+	 * (for theories with the finite variant property).
+	 * @param irreducible Irreducible terms constraint.
+	 *
+ 	 * @return An object to iterate through variants.
+	 */
+	VariantSearch* get_variants(bool irredundant = false,
+	                            const std::vector<EasyTerm*> &irreducible = {});
+
+	/**
+	 * Narrowing-based search of terms that unify with the given target.
+	 *
+	 * @param type Type of the search (number of steps).
+	 * @param target The pattern that has to be reached.
+	 * @param depth Depth bound (@c -1 for unbounded).
+	 * @param fold Whether to activate folding (@c fvu-narrow command).
+	 *
+	 * @return An object to iterate through solutions.
+	 */
+	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
+					    int depth = -1, bool fold = false);
+
+	/**
 	 * Iterate over the arguments of this term.
 	 */
 	DagArgumentIterator* arguments();
@@ -239,6 +264,33 @@ public:
 	 * whole term matched.
 	 */
 	EasyTerm* matchedPortion() const;
+
+	/**
+	 * Find the value of a given variable by name.
+	 *
+	 * @param name Variable name (without sort).
+	 * @param sort Sort of the variable (optional).
+	 *
+	 * @return The value of the variable or null if not found.
+	 * If the sort of the variable is not given, multiple results
+	 * are possible.
+	 */
+ 	EasyTerm* find(const char* name, Sort* sort = nullptr) const;
+
+	/**
+	 * Instantiate a term with this substitution.
+	 *
+	 * @param term The term to be instantiated.
+	 *
+	 * @return The instantiated term.
+	 */
+	EasyTerm* instantiate(EasyTerm* term) const;
+
+	%newobject variable;
+	%newobject value;
+	%newobject matchedPortion;
+	%newobject find;
+	%newobject instantiate;
 };
 
 /**
@@ -342,6 +394,110 @@ public:
 	 * @return The number of the parent or -1 for the root.
 	 */
 	int getStateParent(int stateNr) const;
+};
+
+/**
+ * An iterator through narrowing solutions.
+ */
+class NarrowingSequenceSearch3 {
+public:
+	NarrowingSequenceSearch3() = delete;
+
+	/**
+	 * Whether some solutions may have been missed due to incomplete unification algorithms.
+	 */
+	bool isIncomplete() const;
+
+	%extend {
+		/**
+		 * Get the next solution of the narrowing search.
+		 */
+		EasyTerm* __next() {
+			if (!$self->findNextUnifier())
+				return nullptr;
+
+			DagNode* stateDag;
+			int variableFamily;
+			Substitution* substitution;
+
+			$self->getStateInfo(stateDag, variableFamily, substitution);
+			return new EasyTerm(stateDag);
+		}
+
+		/**
+		 * Get the accumulated substitution.
+		 */
+		EasySubstitution* getSubstitution() const {
+			DagNode* stateDag;
+			int variableFamily;
+			Substitution* substitution;
+
+			$self->getStateInfo(stateDag, variableFamily, substitution);
+			return new EasySubstitution(substitution, &$self->getInitialVariableInfo(), false);
+		}
+
+		/**
+		 * Get the variant unifier.
+		 */
+		EasySubstitution* getUnifier() const {
+			const Vector<DagNode*>* unifier = $self->getUnifier();
+			size_t nrVariables = unifier->size();
+
+			Substitution* subs = new Substitution(nrVariables);
+
+			for (size_t i = 0; i < nrVariables; i++)
+				subs->bind(i, (*unifier)[i]);
+
+			return new EasySubstitution(subs, &$self->getUnifierVariableInfo());
+		}
+	}
+
+	%newobject __next;
+	%newobject getSubstitution;
+	%newobject getUnifier;
+};
+
+/**
+ * An iterator through variants.
+ */
+class VariantSearch {
+public:
+	VariantSearch() = delete;
+
+	/**
+	 * Whether some variants may have been missed due to incomplete unification algorithms.
+	 */
+	bool isIncomplete() const;
+
+	%extend {
+		/**
+		 * Get the next variant.
+		 *
+		 * @return The variant term or null if there is no more.
+		 */
+		std::pair<EasyTerm*, EasySubstitution*> * __next() {
+			int dummy, dummy2, dummy3; bool dummy4;
+			const Vector<DagNode*>* variant = $self->getNextVariant(dummy, dummy2, dummy3, dummy4);
+
+			if (variant == nullptr)
+				return nullptr;
+
+			int nrVariables = variant->size() - 1;
+
+			DagNode* d = (*variant)[nrVariables];
+
+			// Create a substitution
+			Substitution* subs = new Substitution(nrVariables);
+
+			for (int i = 0; i < nrVariables; i++)
+				subs->bind(i, (*variant)[i]);
+
+			return new std::pair<EasyTerm*, EasySubstitution*>(new EasyTerm(d),
+			          new EasySubstitution(subs, &$self->getVariableInfo()));
+		}
+	};
+
+	%newobject __next;
 };
 
 /**

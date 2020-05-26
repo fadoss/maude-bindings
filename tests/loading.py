@@ -1,6 +1,6 @@
 import maude
 
-maude.init()
+maude.init(advise=False)
 
 maude.load('tests/example.maude')
 maude.load('tests/example.maude')

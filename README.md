@@ -49,8 +49,11 @@ Documentation for the Python package is available [here](https://fadoss.github.i
 
 * Loading files, parsing terms, reducing, rewriting, rewriting with strategies, and searching in `test.py`.
 * Matching in `match.py`.
+* Unification in `unify.py`.
 * Manipulating the rewrite graph in `graph.py`.
 * Model checking in `modelcheck.py`.
+* Narrowing in `vunarrow.py`.
+* Variant generation in `variants.py`.
 * Iterating over the arguments of a term in `gui.py`.
 * Building terms from symbols in `buildTerm.py`.
 * Inspecting modules in `maudedoc.py`.

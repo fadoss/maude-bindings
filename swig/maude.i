@@ -24,6 +24,7 @@
 
 #include "maude_wrappers.hh"
 #include "easyTerm.hh"
+#include "narrowing.hh"
 %}
 
 %include std_vector.i
@@ -40,6 +41,9 @@ namespace std {
 	%template (TermIntPair) pair<EasyTerm*, int>;
 	%template (TermVector) vector<EasyTerm*>;
 	%template (StringVector) vector<std::string>;
+	%template (TermPair) pair<EasyTerm*, EasyTerm*>;
+	%template (TermSubstitutionPair) pair<EasyTerm*, EasySubstitution*>;
+	%template (TermPairVector) vector<pair<EasyTerm*, EasyTerm*>>;
 }
 
 //

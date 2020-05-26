@@ -180,13 +180,13 @@ VisibleModule* getCurrentModule() {
 	if (premodule == nullptr || premodule->getFlatSignature()->isBad())
 		return nullptr;
 
-	VisibleModule* module = premodule->getFlatModule();
+	VisibleModule* vmod = premodule->getFlatModule();
 
-	if (module->isBad())
+	if (vmod->isBad())
 		return nullptr;
 
-	module->protect();
-	return module;
+	vmod->protect();
+	return vmod;
 }
 
 VisibleModule* getModule(const char* name) {
@@ -195,13 +195,13 @@ VisibleModule* getModule(const char* name) {
 	if (premodule == nullptr || premodule->getFlatSignature()->isBad())
 		return nullptr;
 
-	VisibleModule* module = premodule->getFlatModule();
+	VisibleModule* vmod = premodule->getFlatModule();
 
-	if (module->isBad())
+	if (vmod->isBad())
 		return nullptr;
 
-	module->protect();
-	return module;
+	vmod->protect();
+	return vmod;
 }
 
 // Dirty hacks to access some private members
@@ -263,13 +263,13 @@ getViews() {
 }
 
 MetaLevel*
-getMetaLevel(VisibleModule* mod) {
+getMetaLevel(VisibleModule* vmod) {
 	// Finds an operator of type MetaLevelOpSymbol for which to obtain
 	// the MetaLevel instance. Finding a specific function would be more
 	// efficient, but would fail in case or renaming.
 
-	const Vector<Symbol*> &symbols = mod->getSymbols();
-	int symbolIndex = mod->getNrUserSymbols() - 1;
+	const Vector<Symbol*> &symbols = vmod->getSymbols();
+	int symbolIndex = vmod->getNrUserSymbols() - 1;
 
 	MetaLevelOpSymbol* metaSymbol = nullptr;
 

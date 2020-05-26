@@ -1,7 +1,7 @@
 import maude
 import os.path
 
-maude.init()
+maude.init(advise=False)
 maude.load(os.path.join(os.path.dirname(__file__), 'example.maude'))
 
 m = maude.getCurrentModule()
@@ -59,3 +59,17 @@ print(pattern, '<=?', t)
 
 for match in t.match(pattern, maude.Term.NO_CONDITION, True):
 	print(match, 'inside', match.matchedPortion())
+
+#####
+
+pattern = m.parseTerm('f(X:Symbol, g(Y:Symbol))')
+t = m.parseTerm('f(a, g(b))')
+
+for match in t.match(pattern):
+	print('Substitution', match)
+	print('X =', match.find('X'))
+	print('Y =', match.find('Y'))
+	print('X:Symbol =', match.find('X', m.findSort('Symbol')))
+	print('Y:Nat =', match.find('Y', m.findSort('Nat')))
+	print('σ(c) =', match.instantiate(m.parseTerm('c')))
+	print('σ(f(g(Y), g(X))) =', match.instantiate(m.parseTerm('f(g(Y:Symbol), g(X:Symbol))')))

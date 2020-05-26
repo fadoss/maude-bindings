@@ -5,6 +5,8 @@
 %{
 #include "metaLevel.hh"
 #include "metaModule.hh"
+#include "unificationProblem.hh"
+#include "freshVariableSource.hh"
 %}
 
 %rename (Module) VisibleModule;
@@ -23,7 +25,6 @@ public:
 			// in the target language (if another module with the
 			// same name is introduced)
 			$self->unprotect();
-			delete $self;
 		}
 	}
 
@@ -253,8 +254,141 @@ public:
 		}
 	}
 
+	//
+	//	Methods for operations
+	//
+
+	%extend {
+		/**
+		 * Solves the given unification problem.
+		 *
+		 * @param problem A list of pairs of terms to be unified.
+		 *
+		 * @returns An object to iterate through unifiers.
+		 */
+		UnificationProblem* unify(const std::vector<std::pair<EasyTerm*, EasyTerm*>> &problem) {
+			size_t nrPairs = problem.size();
+
+			if (nrPairs == 0) {
+				IssueWarning("the given unification problem is empty.");
+				return nullptr;
+			}
+
+			Vector<Term*> lhs(nrPairs);
+			Vector<Term*> rhs(nrPairs);
+
+			for (size_t i = 0; i < nrPairs; i++) {
+				// Terms are deleted by ~UnificationProblem
+				lhs[i] = problem[i].first->termCopy();
+				rhs[i] = problem[i].second->termCopy();
+			}
+
+			EasyTerm::startUsingModule($self);
+			UnificationProblem* unifProblem = new UnificationProblem(lhs, rhs, new FreshVariableSource($self));
+			if (unifProblem->problemOK())
+				return unifProblem;
+
+			delete unifProblem;
+			$self->unprotect();
+			return nullptr;
+		}
+
+		/**
+		 * Solves the given unification problem using variants.
+		 *
+		 * @param problem A list of pairs of terms to be unified.
+		 * @param irreducible Irreducible terms.
+		 *
+		 * @returns An object to iterate through unifiers.
+		 */
+		VariantUnifierSearch* variant_unify(const std::vector<std::pair<EasyTerm*, EasyTerm*>> &problem,
+					            const std::vector<EasyTerm*> &irreducible = {}) {
+			size_t nrPairs = problem.size();
+
+			if (nrPairs == 0) {
+				IssueWarning("the given unification problem is empty.");
+				return nullptr;
+			}
+
+			Vector<Term*> lhs(nrPairs);
+			Vector<Term*> rhs(nrPairs);
+
+			for (size_t i = 0; i < nrPairs; i++) {
+				// Terms are deleted by makeUnificationProblemDag
+				lhs[i] = problem[i].first->termCopy();
+				rhs[i] = problem[i].second->termCopy();
+			}
+
+			DagNode* d = $self->makeUnificationProblemDag(lhs, rhs);
+
+			size_t nrIrredTerm = irreducible.size();
+			Vector<DagNode*> blockerDags(nrIrredTerm);
+
+			for (size_t i = 0; i < nrIrredTerm; i++)
+				blockerDags[i] = irreducible[i]->getDag();
+
+			EasyTerm::startUsingModule($self);
+			VariantSearch* unifProblem = new VariantSearch(new UserLevelRewritingContext(d),
+								       blockerDags,
+								       new FreshVariableSource($self),
+								       true,
+								       false);
+			return new VariantUnifierSearch(unifProblem);
+		}
+	}
+
 	%newobject parseTerm;
 	%newobject parseStrategy;
+	%newobject downStrategy;
+	%newobject downModule;
+	%newobject unify;
+	%newobject variant_unify;
 
 	%namedEntityPrint;
+};
+
+/**
+ * An iterator through unifiers.
+ */
+class UnificationProblem {
+public:
+	UnificationProblem() = delete;
+
+	%extend {
+		/**
+		 * Get the next unifier.
+		 *
+		 * @return That unifier or null pointer if there is no more.
+		 */
+		EasySubstitution* __next() {
+			bool nextMatch = $self->findNextUnifier();
+			return nextMatch ? new EasySubstitution(&$self->getSolution(),
+								&$self->getVariableInfo())
+					 : nullptr;
+		}
+	}
+
+	%newobject __next;
+};
+
+/**
+ * An iterator through unifiers for variant unification.
+ */
+class VariantUnifierSearch {
+public:
+	VariantUnifierSearch() = delete;
+
+	/**
+	 * Whether some unifiers may have been missed due to incomplete unification algorithms.
+	 */
+	bool isIncomplete() const;
+
+	/**
+	 * Get the next unifier.
+	 *
+	 * @return The next unifier or null if there is no more.
+	 */
+	EasySubstitution* __next();
+
+	%newobject __next;
 };

@@ -1,7 +1,7 @@
 import maude
 import os.path
 
-maude.init()
+maude.init(advise=False)
 maude.load(os.path.join(os.path.dirname(__file__), 'example.maude'))
 
 example = maude.getCurrentModule()

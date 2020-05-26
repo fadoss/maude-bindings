@@ -10,7 +10,7 @@ YICES_HEADERS_URL="https://raw.githubusercontent.com/SRI-CSL/yices2/Yices-2.6.1/
 #
 ## Install required libraries
 
-brew install libsigsegv ninja
+brew install libsigsegv ninja swig
 
 # Get the extended version of Maude from its repository
 # and copies Maude's config.h and libmaude.dylib to the

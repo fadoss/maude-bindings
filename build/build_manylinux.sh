@@ -4,8 +4,8 @@
 
 set -xe
 
-AUXFILES_PKG="https://github.com/fadoss/maude-bindings/releases/download/0.1/manylinux2010-auxfiles.tar.xz"
-LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-manylinux2010.tar.xz"
+AUXFILES_PKG="https://github.com/fadoss/maude-bindings/releases/download/0.1/manylinux$1-auxfiles.tar.xz"
+LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-manylinux$1.tar.xz"
 
 #
 ## Install required libraries
@@ -13,16 +13,16 @@ LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmau
 sudo yum install -y xz libsigsegv-devel gmp-devel
 
 # A prebuilt package that includes Swig 4 and Buddy and Yices2 headers
-wget "$AUXFILES_PKG"
-sudo tar -xf $(basename "$AUXFILES_PKG") -C /
+curl -L "$AUXFILES_PKG" -O
+xz -cd $(basename "$AUXFILES_PKG") | sudo tar -xC /
 
 # Get the extended version of Maude from its repository
 # and copies Maude's config.h and libmaude.so to the
 # locations expected by the cmake script
 
-wget "$LIBMAUDE_PKG"
+curl -L "$LIBMAUDE_PKG" -O
 mkdir libmaude-pkg
-tar -xf $(basename "$LIBMAUDE_PKG") -C libmaude-pkg
+xz -cd $(basename "$LIBMAUDE_PKG")  | tar -xC libmaude-pkg
 
 mkdir -p subprojects/maudesmc/build
 mkdir -p subprojects/maudesmc/installdir/lib
@@ -50,7 +50,7 @@ done
 
 for whl in dist/*linux_*.whl; do
 	/opt/python/cp38-cp38/bin/auditwheel repair $whl -w /work/dist/
-	rm $whl
+	rm -f $whl
 done
 
 #
