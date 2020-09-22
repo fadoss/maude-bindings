@@ -1,0 +1,2350 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maude bindings documentation &#8212; Maude bindings  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<style>
+div.body p {
+	text-align: justify;
+}
+</style>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Maude bindings  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Maude bindings documentation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="maude-bindings-documentation">
+<h1>Maude bindings documentation<a class="headerlink" href="#maude-bindings-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="#module-maude" title="maude"><code class="xref py py-mod docutils literal notranslate"><span class="pre">maude</span></code></a> package allows manipulating terms, modules, and other entities of the <a class="reference external" href="http://maude.cs.illinois.edu/">Maude</a> specification language as Python objects, whose methods expose the operations available as commands in the Maude interpreter. This documentation describes the Python bindings, but most of the API is available for other languages supported by <a class="reference external" href="http://www.swig.org/">SWIG</a>. These bindings are based on the latest Maude release extended with a <a class="reference external" href="https://github.com/fadoss/maudesmc">model checker</a> for systems controlled by the Maude <a class="reference external" href="http://maude.ucm.es/strategies">strategy language</a>, which is accessible via the <a class="reference internal" href="#maude.StrategyRewriteGraph.modelCheck" title="maude.StrategyRewriteGraph.modelCheck"><code class="xref py py-meth docutils literal notranslate"><span class="pre">StrategyRewriteGraph.modelCheck()</span></code></a> method.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="http://maude.lcc.uma.es/maude31-manual-html/maude-manual.html">Maude 3.1 manual</a> · <a class="reference external" href="https://github.com/fadoss/maude-bindings">Source code</a> ·  <a class="reference external" href="https://pypi.org/project/maude">Package at PyPI</a></p>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="first-steps">
+<h2>First steps<a class="headerlink" href="#first-steps" title="Permalink to this headline">¶</a></h2>
+<p>After loading the <a class="reference internal" href="#module-maude" title="maude"><code class="xref py py-mod docutils literal notranslate"><span class="pre">maude</span></code></a> module, the first step should be calling the <a class="reference internal" href="#maude.init" title="maude.init"><code class="xref py py-func docutils literal notranslate"><span class="pre">init()</span></code></a> function to initialize Maude and load its prelude. Other modules can be loaded from file with the <a class="reference internal" href="#maude.load" title="maude.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code></a> function or inserted verbatim with <a class="reference internal" href="#maude.input" title="maude.input"><code class="xref py py-func docutils literal notranslate"><span class="pre">input()</span></code></a>. Any loaded module can be obtained as a <a class="reference internal" href="#maude.Module" title="maude.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> object with <a class="reference internal" href="#maude.getModule" title="maude.getModule"><code class="xref py py-func docutils literal notranslate"><span class="pre">getModule()</span></code></a> or <a class="reference internal" href="#maude.getCurrentModule" title="maude.getCurrentModule"><code class="xref py py-func docutils literal notranslate"><span class="pre">getCurrentModule()</span></code></a>, which allow parsing terms with their <a class="reference internal" href="#maude.Module.parseTerm" title="maude.Module.parseTerm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parseTerm()</span></code></a> method. The usual Maude commands are represented as homonym methods of the <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a> class, except <a class="reference internal" href="#maude.Module.unify" title="maude.Module.unify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unify()</span></code></a>, <a class="reference internal" href="#maude.Module.variant_unify" title="maude.Module.variant_unify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">variant_unify()</span></code></a> and <a class="reference internal" href="#maude.Module.variant_match" title="maude.Module.variant_match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">variant_match()</span></code></a> that belong to the <a class="reference internal" href="#maude.Module" title="maude.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maude</span>
+<span class="n">maude</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">maude</span><span class="o">.</span><span class="n">getModule</span><span class="p">(</span><span class="s1">&#39;NAT&#39;</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">parseTerm</span><span class="p">(</span><span class="s1">&#39;2 * 3&#39;</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, the snippet above parses the term <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">3</span></code> in the <code class="docutils literal notranslate"><span class="pre">NAT</span></code> module (defined in the Maude prelude) and reduces it equationally. The result <code class="docutils literal notranslate"><span class="pre">6</span></code> is printed to the standard output.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Loading the package attaches a single session of Maude to the Python process that cannot be refreshed or unloaded. Finer control on the session lifetime and multiple simultaneous instances can be achieved using the <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a> module.</p>
+</div>
+<span class="target" id="module-maude"></span><dl class="py function">
+<dt id="maude.downModule">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">downModule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.downModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a module object from its metarepresentation in this
+module, which must include the <code class="docutils literal notranslate"><span class="pre">META-LEVEL</span></code> module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>term</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – The metarepresentation of a module, that is,
+a valid element of the <code class="docutils literal notranslate"><span class="pre">Module</span></code> sort in <code class="docutils literal notranslate"><span class="pre">META-MODULE</span></code>.
+The term will be reduced.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">VisibleModule</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The module object or null if the given term was not
+a valid module metarepresentation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.getCurrentModule">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">getCurrentModule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.getCurrentModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current module (the last module inserted or explicitly selected,
+like in the Maude interpreter).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.getModule">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">getModule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.getModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a module or theory by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>string</em>) – Name of the module or theory (module expressions are not allowed).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.getModules">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">getModules</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.getModules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of loaded modules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#maude.ModuleHeader" title="maude.ModuleHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModuleHeader</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of module headers (this may change).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.getView">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">getView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.getView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a view by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>string</em>) – Name of the view (view expressions are not allowed).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.getViews">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">getViews</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.getViews" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of loaded views.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.init">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">init</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loadPrelude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomSeed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">advise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handleInterrupts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init Maude.</p>
+<p>This function must be called before anything else.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loadPrelude</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether the Maude prelude should be loaded.</p></li>
+<li><p><strong>randomSeed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for the pseudorandom number generator in
+the <code class="docutils literal notranslate"><span class="pre">RANDOM</span></code> module.</p></li>
+<li><p><strong>advise</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether debug messages should be printed.</p></li>
+<li><p><strong>handleInterrupts</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether interrupts are handled by Maude.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.input">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the given text as direct input to Maude.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>string</em>) – Maude modules or commands.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.load">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the file with the given name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>string</em>) – The name of the file (absolute or relative to the current
+working directory or <code class="docutils literal notranslate"><span class="pre">MAUDE_LIB)</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.setAllowFiles">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">setAllowFiles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.setAllowFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow or disallow operations on files from Maude code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>flag</strong> (<em>boolean</em>) – Whether processes should be allowed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.setAllowProcesses">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">setAllowProcesses</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.setAllowProcesses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow or disallow running arbitrary executables from Maude code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>flag</strong> (<em>boolean</em>) – Whether file access should be allowed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.ModuleHeader">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">ModuleHeader</span></code><a class="headerlink" href="#maude.ModuleHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Module header information.</p>
+<dl class="py method">
+<dt id="maude.ModuleHeader.name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#maude.ModuleHeader.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the module</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.ModuleHeader.type">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">type</span></code><a class="headerlink" href="#maude.ModuleHeader.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the module (see Module class)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="terms">
+<h2>Terms<a class="headerlink" href="#terms" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a> objects represent Maude terms in the context of a module. Their methods include observers (<a class="reference internal" href="#maude.Term.arguments" title="maude.Term.arguments"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arguments()</span></code></a>, <a class="reference internal" href="#maude.Term.equal" title="maude.Term.equal"><code class="xref py py-meth docutils literal notranslate"><span class="pre">equal()</span></code></a>, …) and command-like operations (<a class="reference internal" href="#maude.Term.reduce" title="maude.Term.reduce"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reduce()</span></code></a>, <a class="reference internal" href="#maude.Term.rewrite" title="maude.Term.rewrite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rewrite()</span></code></a>, …). Some of the latter are applied destructively, replacing the original term by the result, so a previous <a class="reference internal" href="#maude.Term.copy" title="maude.Term.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">copy()</span></code></a> may be required to preserve the original term if desired. Operations with multiple potential results return iterable objects over them.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Modules should be understood as closed compartments. In operations involving different terms, symbols or other module items, they must all belong to the same module. Mixing terms from different modules, even if related by inclusion, will not work.</p>
+</div>
+<dl class="py class">
+<dt id="maude.Term">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Term</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maude term with its associated operations.</p>
+<dl class="py attribute">
+<dt id="maude.Term.NO_CONDITION">
+<code class="sig-name descname"><span class="pre">NO_CONDITION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">Condition</span> <span class="pre">with</span> <span class="pre">0</span> <span class="pre">elements</span></em><a class="headerlink" href="#maude.Term.NO_CONDITION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.arguments">
+<code class="sig-name descname"><span class="pre">arguments</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over the arguments of this term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.check">
+<code class="sig-name descname"><span class="pre">check</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check an SMT formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A string, either <code class="docutils literal notranslate"><span class="pre">sat</span></code>, <code class="docutils literal notranslate"><span class="pre">unsat</span></code> or <code class="docutils literal notranslate"><span class="pre">undecided</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.copy">
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.equal">
+<code class="sig-name descname"><span class="pre">equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare two terms for equality.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – The second term to be compared.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.erewrite">
+<code class="sig-name descname"><span class="pre">erewrite</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.erewrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrite a term following the semantics of the <code class="docutils literal notranslate"><span class="pre">erewrite</span></code> command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bound</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – An upper bound on the number of rule rewrites.</p></li>
+<li><p><strong>gas</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – An upper bound on the number of rule rewrites by position.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, int)</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The result and the total number of rewrites (the original
+term is not modified).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.frewrite">
+<code class="sig-name descname"><span class="pre">frewrite</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.frewrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrite a term following the semantics of the <code class="docutils literal notranslate"><span class="pre">frewrite</span></code> command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bound</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – An upper bound on the number of rule rewrites.</p></li>
+<li><p><strong>gas</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – An upper bound on the number of rule rewrites per position.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The total number of rewrites.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.getSort">
+<code class="sig-name descname"><span class="pre">getSort</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.getSort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sort of this term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.get_variants">
+<code class="sig-name descname"><span class="pre">get_variants</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.get_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the most general variants of this term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>irredundant</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to obtain irredundant variants
+(for theories with the finite variant property).</p></li>
+<li><p><strong>irreducible</strong> (list of <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, optional) – Irreducible terms constraint.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.VariantSearch" title="maude.VariantSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantSearch</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through variants.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.hash">
+<code class="sig-name descname"><span class="pre">hash</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the hash value of the term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.leq">
+<code class="sig-name descname"><span class="pre">leq</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.leq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the sort of this term is a subtype of the given sort.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sort</strong> (<a class="reference internal" href="#maude.Sort" title="maude.Sort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sort</span></code></a>) – The pretended supertype.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.match">
+<code class="sig-name descname"><span class="pre">match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Match this term into a given pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – Pattern term.</p></li>
+<li><p><strong>condition</strong> (<a class="reference internal" href="#maude.Condition" title="maude.Condition"><em>Condition</em></a><em>, </em><em>optional</em>) – Equational condition that solutions must satisfy.</p></li>
+<li><p><strong>withExtension</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether the matching should be done with extension modulo axioms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.MatchSearchState" title="maude.MatchSearchState"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatchSearchState</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.prettyPrint">
+<code class="sig-name descname"><span class="pre">prettyPrint</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.prettyPrint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pretty prints this term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Flags that affect the term output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.reduce">
+<code class="sig-name descname"><span class="pre">reduce</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.reduce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce this term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The total number of rewrites.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.rewrite">
+<code class="sig-name descname"><span class="pre">rewrite</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.rewrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrite a term following the semantics of the <code class="docutils literal notranslate"><span class="pre">rewrite</span></code> command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bound</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – An upper bound on the number of rule rewrites.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The total number of rewrites.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.search">
+<code class="sig-name descname"><span class="pre">search</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search states that match into a given pattern and satisfy a given
+condition by rewriting from this term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Type of search (number of steps).</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – Patterm term.</p></li>
+<li><p><strong>condition</strong> (<a class="reference internal" href="#maude.Condition" title="maude.Condition"><em>Condition</em></a><em>, </em><em>optional</em>) – Condition that solutions must satisfy.</p></li>
+<li><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Depth bound.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.RewriteSequenceSearch" title="maude.RewriteSequenceSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">RewriteSequenceSearch</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.srewrite">
+<code class="sig-name descname"><span class="pre">srewrite</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.srewrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrite a term following a strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">StrategyExpression</span></code>) – A strategy expression.</p></li>
+<li><p><strong>depth</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to perform a depth-first search. By default, a fair search is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.StrategicSearch" title="maude.StrategicSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrategicSearch</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through strategy solutions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.symbol">
+<code class="sig-name descname"><span class="pre">symbol</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the top symbol of this term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.toFloat">
+<code class="sig-name descname"><span class="pre">toFloat</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.toFloat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the floating-point number represented by the given term or
+zero otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.toInt">
+<code class="sig-name descname"><span class="pre">toInt</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.toInt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the integer number represented by the given term or
+zero otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Term.vu_narrow">
+<code class="sig-name descname"><span class="pre">vu_narrow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Term.vu_narrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Narrowing-based search of terms that unify with the given target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Type of the search (number of steps).</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – The pattern that has to be reached.</p></li>
+<li><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Depth bound (<code class="docutils literal notranslate"><span class="pre">-1</span></code> for unbounded).</p></li>
+<li><p><strong>fold</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to activate folding (<code class="docutils literal notranslate"><span class="pre">fvu-narrow</span></code> command).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NarrowingSequenceSearch3</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through solutions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.Symbol">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Symbol</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Maude symbol (operator at the kind level).</p>
+<dl class="py method">
+<dt id="maude.Symbol.arity">
+<code class="sig-name descname"><span class="pre">arity</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.arity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of arguments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.domainKind">
+<code class="sig-name descname"><span class="pre">domainKind</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.domainKind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the kind for the given argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>argNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The argument index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.equal">
+<code class="sig-name descname"><span class="pre">equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether two symbols are the same.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.getLineNumber">
+<code class="sig-name descname"><span class="pre">getLineNumber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.getLineNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the line number information for this item as formatted by Maude.</p>
+<p>The format of the string is usually <code class="docutils literal notranslate"><span class="pre">filename,</span> <span class="pre">line</span> <span class="pre">line</span> <span class="pre">(module)</span></code>
+where the second <code class="docutils literal notranslate"><span class="pre">line</span></code> is the integral line number, and <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the module type and name where this item was originally defined. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> may be an actual quoted filename or some special name
+between angle brackets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.getMetadata">
+<code class="sig-name descname"><span class="pre">getMetadata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.getMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the metadata attribute of the given declaration of this symbol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Index of the operator declaration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.getOpDeclarations">
+<code class="sig-name descname"><span class="pre">getOpDeclarations</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.getOpDeclarations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the declarations of the symbol.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.getRangeSort">
+<code class="sig-name descname"><span class="pre">getRangeSort</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.getRangeSort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the range sort of the symbol.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.hash">
+<code class="sig-name descname"><span class="pre">hash</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the hash value of the symbol.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Symbol.makeTerm">
+<code class="sig-name descname"><span class="pre">makeTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Symbol.makeTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a term with this symbol and the given terms as arguments.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.OpDeclaration">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">OpDeclaration</span></code><a class="headerlink" href="#maude.OpDeclaration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Syntactical operator declaration.</p>
+<dl class="py method">
+<dt id="maude.OpDeclaration.getDomainAndRange">
+<code class="sig-name descname"><span class="pre">getDomainAndRange</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.OpDeclaration.getDomainAndRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get domain and range sorts (range is last).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.OpDeclaration.isConstructor">
+<code class="sig-name descname"><span class="pre">isConstructor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.OpDeclaration.isConstructor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the declared operator marked as a data constructor?</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.Substitution">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Substitution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Substitution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Substitution (mapping from variables to terms).</p>
+<p>Substitution are iterable, and the iterator returns pairs with each variable and value of the mapping.</p>
+<dl class="py method">
+<dt id="maude.Substitution.find">
+<code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Substitution.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the value of a given variable by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Variable name (without sort).</p></li>
+<li><p><strong>sort</strong> (<a class="reference internal" href="#maude.Sort" title="maude.Sort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sort</span></code></a>, optional) – Sort of the variable (optional).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The value of the variable or null if not found.
+If the sort of the variable is not given, multiple results
+are possible.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Substitution.instantiate">
+<code class="sig-name descname"><span class="pre">instantiate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Substitution.instantiate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate a term with this substitution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>term</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – The term to be instantiated.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The instantiated term.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Substitution.matchedPortion">
+<code class="sig-name descname"><span class="pre">matchedPortion</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Substitution.matchedPortion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the matched portion when matching with extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The matched portion or null if the
+whole term matched.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Substitution.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Substitution.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of variables in the substitution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Substitution.value">
+<code class="sig-name descname"><span class="pre">value</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Substitution.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of the variable at the given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The index of the variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Substitution.variable">
+<code class="sig-name descname"><span class="pre">variable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Substitution.variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the variable at the given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The index of the variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="search-iterators">
+<h3>Search iterators<a class="headerlink" href="#search-iterators" title="Permalink to this headline">¶</a></h3>
+<p>The following classes can be used as usual Python iterators, albeit some offer additional methods.</p>
+<dl class="py class">
+<dt id="maude.StrategicSearch">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">StrategicSearch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategicSearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through the solutions of a strategy search.</p>
+<p>It iterates over (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) pairs including the solution term and the
+number of rewrites until it has been reached.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.MatchSearchState">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">MatchSearchState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.MatchSearchState" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through the matching a term into a pattern.</p>
+<p>It iterates over matching substitutions of type <a class="reference internal" href="#maude.Substitution" title="maude.Substitution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Substitution</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.RewriteSequenceSearch">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">RewriteSequenceSearch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through the solutions of a search.</p>
+<p>It iterates over (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, <a class="reference internal" href="#maude.Substitution" title="maude.Substitution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Substitution</span></code></a>, function, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)
+tuples consisting of the solution term, the matching substitution, and the
+number of rewrites until it has been found. The third coordinate is a
+function that returns, when called without arguments, a path to the
+solution, as described in <a class="reference internal" href="#maude.RewriteSequenceSearch.pathTo" title="maude.RewriteSequenceSearch.pathTo"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pathTo()</span></code></a>.</p>
+<dl class="py method">
+<dt id="maude.RewriteSequenceSearch.getRewriteCount">
+<code class="sig-name descname"><span class="pre">getRewriteCount</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch.getRewriteCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of rewrites until this term has been found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteSequenceSearch.getRule">
+<code class="sig-name descname"><span class="pre">getRule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch.getRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the rule leading to the given state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The number of a state in the search graph
+or -1 for the current one.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteSequenceSearch.getStateNr">
+<code class="sig-name descname"><span class="pre">getStateNr</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch.getStateNr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an internal state number that allows reconstructing
+the path to this term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteSequenceSearch.getStateParent">
+<code class="sig-name descname"><span class="pre">getStateParent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch.getStateParent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parent state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The number of a state in the search graph.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of the parent or -1 for the root.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteSequenceSearch.getStateTerm">
+<code class="sig-name descname"><span class="pre">getStateTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch.getStateTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the term of a given state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The number of a state in the search graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteSequenceSearch.getSubstitution">
+<code class="sig-name descname"><span class="pre">getSubstitution</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch.getSubstitution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the substitution the matching substitution of the
+solution into the pattern.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteSequenceSearch.pathTo">
+<code class="sig-name descname"><span class="pre">pathTo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteSequenceSearch.pathTo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the path from the initial to the given state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – State index.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a> and <a class="reference internal" href="#maude.Rule" title="maude.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list interleaving terms and rules that connect
+them from the initial to the given state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.NarrowingSequenceSearch">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">NarrowingSequenceSearch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.NarrowingSequenceSearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through narrowing solutions.</p>
+<p>It iterates over (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, <a class="reference internal" href="#maude.Substitution" title="maude.Substitution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Substitution</span></code></a>, <a class="reference internal" href="#maude.Substitution" title="maude.Substitution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Substitution</span></code></a>)
+tuples, consisting of the solution, the accumulated substitution, and the variant unifer.</p>
+<dl class="py method">
+<dt id="maude.NarrowingSequenceSearch.getSubstitution">
+<code class="sig-name descname"><span class="pre">getSubstitution</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.NarrowingSequenceSearch.getSubstitution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the accumulated substitution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.NarrowingSequenceSearch.getUnifier">
+<code class="sig-name descname"><span class="pre">getUnifier</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.NarrowingSequenceSearch.getUnifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the variant unifier.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.NarrowingSequenceSearch.isIncomplete">
+<code class="sig-name descname"><span class="pre">isIncomplete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.NarrowingSequenceSearch.isIncomplete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether some solutions may have been missed due to incomplete unification algorithms.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.VariantSearch">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">VariantSearch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.VariantSearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through variants.</p>
+<p>It iterates over (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, <a class="reference internal" href="#maude.Substitution" title="maude.Substitution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Substitution</span></code></a>) pairs
+describing the variants.</p>
+<dl class="py method">
+<dt id="maude.VariantSearch.isIncomplete">
+<code class="sig-name descname"><span class="pre">isIncomplete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.VariantSearch.isIncomplete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether some variants may have been missed due to incomplete unification algorithms.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.UnificationProblem">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">UnificationProblem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.UnificationProblem" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through unifiers.</p>
+<p>It iterates over unifiers of type <a class="reference internal" href="#maude.Substitution" title="maude.Substitution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Substitution</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.VariantUnifierSearch">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">VariantUnifierSearch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.VariantUnifierSearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through unifiers or matchers for variant unification or matching.</p>
+<p>It iterates over unifiers of type <a class="reference internal" href="#maude.Substitution" title="maude.Substitution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Substitution</span></code></a>.</p>
+<dl class="py method">
+<dt id="maude.VariantUnifierSearch.filteringIncomplete">
+<code class="sig-name descname"><span class="pre">filteringIncomplete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.VariantUnifierSearch.filteringIncomplete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether filetering was incomplete due to incomplete unification algorithms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.VariantUnifierSearch.isIncomplete">
+<code class="sig-name descname"><span class="pre">isIncomplete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.VariantUnifierSearch.isIncomplete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether some unifiers may have been missed due to incomplete unification algorithms.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.ArgumentIterator">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">ArgumentIterator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.ArgumentIterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator through the arguments of a term.</p>
+<p>It iterates over subterms of type <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="search-types">
+<h3>Search types<a class="headerlink" href="#search-types" title="Permalink to this headline">¶</a></h3>
+<dl class="py data">
+<dt id="maude.ANY_STEPS">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">ANY_STEPS</span></code><a class="headerlink" href="#maude.ANY_STEPS" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt;*</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.AT_LEAST_ONE_STEP">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">AT_LEAST_ONE_STEP</span></code><a class="headerlink" href="#maude.AT_LEAST_ONE_STEP" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt;+</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.ONE_STEP">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">ONE_STEP</span></code><a class="headerlink" href="#maude.ONE_STEP" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt;1</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.NORMAL_FORM">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">NORMAL_FORM</span></code><a class="headerlink" href="#maude.NORMAL_FORM" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt;!</p>
+</dd></dl>
+
+</div>
+<div class="section" id="print-flags">
+<h3>Print flags<a class="headerlink" href="#print-flags" title="Permalink to this headline">¶</a></h3>
+<dl class="py data">
+<dt id="maude.PRINT_CONCEAL">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_CONCEAL</span></code><a class="headerlink" href="#maude.PRINT_CONCEAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>respect concealed argument lists</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_FORMAT">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_FORMAT</span></code><a class="headerlink" href="#maude.PRINT_FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>respect format attribute</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_MIXFIX">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_MIXFIX</span></code><a class="headerlink" href="#maude.PRINT_MIXFIX" title="Permalink to this definition">¶</a></dt>
+<dd><p>mixfix notation</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_WITH_PARENS">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_WITH_PARENS</span></code><a class="headerlink" href="#maude.PRINT_WITH_PARENS" title="Permalink to this definition">¶</a></dt>
+<dd><p>maximal parens</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_COLOR">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_COLOR</span></code><a class="headerlink" href="#maude.PRINT_COLOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>dag node coloring based on ctor/reduced status</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_DISAMBIG_CONST">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_DISAMBIG_CONST</span></code><a class="headerlink" href="#maude.PRINT_DISAMBIG_CONST" title="Permalink to this definition">¶</a></dt>
+<dd><p>(c).s for every constant c</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_FLAT">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_FLAT</span></code><a class="headerlink" href="#maude.PRINT_FLAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>for assoc symbols</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_NUMBER">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_NUMBER</span></code><a class="headerlink" href="#maude.PRINT_NUMBER" title="Permalink to this definition">¶</a></dt>
+<dd><p>for nats &amp; ints</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="maude.PRINT_RAT">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">PRINT_RAT</span></code><a class="headerlink" href="#maude.PRINT_RAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>for rats</p>
+</dd></dl>
+
+</div>
+<div class="section" id="conditions">
+<h3>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h3>
+<p>Conditions are sequences of condition fragments of any of the four types described below. They should be provided as Python lists to methods like <a class="reference internal" href="#maude.Term.search" title="maude.Term.search"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Term.search()</span></code></a>, and they are returned as Maude internal vectors in other methods like <a class="reference internal" href="#maude.Rule.getCondition" title="maude.Rule.getCondition"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Rule.getCondition()</span></code></a>. Maude internal vectors are read-only iterable objects, whose elements can also be accessed by index.</p>
+<dl class="py class">
+<dt id="maude.Condition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Condition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal Maude vector.</p>
+<dl class="py method">
+<dt id="maude.Condition.empty">
+<code class="sig-name descname"><span class="pre">empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Condition.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the vector empty?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Condition.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Condition.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of the vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.EqualityCondition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">EqualityCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lhs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.EqualityCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">maude.ConditionFragment</span></code></p>
+<p>An equality <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">t'</span></code> condition.</p>
+<dl class="py method">
+<dt id="maude.EqualityCondition.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.EqualityCondition.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the left-hand-side term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.EqualityCondition.getRhs">
+<code class="sig-name descname"><span class="pre">getRhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.EqualityCondition.getRhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the right-hand-side term.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.AssignmentCondition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">AssignmentCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lhs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.AssignmentCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">maude.ConditionFragment</span></code></p>
+<p>An assignment <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">:=</span> <span class="pre">t'</span></code> condition.</p>
+<dl class="py method">
+<dt id="maude.AssignmentCondition.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.AssignmentCondition.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the left-hand-side term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.AssignmentCondition.getRhs">
+<code class="sig-name descname"><span class="pre">getRhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.AssignmentCondition.getRhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the right-hand-side term.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.SortTestCondition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">SortTestCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lhs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.SortTestCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">maude.ConditionFragment</span></code></p>
+<p>A sort test <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">:</span> <span class="pre">s</span></code> condition.</p>
+<dl class="py method">
+<dt id="maude.SortTestCondition.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.SortTestCondition.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the term of the sort test.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.SortTestCondition.getSort">
+<code class="sig-name descname"><span class="pre">getSort</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.SortTestCondition.getSort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sort of the sort test.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.RewriteCondition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">RewriteCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lhs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">maude.ConditionFragment</span></code></p>
+<p>A rewrite <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=&gt;</span> <span class="pre">t'</span></code> condition.</p>
+<dl class="py method">
+<dt id="maude.RewriteCondition.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteCondition.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the left-hand-side term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteCondition.getRhs">
+<code class="sig-name descname"><span class="pre">getRhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteCondition.getRhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the right-hand-side term.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#maude.Module" title="maude.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> class gives access to module information including its components: <a class="reference internal" href="#maude.Sort" title="maude.Sort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sort</span></code></a>, <a class="reference internal" href="#maude.Kind" title="maude.Kind"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kind</span></code></a>, <a class="reference internal" href="#maude.Equation" title="maude.Equation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Equation</span></code></a>, <a class="reference internal" href="#maude.MembershipAxiom" title="maude.MembershipAxiom"><code class="xref py py-class docutils literal notranslate"><span class="pre">MembershipAxiom</span></code></a>, <a class="reference internal" href="#maude.Rule" title="maude.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a>, <a class="reference internal" href="#maude.RewriteStrategy" title="maude.RewriteStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">RewriteStrategy</span></code></a> (strategy declarations) and <a class="reference internal" href="#maude.StrategyDefinition" title="maude.StrategyDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrategyDefinition</span></code></a>.
+Terms and strategy expressions can be parsed by means of the <a class="reference internal" href="#maude.Module.parseTerm" title="maude.Module.parseTerm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parseTerm()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">parseStrategy()</span></code> functions.
+Modules can be obtained with <a class="reference internal" href="#maude.getCurrentModule" title="maude.getCurrentModule"><code class="xref py py-func docutils literal notranslate"><span class="pre">getCurrentModule()</span></code></a>, <a class="reference internal" href="#maude.getModule" title="maude.getModule"><code class="xref py py-func docutils literal notranslate"><span class="pre">getModule()</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">downModule()</span></code>, and some other specific functions.</p>
+<dl class="py class">
+<dt id="maude.Module">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Module</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Maude module.</p>
+<dl class="py attribute">
+<dt id="maude.Module.FUNCTIONAL_MODULE">
+<code class="sig-name descname"><span class="pre">FUNCTIONAL_MODULE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#maude.Module.FUNCTIONAL_MODULE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Functional module (<code class="docutils literal notranslate"><span class="pre">fmod</span></code>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="maude.Module.FUNCTIONAL_THEORY">
+<code class="sig-name descname"><span class="pre">FUNCTIONAL_THEORY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#maude.Module.FUNCTIONAL_THEORY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Functional theory (<code class="docutils literal notranslate"><span class="pre">fth</span></code>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="maude.Module.STRATEGY_MODULE">
+<code class="sig-name descname"><span class="pre">STRATEGY_MODULE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#maude.Module.STRATEGY_MODULE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strategy module (<code class="docutils literal notranslate"><span class="pre">smod</span></code>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="maude.Module.STRATEGY_THEORY">
+<code class="sig-name descname"><span class="pre">STRATEGY_THEORY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#maude.Module.STRATEGY_THEORY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strategy module (<code class="docutils literal notranslate"><span class="pre">sth</span></code>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="maude.Module.SYSTEM_MODULE">
+<code class="sig-name descname"><span class="pre">SYSTEM_MODULE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#maude.Module.SYSTEM_MODULE" title="Permalink to this definition">¶</a></dt>
+<dd><p>System module (<code class="docutils literal notranslate"><span class="pre">mod</span></code>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="maude.Module.SYSTEM_THEORY">
+<code class="sig-name descname"><span class="pre">SYSTEM_THEORY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#maude.Module.SYSTEM_THEORY" title="Permalink to this definition">¶</a></dt>
+<dd><p>System module (<code class="docutils literal notranslate"><span class="pre">th</span></code>)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.downStrategy">
+<code class="sig-name descname"><span class="pre">downStrategy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.downStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a strategy expression in this module from its
+metarepresentation in (possibly) another module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>term</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – The metarepresentation of a strategy, that is,
+a valid element of the <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> sort in <code class="docutils literal notranslate"><span class="pre">META-STRATEGY</span></code>.
+This term must belong to a module where the <code class="docutils literal notranslate"><span class="pre">META-LEVEL</span></code>
+module is included. The term will be reduced.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StrategyExpression</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The strategy expression or null if the
+metarepresentation was not valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.downTerm">
+<code class="sig-name descname"><span class="pre">downTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.downTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a term in this module from its metarepresentation
+in (possibly) another module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>term</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – The metarepresentation of a term, that is,
+a valid element of the <code class="docutils literal notranslate"><span class="pre">Term</span></code> sort in <code class="docutils literal notranslate"><span class="pre">META-TERM</span></code>.
+This term must belong to a module where the <code class="docutils literal notranslate"><span class="pre">META-LEVEL</span></code>
+module is included. The term will be reduced.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The term or null if the metarepresentation was
+not valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.findSort">
+<code class="sig-name descname"><span class="pre">findSort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.findSort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a sort by its name in the module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>string</em>) – The name of the sort.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Sort" title="maude.Sort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sort</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The sort or null if it does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.findSymbol">
+<code class="sig-name descname"><span class="pre">findSymbol</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domainKinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rangeKind</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.findSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a symbol by its name and signature in the module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – The name of the sort.</p></li>
+<li><p><strong>domainKinds</strong> (list of <a class="reference internal" href="#maude.Kind" title="maude.Kind"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kind</span></code></a>) – Kinds of the symbol domain.</p></li>
+<li><p><strong>rangeKind</strong> (<a class="reference internal" href="#maude.Kind" title="maude.Kind"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kind</span></code></a>) – Range kind of the symbol.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Symbol" title="maude.Symbol"><code class="xref py py-class docutils literal notranslate"><span class="pre">Symbol</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The symbol or null if it does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getEquations">
+<code class="sig-name descname"><span class="pre">getEquations</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getEquations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the equations defined in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getKinds">
+<code class="sig-name descname"><span class="pre">getKinds</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getKinds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the kinds defined in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getMembershipAxioms">
+<code class="sig-name descname"><span class="pre">getMembershipAxioms</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getMembershipAxioms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the membership axioms defined in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getModuleType">
+<code class="sig-name descname"><span class="pre">getModuleType</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getModuleType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the module type.</p>
+<p>This allows distinguishing modules from theories, and the
+functional, system and strategy variants within them.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getNrImportedSorts">
+<code class="sig-name descname"><span class="pre">getNrImportedSorts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getNrImportedSorts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of sorts imported from other modules or parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getNrImportedStrategies">
+<code class="sig-name descname"><span class="pre">getNrImportedStrategies</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getNrImportedStrategies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of strategies imported from other modules or parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getNrImportedSymbols">
+<code class="sig-name descname"><span class="pre">getNrImportedSymbols</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getNrImportedSymbols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of symbols imported from other modules or parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getNrOriginalEquations">
+<code class="sig-name descname"><span class="pre">getNrOriginalEquations</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getNrOriginalEquations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of equations from this module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getNrOriginalRules">
+<code class="sig-name descname"><span class="pre">getNrOriginalRules</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getNrOriginalRules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of rules from this module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getNrOriginalStrategyDefinitions">
+<code class="sig-name descname"><span class="pre">getNrOriginalStrategyDefinitions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getNrOriginalStrategyDefinitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of strategy definitions from this module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getNrParameters">
+<code class="sig-name descname"><span class="pre">getNrParameters</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getNrParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of parameters of the parameterized module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getParameterName">
+<code class="sig-name descname"><span class="pre">getParameterName</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getParameterName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of a module parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Index of the parameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getParameterTheory">
+<code class="sig-name descname"><span class="pre">getParameterTheory</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getParameterTheory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the theory of the given parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getRules">
+<code class="sig-name descname"><span class="pre">getRules</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getRules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the rules defined in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getSorts">
+<code class="sig-name descname"><span class="pre">getSorts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getSorts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sorts declared in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getStrategies">
+<code class="sig-name descname"><span class="pre">getStrategies</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getStrategies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the strategies declared in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getStrategyDefinitions">
+<code class="sig-name descname"><span class="pre">getStrategyDefinitions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getStrategyDefinitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the strategy definitions defined in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.getSymbols">
+<code class="sig-name descname"><span class="pre">getSymbols</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.getSymbols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the symbols declared in the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.hasFreeParameters">
+<code class="sig-name descname"><span class="pre">hasFreeParameters</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.hasFreeParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this a parameterized module with free parameters?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.parseStrategy">
+<code class="sig-name descname"><span class="pre">parseStrategy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strat_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.parseStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a strategy expression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>term_str</strong> – A strategy represented as a string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.parseTerm">
+<code class="sig-name descname"><span class="pre">parseTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.parseTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Overload 1:</em></p>
+<p>Parse a term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bubble</strong> (list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code>) – Tokenized term.</p></li>
+<li><p><strong>kind</strong> (<a class="reference internal" href="#maude.Kind" title="maude.Kind"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kind</span></code></a>, optional) – Restrict parsing to terms of the given kind.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><em>Overload 2:</em></p>
+<p>Parse a term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>term_str</strong> (<em>string</em>) – A term represented as a string.</p></li>
+<li><p><strong>kind</strong> (<a class="reference internal" href="#maude.Kind" title="maude.Kind"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kind</span></code></a>, optional) – Restrict parsing to terms of the given kind.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><em>Overload 3:</em></p>
+<p>Parse a term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>term_str</strong> (<em>string</em>) – A term represented as a string.</p></li>
+<li><p><strong>kind</strong> – Restrict parsing to terms of the given kind.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.unify">
+<code class="sig-name descname"><span class="pre">unify</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irredundant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.unify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves the given unification problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (list of (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>)) – A list of pairs of terms to be unified.</p></li>
+<li><p><strong>irredundant</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to compute a minimal set of unifiers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.UnificationProblem" title="maude.UnificationProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnificationProblem</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through unifiers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.upStrategy">
+<code class="sig-name descname"><span class="pre">upStrategy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.upStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the metarepresentation in this module of a strategy
+expression in (possibly) another module. This module must
+contain <code class="docutils literal notranslate"><span class="pre">META-LEVEL</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>expr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">StrategyExpression</span></code>) – Any strategy expression.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The metarepresented strategy or null.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.upTerm">
+<code class="sig-name descname"><span class="pre">upTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.upTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the metarepresentation in this module of a term
+in (possibly) another module. This module must contain
+<code class="docutils literal notranslate"><span class="pre">META-LEVEL</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>term</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – Any term.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The metarepresentation term or null.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.variant_match">
+<code class="sig-name descname"><span class="pre">variant_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.variant_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes a complete set of order-sorted matches modulo the equations
+declared with the variant attribute (which must satisfy the finite
+variant property) plus the (supported) equational axioms in the
+given module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (list of (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>)) – A list of pairs of terms to be matched.</p></li>
+<li><p><strong>irreducible</strong> (list of <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, optional) – Irreducible terms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.VariantUnifierSearch" title="maude.VariantUnifierSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantUnifierSearch</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through unifiers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Module.variant_unify">
+<code class="sig-name descname"><span class="pre">variant_unify</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Module.variant_unify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves the given unification problem using variants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (list of (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>)) – A list of pairs of terms to be unified.</p></li>
+<li><p><strong>irreducible</strong> (list of <a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>, optional) – Irreducible terms.</p></li>
+<li><p><strong>filtered</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to compute a minimal set of unifiers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.VariantUnifierSearch" title="maude.VariantUnifierSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantUnifierSearch</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An object to iterate through unifiers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="module-items">
+<h3>Module items<a class="headerlink" href="#module-items" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="maude.Sort">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Sort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Maude sort.</p>
+<dl class="py method">
+<dt id="maude.Sort.equal">
+<code class="sig-name descname"><span class="pre">equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort.equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether two sorts are the same.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Sort.getLineNumber">
+<code class="sig-name descname"><span class="pre">getLineNumber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort.getLineNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the line number information for this item as formatted by Maude.</p>
+<p>The format of the string is usually <code class="docutils literal notranslate"><span class="pre">filename,</span> <span class="pre">line</span> <span class="pre">line</span> <span class="pre">(module)</span></code>
+where the second <code class="docutils literal notranslate"><span class="pre">line</span></code> is the integral line number, and <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the module type and name where this item was originally defined. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> may be an actual quoted filename or some special name
+between angle brackets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Sort.getSubsorts">
+<code class="sig-name descname"><span class="pre">getSubsorts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort.getSubsorts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the subsorts of this sort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Sort.getSupersorts">
+<code class="sig-name descname"><span class="pre">getSupersorts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort.getSupersorts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the supersorts of this sort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Sort.hash">
+<code class="sig-name descname"><span class="pre">hash</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort.hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the hash value of the sort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Sort.kind">
+<code class="sig-name descname"><span class="pre">kind</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort.kind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the kind this sort belongs to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Sort.leq">
+<code class="sig-name descname"><span class="pre">leq</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Sort.leq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this sort is a subsort of the given sort.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rhs</strong> (<a class="reference internal" href="#maude.Sort" title="maude.Sort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sort</span></code></a>) – The right-hand side of the comparison.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.Kind">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Kind</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Kind" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Maude kind (connected component of sorts).</p>
+<p>This is an iterable object over its sorts.</p>
+<dl class="py method">
+<dt id="maude.Kind.equal">
+<code class="sig-name descname"><span class="pre">equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Kind.equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether two kinds are the same.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Kind.nrSorts">
+<code class="sig-name descname"><span class="pre">nrSorts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Kind.nrSorts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of sorts in this kind.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Kind.sort">
+<code class="sig-name descname"><span class="pre">sort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Kind.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sort with a given index in this kind.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Sort index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.MembershipAxiom">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">MembershipAxiom</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.MembershipAxiom" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sort membership axiom.</p>
+<dl class="py method">
+<dt id="maude.MembershipAxiom.getLabel">
+<code class="sig-name descname"><span class="pre">getLabel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.MembershipAxiom.getLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the label attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.MembershipAxiom.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.MembershipAxiom.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the term of the membership axiom.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.MembershipAxiom.getLineNumber">
+<code class="sig-name descname"><span class="pre">getLineNumber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.MembershipAxiom.getLineNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the line number information for this item as formatted by Maude.</p>
+<p>The format of the string is usually <code class="docutils literal notranslate"><span class="pre">filename,</span> <span class="pre">line</span> <span class="pre">line</span> <span class="pre">(module)</span></code>
+where the second <code class="docutils literal notranslate"><span class="pre">line</span></code> is the integral line number, and <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the module type and name where this item was originally defined. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> may be an actual quoted filename or some special name
+between angle brackets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.MembershipAxiom.getMetadata">
+<code class="sig-name descname"><span class="pre">getMetadata</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.MembershipAxiom.getMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the free text <code class="docutils literal notranslate"><span class="pre">metadata</span></code> attribute of this statement.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.MembershipAxiom.getSort">
+<code class="sig-name descname"><span class="pre">getSort</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.MembershipAxiom.getSort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sort of the membership axiom.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.Equation">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Equation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Maude equation.</p>
+<dl class="py method">
+<dt id="maude.Equation.getCondition">
+<code class="sig-name descname"><span class="pre">getCondition</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.getCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the condition of the equation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Equation.getLabel">
+<code class="sig-name descname"><span class="pre">getLabel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.getLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the label attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Equation.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the left-hand-side term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Equation.getLineNumber">
+<code class="sig-name descname"><span class="pre">getLineNumber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.getLineNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the line number information for this item as formatted by Maude.</p>
+<p>The format of the string is usually <code class="docutils literal notranslate"><span class="pre">filename,</span> <span class="pre">line</span> <span class="pre">line</span> <span class="pre">(module)</span></code>
+where the second <code class="docutils literal notranslate"><span class="pre">line</span></code> is the integral line number, and <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the module type and name where this item was originally defined. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> may be an actual quoted filename or some special name
+between angle brackets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Equation.getMetadata">
+<code class="sig-name descname"><span class="pre">getMetadata</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.getMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the free text <code class="docutils literal notranslate"><span class="pre">metadata</span></code> attribute of this statement.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Equation.getRhs">
+<code class="sig-name descname"><span class="pre">getRhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.getRhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the right-hand-side term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Equation.hasCondition">
+<code class="sig-name descname"><span class="pre">hasCondition</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.hasCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the equation has a condition.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Equation.isNonexec">
+<code class="sig-name descname"><span class="pre">isNonexec</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Equation.isNonexec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the equation has the <code class="docutils literal notranslate"><span class="pre">nonexec</span></code> attribute.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.Rule">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Rule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Maude rewrite rule.</p>
+<dl class="py method">
+<dt id="maude.Rule.getCondition">
+<code class="sig-name descname"><span class="pre">getCondition</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.getCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the condition of the rule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.getLabel">
+<code class="sig-name descname"><span class="pre">getLabel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.getLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the label attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the left-hand-side term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.getLineNumber">
+<code class="sig-name descname"><span class="pre">getLineNumber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.getLineNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the line number information for this item as formatted by Maude.</p>
+<p>The format of the string is usually <code class="docutils literal notranslate"><span class="pre">filename,</span> <span class="pre">line</span> <span class="pre">line</span> <span class="pre">(module)</span></code>
+where the second <code class="docutils literal notranslate"><span class="pre">line</span></code> is the integral line number, and <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the module type and name where this item was originally defined. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> may be an actual quoted filename or some special name
+between angle brackets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.getMetadata">
+<code class="sig-name descname"><span class="pre">getMetadata</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.getMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the free text <code class="docutils literal notranslate"><span class="pre">metadata</span></code> attribute of this statement.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.getRhs">
+<code class="sig-name descname"><span class="pre">getRhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.getRhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the right-hand-side term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.hasCondition">
+<code class="sig-name descname"><span class="pre">hasCondition</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.hasCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the rule has a condition.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.isNarrowing">
+<code class="sig-name descname"><span class="pre">isNarrowing</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.isNarrowing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the rule has the <code class="docutils literal notranslate"><span class="pre">narrowing</span></code> attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.Rule.isNonexec">
+<code class="sig-name descname"><span class="pre">isNonexec</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.Rule.isNonexec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the rule has the <code class="docutils literal notranslate"><span class="pre">nonexec</span></code> attribute.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.RewriteStrategy">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">RewriteStrategy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>A named rewriting strategy.</p>
+<dl class="py method">
+<dt id="maude.RewriteStrategy.arity">
+<code class="sig-name descname"><span class="pre">arity</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy.arity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of arguments of the strategy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteStrategy.getDefinitions">
+<code class="sig-name descname"><span class="pre">getDefinitions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy.getDefinitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the definitions for this strategy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteStrategy.getDomain">
+<code class="sig-name descname"><span class="pre">getDomain</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy.getDomain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the argument domain.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteStrategy.getLineNumber">
+<code class="sig-name descname"><span class="pre">getLineNumber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy.getLineNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the line number information for this item as formatted by Maude.</p>
+<p>The format of the string is usually <code class="docutils literal notranslate"><span class="pre">filename,</span> <span class="pre">line</span> <span class="pre">line</span> <span class="pre">(module)</span></code>
+where the second <code class="docutils literal notranslate"><span class="pre">line</span></code> is the integral line number, and <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the module type and name where this item was originally defined. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> may be an actual quoted filename or some special name
+between angle brackets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteStrategy.getMetadata">
+<code class="sig-name descname"><span class="pre">getMetadata</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy.getMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the free text <code class="docutils literal notranslate"><span class="pre">metadata</span></code> attribute of this statement.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteStrategy.getName">
+<code class="sig-name descname"><span class="pre">getName</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteStrategy.getSubjectSort">
+<code class="sig-name descname"><span class="pre">getSubjectSort</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteStrategy.getSubjectSort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sort to which the strategy is intended to be applied.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.StrategyDefinition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">StrategyDefinition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Maude strategy definition.</p>
+<dl class="py method">
+<dt id="maude.StrategyDefinition.getLabel">
+<code class="sig-name descname"><span class="pre">getLabel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition.getLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the label attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyDefinition.getLhs">
+<code class="sig-name descname"><span class="pre">getLhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition.getLhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the left-hand side of the strategy definition as a term.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyDefinition.getLineNumber">
+<code class="sig-name descname"><span class="pre">getLineNumber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition.getLineNumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the line number information for this item as formatted by Maude.</p>
+<p>The format of the string is usually <code class="docutils literal notranslate"><span class="pre">filename,</span> <span class="pre">line</span> <span class="pre">line</span> <span class="pre">(module)</span></code>
+where the second <code class="docutils literal notranslate"><span class="pre">line</span></code> is the integral line number, and <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the module type and name where this item was originally defined. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> may be an actual quoted filename or some special name
+between angle brackets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyDefinition.getMetadata">
+<code class="sig-name descname"><span class="pre">getMetadata</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition.getMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the free text <code class="docutils literal notranslate"><span class="pre">metadata</span></code> attribute of this statement.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyDefinition.getRhs">
+<code class="sig-name descname"><span class="pre">getRhs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition.getRhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the strategy definition.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyDefinition.getStrategy">
+<code class="sig-name descname"><span class="pre">getStrategy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition.getStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the named strategy being defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyDefinition.isNonexec">
+<code class="sig-name descname"><span class="pre">isNonexec</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyDefinition.isNonexec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the strategy definition has the <code class="docutils literal notranslate"><span class="pre">nonexec</span></code> attribute.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="rewriting-graphs-and-model-checking">
+<h2>Rewriting graphs and model checking<a class="headerlink" href="#rewriting-graphs-and-model-checking" title="Permalink to this headline">¶</a></h2>
+<p>These two classes give access to the reachable rewriting graphs from an initial
+term. Their nodes are terms indexed by integers and their edges are essentially
+rule applications. In <a class="reference internal" href="#maude.StrategyRewriteGraph" title="maude.StrategyRewriteGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrategyRewriteGraph</span></code></a>, rewriting is
+controlled by a strategy expression. LTL formulae can be model checked on these
+graphs using their <code class="docutils literal notranslate"><span class="pre">modelCheck</span></code> methods, obtaining the state indices of the
+counterexample in case the property is not satisfied.</p>
+<dl class="py class">
+<dt id="maude.RewriteGraph">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">RewriteGraph</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete rewriting graph from an initial state.</p>
+<dl class="py method">
+<dt id="maude.RewriteGraph.getNextState">
+<code class="sig-name descname"><span class="pre">getNextState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph.getNextState" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the successors of a state in the graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A state number.</p></li>
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A child index (from zero).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The state number of a successor or -1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteGraph.getNrRewrites">
+<code class="sig-name descname"><span class="pre">getNrRewrites</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph.getNrRewrites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of rewrites used to generate this graph,
+including the evaluation of atomic propositions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteGraph.getNrStates">
+<code class="sig-name descname"><span class="pre">getNrStates</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph.getNrStates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of states in the graph.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteGraph.getRule">
+<code class="sig-name descname"><span class="pre">getRule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph.getRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a rule that connects two states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Origin state number.</p></li>
+<li><p><strong>dest</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Destination state number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Rule" title="maude.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A rule that connects the two states or null if none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteGraph.getStateParent">
+<code class="sig-name descname"><span class="pre">getStateParent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph.getStateParent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the (one) parent of a given state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A state number.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The state number of the parent or -1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteGraph.getStateTerm">
+<code class="sig-name descname"><span class="pre">getStateTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph.getStateTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the term of the given state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A state number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.RewriteGraph.modelCheck">
+<code class="sig-name descname"><span class="pre">modelCheck</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.RewriteGraph.modelCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model check a given LTL formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>formula</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – Term of the <code class="docutils literal notranslate"><span class="pre">Formula</span></code> sort.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.ModelCheckResult" title="maude.ModelCheckResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelCheckResult</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The result of model checking.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.StrategyRewriteGraph">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">StrategyRewriteGraph</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete rewriting graph under the control of a strategy from an initial state.</p>
+<dl class="py attribute">
+<dt id="maude.StrategyRewriteGraph.OPAQUE_STRATEGY">
+<code class="sig-name descname"><span class="pre">OPAQUE_STRATEGY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#maude.StrategyRewriteGraph.OPAQUE_STRATEGY" title="Permalink to this definition">¶</a></dt>
+<dd><p>opaque strategy</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="maude.StrategyRewriteGraph.RULE_APPLICATION">
+<code class="sig-name descname"><span class="pre">RULE_APPLICATION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#maude.StrategyRewriteGraph.RULE_APPLICATION" title="Permalink to this definition">¶</a></dt>
+<dd><p>rule application</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="maude.StrategyRewriteGraph.SOLUTION">
+<code class="sig-name descname"><span class="pre">SOLUTION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#maude.StrategyRewriteGraph.SOLUTION" title="Permalink to this definition">¶</a></dt>
+<dd><p>self-loops for solutions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.getNextState">
+<code class="sig-name descname"><span class="pre">getNextState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.getNextState" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the successors of a state in the graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A state number.</p></li>
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A child index (from zero).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The state number of a successor or -1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.getNrRealStates">
+<code class="sig-name descname"><span class="pre">getNrRealStates</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.getNrRealStates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of real (not merged) states in the graph (in linear time).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.getNrRewrites">
+<code class="sig-name descname"><span class="pre">getNrRewrites</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.getNrRewrites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of rewrites used to generate this graph,
+including the evaluation of atomic propositions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.getNrStates">
+<code class="sig-name descname"><span class="pre">getNrStates</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.getNrStates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of states in the graph.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.getStateStrategy">
+<code class="sig-name descname"><span class="pre">getStateStrategy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.getStateStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the strategy that will be executed next
+from the given state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A state number.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StrategyExpression</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>That strategy expression or null if there is
+no pending strategy in the current call or subsearch frame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.getStateTerm">
+<code class="sig-name descname"><span class="pre">getStateTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.getStateTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the term of the given state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A state number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.getTransition">
+<code class="sig-name descname"><span class="pre">getTransition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.getTransition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the transition that connects two states (if any).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Origin state number.</p></li>
+<li><p><strong>dest</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Destination state number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Transition</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>That transition if exists or a null pointer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.isSolutionState">
+<code class="sig-name descname"><span class="pre">isSolutionState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateNr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.isSolutionState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the state is a solution for the strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stateNr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A state number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyRewriteGraph.modelCheck">
+<code class="sig-name descname"><span class="pre">modelCheck</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formula</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyRewriteGraph.modelCheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model check a given LTL formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>formula</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – Term of the <code class="docutils literal notranslate"><span class="pre">Formula</span></code> sort.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.ModelCheckResult" title="maude.ModelCheckResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelCheckResult</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The result of model checking.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.StrategyGraphTransition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">StrategyGraphTransition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyGraphTransition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure describing a transition in the graph.</p>
+<dl class="py method">
+<dt id="maude.StrategyGraphTransition.getRule">
+<code class="sig-name descname"><span class="pre">getRule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyGraphTransition.getRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the rule applied, in case the transition is a rule application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#maude.Rule" title="maude.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>That rule or a null pointer if the transition is not
+a rule application.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyGraphTransition.getStrategy">
+<code class="sig-name descname"><span class="pre">getStrategy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyGraphTransition.getStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the strategy executed, in case of an opaque transition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#maude.RewriteStrategy" title="maude.RewriteStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">RewriteStrategy</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>That strategy or a null pointer if the transition
+is not an opaque strategy.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.StrategyGraphTransition.getType">
+<code class="sig-name descname"><span class="pre">getType</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.StrategyGraphTransition.getType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the transition type (rule application, opaque strategy,
+or solution).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.ModelCheckResult">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">ModelCheckResult</span></code><a class="headerlink" href="#maude.ModelCheckResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Result of LTL model checking.</p>
+<dl class="py method">
+<dt id="maude.ModelCheckResult.cycle">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">cycle</span></code><a class="headerlink" href="#maude.ModelCheckResult.cycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The counterexample cycle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.ModelCheckResult.holds">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">holds</span></code><a class="headerlink" href="#maude.ModelCheckResult.holds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the property holds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.ModelCheckResult.leadIn">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">leadIn</span></code><a class="headerlink" href="#maude.ModelCheckResult.leadIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>The counterexample path to the cycle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.ModelCheckResult.nrBuchiStates">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">nrBuchiStates</span></code><a class="headerlink" href="#maude.ModelCheckResult.nrBuchiStates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of states in the Büchi automaton.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="custom-special-operators">
+<h2>Custom special operators<a class="headerlink" href="#custom-special-operators" title="Permalink to this headline">¶</a></h2>
+<p>Special operators in Maude are those whose semantics are given in the C++ code of its interpreter, as opposed to the usual ones  that are defined by means of equations and rules. Using the elements described below, new special operators can be declared whose behavior is implemented in Python. The process involves three steps:</p>
+<ol class="arabic simple">
+<li><p>Declaring in Maude the desired operator with a <code class="docutils literal notranslate"><span class="pre">special</span></code> attribute containing the fragment <code class="docutils literal notranslate"><span class="pre">id-hook</span> <span class="pre">SpecialHubSymbol</span></code>. Additionally, <code class="docutils literal notranslate"><span class="pre">op-hook</span></code> and <code class="docutils literal notranslate"><span class="pre">term-hook</span></code> bindings can be included in the attribute to let the Python implementation access some given symbols and terms through the <a class="reference internal" href="#maude.HookData" title="maude.HookData"><code class="xref py py-class docutils literal notranslate"><span class="pre">HookData</span></code></a> class.</p></li>
+<li><p>Defining in Python the behavior of the special operator whenever it is reduced equationally or rewritten. A subclass of <a class="reference internal" href="#maude.Hook" title="maude.Hook"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a> must define its <a class="reference internal" href="#maude.Hook.run" title="maude.Hook.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> method that produces the reduced or rewritten term.</p></li>
+<li><p>Associating a <a class="reference internal" href="#maude.Hook" title="maude.Hook"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a> instance with an special operator using the functions <a class="reference internal" href="#maude.connectEqHook" title="maude.connectEqHook"><code class="xref py py-func docutils literal notranslate"><span class="pre">connectEqHook()</span></code></a> for equational rewriting or <a class="reference internal" href="#maude.connectRlHook" title="maude.connectRlHook"><code class="xref py py-func docutils literal notranslate"><span class="pre">connectRlHook()</span></code></a> for rule rewriting.</p></li>
+</ol>
+<p>For example, the following is the declaration in Maude of a function <code class="docutils literal notranslate"><span class="pre">getenv</span></code> to obtain the value of an environment variable:</p>
+<div class="highlight-maude notranslate"><div class="highlight"><pre><span></span><span class="kd">op</span><span class="w"> </span><span class="n">getenv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="o">~&gt;</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="p">[</span><span class="k">special</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">id-hook</span><span class="w"> </span><span class="n">SpecialHubSymbol</span><span class="w"></span>
+<span class="p">)]</span><span class="w"> </span><span class="p">.</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This declaration alone makes <code class="docutils literal notranslate"><span class="pre">getenv</span></code> behave as a standard operator, and its special meaning should be given within Python:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">EnvironmentHook</span><span class="p">(</span><span class="n">maude</span><span class="o">.</span><span class="n">Hook</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">symbol</span><span class="p">()</span><span class="o">.</span><span class="n">getModule</span><span class="p">()</span>
+        <span class="n">term</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
+        <span class="n">envar</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">term</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">enval</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">envar</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">parseTerm</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">enval</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">enval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+<span class="n">envhook</span> <span class="o">=</span> <span class="n">EnvironmentHook</span><span class="p">()</span>
+<span class="n">maude</span><span class="o">.</span><span class="n">connectEqHook</span><span class="p">(</span><span class="s1">&#39;getenv&#39;</span><span class="p">,</span> <span class="n">envhook</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The terms passed to the Python implementation do not have their subterms reduced, but these arguments must be reduced if included in the resulting term. <code class="docutils literal notranslate"><span class="pre">None</span></code> is an admitted return value that is interpreted as the absence of rewrite at that symbol. In this case, <code class="docutils literal notranslate"><span class="pre">getenv</span></code> is a partial function that does not yield a string when the given environment variable does not exist.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This feature is experimental and may be subject to changes. Do not forget that Maude programs including these special operators will not be executable in the official Maude interpreter.</p>
+</div>
+<dl class="py class">
+<dt id="maude.Hook">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">Hook</span></code><a class="headerlink" href="#maude.Hook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Special operators defined on the external language.</p>
+<dl class="py method">
+<dt id="maude.Hook.run">
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.Hook.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method called by the hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>term</strong> (<a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a>) – The term being reduced or rewritten.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="#maude.HookData" title="maude.HookData"><code class="xref py py-class docutils literal notranslate"><span class="pre">HookData</span></code></a>) – Data associated to the hook.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#maude.Term" title="maude.Term"><code class="xref py py-class docutils literal notranslate"><span class="pre">Term</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The reduced or rewritten term, or a null value in case
+no rewrite is possible.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="maude.HookData">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">HookData</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.HookData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data associated to a hook and passed to its callback.</p>
+<dl class="py method">
+<dt id="maude.HookData.getData">
+<code class="sig-name descname"><span class="pre">getData</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#maude.HookData.getData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the data associated to the hook.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.HookData.getSymbol">
+<code class="sig-name descname"><span class="pre">getSymbol</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.HookData.getSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the symbol associated to the hook with the given name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="maude.HookData.getTerm">
+<code class="sig-name descname"><span class="pre">getTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.HookData.getTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the term associated to the hook with the given name.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.connectEqHook">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">connectEqHook</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hook</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.connectEqHook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect a callback for the reduction of a special operator declared with
+the <code class="docutils literal notranslate"><span class="pre">SpecialHubSymbol</span></code> id-hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – The name of the operator to be bound to this callback.
+In case the id-hook contains arguments, the name is instead the first
+of these. A null value may be passed to assign a default callback for
+those operators without an explicitly associated one.</p></li>
+<li><p><strong>hook</strong> (<a class="reference internal" href="#maude.Hook" title="maude.Hook"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a>) – An instance of a subclass of Hook defining its run method.
+The object must be alive as long as the binding is active. A null value
+can be passed to disconnect the current one.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether this call overwrites a previous binding.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="maude.connectRlHook">
+<code class="sig-prename descclassname"><span class="pre">maude.</span></code><code class="sig-name descname"><span class="pre">connectRlHook</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hook</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maude.connectRlHook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect a callback for rule rewriting a special operator declared with
+the <code class="docutils literal notranslate"><span class="pre">SpecialHubSymbol</span></code> id-hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – The name of the operator to be bound to this callback.
+In case the id-hook contains arguments, the name is instead the first
+of these. A null value may be passed to assign a default callback for
+those operators without an explicitly associated one.</p></li>
+<li><p><strong>hook</strong> (<a class="reference internal" href="#maude.Hook" title="maude.Hook"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hook</span></code></a>) – An instance of a subclass of Hook defining its run method.
+The object must be alive as long as the binding is active. A null value
+can be passed to disconnect the current one.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether this call overwrites a previous binding.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Maude bindings documentation</a><ul>
+<li><a class="reference internal" href="#first-steps">First steps</a></li>
+<li><a class="reference internal" href="#terms">Terms</a><ul>
+<li><a class="reference internal" href="#search-iterators">Search iterators</a></li>
+<li><a class="reference internal" href="#search-types">Search types</a></li>
+<li><a class="reference internal" href="#print-flags">Print flags</a></li>
+<li><a class="reference internal" href="#conditions">Conditions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modules">Modules</a><ul>
+<li><a class="reference internal" href="#module-items">Module items</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rewriting-graphs-and-model-checking">Rewriting graphs and model checking</a></li>
+<li><a class="reference internal" href="#custom-special-operators">Custom special operators</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Maude bindings  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Maude bindings documentation</a></li> 
+      </ul>
+    </div>
+
+  </body>
+</html>
