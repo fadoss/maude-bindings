@@ -38,7 +38,7 @@ For example, the snippet above parses the term ``2 * 3`` in the ``NAT`` module (
 
 
 .. automodule:: maude
-   :members: init, load, input, getCurrentModule, getModule, getModules, getViews
+   :members: init, load, input, getCurrentModule, getModule, downModule, getModules, getView, getViews
    :undoc-members:
 
 .. autoclass:: ModuleHeader
@@ -130,6 +130,53 @@ The following classes can be used as usual Python iterators, albeit some offer a
    :undoc-members:
 
    It iterates over subterms of type :py:class:`Term`.
+
+
+Search types
+............
+
+.. autodata:: ANY_STEPS
+   :annotation:
+
+.. autodata:: AT_LEAST_ONE_STEP
+   :annotation:
+
+.. autodata:: ONE_STEP
+   :annotation:
+
+.. autodata:: NORMAL_FORM
+   :annotation:
+
+
+Print flags
+...........
+
+.. autodata:: PRINT_CONCEAL
+   :annotation:
+
+.. autodata:: PRINT_FORMAT
+   :annotation:
+
+.. autodata:: PRINT_MIXFIX
+   :annotation:
+
+.. autodata:: PRINT_WITH_PARENS
+   :annotation:
+
+.. autodata:: PRINT_COLOR
+   :annotation:
+
+.. autodata:: PRINT_DISAMBIG_CONST
+   :annotation:
+
+.. autodata:: PRINT_FLAT
+   :annotation:
+
+.. autodata:: PRINT_NUMBER
+   :annotation:
+
+.. autodata:: PRINT_RAT
+   :annotation:
 
 
 Conditions
@@ -231,6 +278,57 @@ counterexample in case the property is not satisfied.
 .. autoclass:: ModelCheckResult
    :members:
    :undoc-members:
+
+
+Custom special operators
+------------------------
+
+Special operators in Maude are those whose semantics are given in the C++ code of its interpreter, as opposed to the usual ones	 that are defined by means of equations and rules. Using the elements described below, new special operators can be declared whose behavior is implemented in Python. The process involves three steps:
+
+1. Declaring in Maude the desired operator with a ``special`` attribute containing the fragment ``id-hook SpecialHubSymbol``. Additionally, ``op-hook`` and ``term-hook`` bindings can be included in the attribute to let the Python implementation access some given symbols and terms through the :py:class:`HookData` class.
+2. Defining in Python the behavior of the special operator whenever it is reduced equationally or rewritten. A subclass of :py:class:`Hook` must define its :py:meth:`~Hook.run` method that produces the reduced or rewritten term.
+3. Associating a :py:class:`Hook` instance with an special operator using the functions :py:func:`connectEqHook` for equational rewriting or :py:func:`connectRlHook` for rule rewriting.
+
+
+For example, the following is the declaration in Maude of a function ``getenv`` to obtain the value of an environment variable:
+
+.. code-block:: maude
+
+   op getenv : String ~> String [special (
+       id-hook SpecialHubSymbol
+   )] .
+
+This declaration alone makes ``getenv`` behave as a standard operator, and its special meaning should be given within Python:
+
+::
+
+   class EnvironmentHook(maude.Hook):
+       def run(self, term, data):
+           module = term.symbol().getModule()
+           term.reduce()
+           envar = str(term)[1:-1]
+           enval = os.getenv(envar)
+           return module.parseTerm(f'"{enval}"') if enval is not None else None
+
+   envhook = EnvironmentHook()
+   maude.connectEqHook('getenv', envhook)
+
+The terms passed to the Python implementation do not have their subterms reduced, but these arguments must be reduced if included in the resulting term. ``None`` is an admitted return value that is interpreted as the absence of rewrite at that symbol. In this case, ``getenv`` is a partial function that does not yield a string when the given environment variable does not exist.
+
+.. warning::
+   This feature is experimental and may be subject to changes. Do not forget that Maude programs including these special operators will not be executable in the official Maude interpreter.
+
+.. autoclass:: Hook
+   :members:
+   :undoc-members:
+
+.. autoclass:: HookData
+   :members:
+   :undoc-members:
+
+.. autofunction:: connectEqHook
+
+.. autofunction:: connectRlHook
 
 
 Indices and tables

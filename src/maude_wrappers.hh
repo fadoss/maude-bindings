@@ -4,12 +4,21 @@
  * Wraps some Maude high-level functions.
  */
 
+#ifndef MAUDE_WRAPPERS_HH
+#define MAUDE_WRAPPERS_HH
+
 #include "macros.hh"
 #include "vector.hh"
 #include "core.hh"
 #include "meta.hh"
 
+#include "visibleModule.hh"
+#include "specialHubSymbol.hh"
+
 #include <vector>
+
+// Forward declaration
+class EasyTerm;
 
 /**
  * Tokenize a string according to Maude lexer rules.
@@ -53,8 +62,10 @@ bool input(const char* text);
  * @param randomSeed Seed for the pseudorandom number generator in
  * the @c RANDOM module.
  * @param advise Whether debug messages should be printed.
+ * @param handleInterrupts Whether interrupts are handled by Maude.
  */
-bool init(bool loadPrelude=true, int randomSeed=0, bool advise=false);
+bool init(bool loadPrelude=true, int randomSeed=0, bool advise=false,
+          bool handleInterrupts=true);
 
 /**
  * Get a module or theory by name.
@@ -87,6 +98,13 @@ std::ostream &operator<<(std::ostream &out, ModuleHeader* mh);
 std::vector<ModuleHeader> getModules();
 
 /**
+ * Get a view by name.
+ *
+ * @param name Name of the view (view expressions are not allowed).
+ */
+View* getView(const char* name);
+
+/**
  * Get the list of loaded views.
  */
 std::vector<View*> getViews();
@@ -98,26 +116,90 @@ struct ModelCheckResult {
 	bool holds;
 	std::vector<int> leadIn;
 	std::vector<int> cycle;
+	int nrBuchiStates;
 };
 
 /**
- * Model check.
- *
- * @param graph State-transition graph of the model to be checked.
- * @param formula Term of sort @c Formula in the module of the state graph.
+ * Data associated to a hook and passed to its callback.
  */
-ModelCheckResult* modelCheck(StateTransitionGraph& graph, DagNode* formula);
+class HookData {
+	const std::vector<std::string>& data;
+	const SpecialHubSymbol::SymbolHooks& symbols;
+	SpecialHubSymbol::TermHooks& terms;
+
+public:
+	HookData(const std::vector<std::string>& data,
+	         const SpecialHubSymbol::SymbolHooks& symbols,
+	         SpecialHubSymbol::TermHooks& terms)
+	: data(data), symbols(symbols), terms(terms) {}
+
+	/**
+	 * Get the data associated to the hook.
+	 */
+	const std::vector<std::string>& getData() const;
+	/**
+	 * Get the symbol associated to the hook with the given name.
+	 */
+	Symbol* getSymbol(const char* name) const;
+	/**
+	 * Get the term associated to the hook with the given name.
+	 */
+	EasyTerm* getTerm(const char* name) const;
+};
 
 /**
- * Model check.
- *
- * @param graph State-transition graph of the strategy-controlled
- * model to be checked.
- * @param formula Term of sort @c Formula in the module of the state graph.
+ * Hooks defined on the external language.
  */
-ModelCheckResult* modelCheck(StrategyTransitionGraph& graph, DagNode* formula);
+struct Hook {
+	/**
+	 * Method called by the hook.
+	 */
+	virtual EasyTerm* run(EasyTerm* term, const HookData* data) = 0;
+	virtual ~Hook() {};
+};
 
 /**
- * Get the meta level of a given module.
+ * Connect a callback for the reduction of a special operator declared with
+ * the @c SpecialHubSymbol id-hook.
+ *
+ * @param name The name of the operator to be bound to this callback.
+ *   In case the id-hook contains arguments, the name is instead the first
+ *   of these. A null value may be passed to assign a default callback for
+ *   those operators without an explicitly associated one.
+ * @param hook An instance of a subclass of Hook defining its run method.
+ *   The object must be alive as long as the binding is active. A null value
+ *   can be passed to disconnect the current one.
+ *
+ * @return Whether this call overwrites a previous binding.
  */
-MetaLevel* getMetaLevel(VisibleModule* mod);
+bool connectEqHook(const char* name, Hook* hook);
+
+/**
+ * Connect a callback for rule rewriting a special operator declared with
+ * the @c SpecialHubSymbol id-hook.
+ *
+ * @param name The name of the operator to be bound to this callback.
+ *   In case the id-hook contains arguments, the name is instead the first
+ *   of these. A null value may be passed to assign a default callback for
+ *   those operators without an explicitly associated one.
+ * @param hook An instance of a subclass of Hook defining its run method.
+ *   The object must be alive as long as the binding is active. A null value
+ *   can be passed to disconnect the current one.
+ *
+ * @return Whether this call overwrites a previous binding.
+ */
+bool connectRlHook(const char* name, Hook* hook);
+
+
+inline const std::vector<std::string>&
+HookData::getData() const {
+	return data;
+}
+
+inline Symbol*
+HookData::getSymbol(const char* name) const {
+	auto it = symbols.find(name);
+	return it != symbols.end() ? it->second : nullptr;
+}
+
+#endif // MAUDE_WRAPPERS_HH

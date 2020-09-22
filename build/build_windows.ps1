@@ -32,9 +32,8 @@ function Extract-Archive {
 Set-PSDebug -Trace 1
 $ErrorActionPreference = "Stop"
 
-$LIBMAUDE_PKG      = "https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-windows.tar.xz"
-$YICES_HEADERS_URL = "https://raw.githubusercontent.com/SRI-CSL/yices2/Yices-2.6.1/src/include"
-$GMP_HEADERS_URL   = "https://gmplib.org/repo/gmp-6.1/raw-file/tip"
+$LIBMAUDE_PKG = "https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-windows.tar.xz"
+$AUXFILES_PKG = "https://github.com/fadoss/maude-bindings/releases/download/0.1/windows-auxfiles.tar.xz"
 
 # Install swig and ninja with Chocolatey
 choco install swig ninja
@@ -61,22 +60,11 @@ Move-Item libmaude-pkg\sigsegv.h subprojects\maudesmc\build
 Move-Item libmaude-pkg\libmaude.dll subprojects\maudesmc\installdir\lib
 Move-Item libmaude-pkg\libmaude.dll.a subprojects\maudesmc\installdir\lib
 
-# Download Buddy headers
-$webclient.DownloadFile("https://sourceforge.net/projects/buddy/files/latest/download", "buddy.tar.gz")
-Extract-Archive buddy.tar.gz
+# Download Buddy, Yices2 and GMP C++ headers
+# (only yices_types.h is modified to avoid a name conflict)
 
-Set-Location buddy-*
-Move-Item src\bdd.h ..\subprojects\maudesmc\build
-Set-Location ..
-
-# Download Yices2 and GMP C++ headers
-Push-Location subprojects\maudesmc\build
-Download-File $webclient "$YICES_HEADERS_URL/yices.h"
-Download-File $webclient "$YICES_HEADERS_URL/yices_exit_codes.h"
-Download-File $webclient "$YICES_HEADERS_URL/yices_limits.h"
-Download-File $webclient "$YICES_HEADERS_URL/yices_types.h"
-Download-File $webclient "$GMP_HEADERS_URL/gmpxx.h"
-Pop-Location
+Download-File $webclient $AUXFILES_PKG
+Extract-Archive (Split-Path -Leaf $AUXFILES_PKG) "-osubprojects\maudesmc\build"
 
 #
 ## Install required build tools

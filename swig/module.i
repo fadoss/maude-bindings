@@ -209,15 +209,46 @@ public:
 		}
 
 		/**
-		 * Get a strategy expression from its metarepresentation in
-		 * this module, which must include the @c META-LEVEL module.
+		 * Get a term in this module from its metarepresentation
+		 * in (possibly) another module.
+		 *
+		 * @param term The metarepresentation of a term, that is,
+		 * a valid element of the @c Term sort in @c META-TERM.
+		 * This term must belong to a module where the @c META-LEVEL
+		 * module is included. The term will be reduced.
+		 *
+		 * @return The term or null if the metarepresentation was
+		 * not valid.
+		 */
+		EasyTerm* downTerm(EasyTerm* term) {
+			VisibleModule* otherModule = safeCast(VisibleModule*, term->symbol()->getModule());
+			MetaLevel* metaLevel = getMetaLevel(otherModule);
+
+			if (metaLevel == nullptr)
+				return nullptr;
+
+			UserLevelRewritingContext context(term->getDag());
+			context.reduce();
+
+			Term* result = metaLevel->downTerm(context.root(), $self);
+			return result == nullptr ? nullptr : new EasyTerm(result);
+		}
+
+		/**
+		 * Get a strategy expression in this module from its
+		 * metarepresentation in (possibly) another module.
 		 *
 		 * @param term The metarepresentation of a strategy, that is,
 		 * a valid element of the @c Strategy sort in @c META-STRATEGY.
-		 * The term will be reduced.
+		 * This term must belong to a module where the @c META-LEVEL
+		 * module is included. The term will be reduced.
+		 *
+		 * @return The strategy expression or null if the
+		 * metarepresentation was not valid.
 		 */
 		StrategyExpression* downStrategy(EasyTerm* term) {
-			MetaLevel* metaLevel = getMetaLevel($self);
+			VisibleModule* otherModule = safeCast(VisibleModule*, term->symbol()->getModule());
+			MetaLevel* metaLevel = getMetaLevel(otherModule);
 
 			if (metaLevel == nullptr)
 				return nullptr;
@@ -228,29 +259,26 @@ public:
 		}
 
 		/**
-		 * Get a module object from its metarepresentation in this
-		 * module, which must include the @c META-LEVEL module.
+		 * Get the metarepresentation in this module of a term
+		 * in (possibly) another module. This module must contain
+		 * @c META-LEVEL.
 		 *
-		 * @param term The metarepresentation of a module, that is,
-		 * a valid element of the @c Module sort in @c META-MODULE.
-		 * The term will be reduced.
+		 * @param term Any term.
+		 *
+		 * @return The metarepresentation term or null.
 		 */
-		VisibleModule* downModule(EasyTerm* term) {
+		EasyTerm* upTerm(EasyTerm* term) {
+			VisibleModule* otherModule = safeCast(VisibleModule*, term->symbol()->getModule());
 			MetaLevel* metaLevel = getMetaLevel($self);
 
 			if (metaLevel == nullptr)
 				return nullptr;
 
-			UserLevelRewritingContext context(term->getDag());
-			context.reduce();
-
-			VisibleModule* mod = metaLevel->downModule(context.root());
-
-			if (mod == nullptr)
-				return nullptr;
-
-			mod->protect();
-			return mod;
+			Term* copy = term->termCopy();
+			PointerMap qidMap;
+			DagNode* result = metaLevel->upTerm(copy, otherModule, qidMap);
+			copy->deepSelfDestruct();
+			return result == nullptr ? nullptr : new EasyTerm(result);
 		}
 	}
 
@@ -339,8 +367,9 @@ public:
 
 	%newobject parseTerm;
 	%newobject parseStrategy;
+	%newobject downTerm;
 	%newobject downStrategy;
-	%newobject downModule;
+	%newobject upTerm;
 	%newobject unify;
 	%newobject variant_unify;
 

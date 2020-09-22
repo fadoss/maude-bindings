@@ -30,6 +30,19 @@
 //
 // Defined in term.i
 
+%extend EasyTerm {
+%pythoncode %{
+	def __float__(self):
+		return self.toFloat()
+
+	def __int__(self):
+		return self.toInt()
+
+	def __eq__(self, other):
+		return self.equal(other)
+%}
+}
+
 %extend StrategicSearch {
 %pythoncode %{
 	def __iter__(self):
@@ -157,6 +170,19 @@
 
 	def __len__(self):
 		return self.nrSorts()
+
+	def __eq__(self, other):
+		return self.equal(other)
+%}
+}
+
+%extend Sort {
+%pythoncode %{
+	def __le__(self, other):
+		return self.leq(other)
+
+	def __eq__(self, other):
+		return self.equal(other)
 %}
 }
 
@@ -164,6 +190,9 @@
 %pythoncode %{
 	def __call__(self, *args):
 		return self.makeTerm(args)
+
+	def __eq__(self, other):
+		return self.equal(other)
 %}
 }
 

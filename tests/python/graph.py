@@ -17,7 +17,7 @@ def exploreAndGraph(graph, stateNr):
 		nextState = graph.getNextState(stateNr, index)
 
 maude.init(advise=False)
-maude.load(os.path.join(os.path.dirname(__file__), 'example.maude'))
+maude.load(os.path.join(os.path.dirname(__file__), '..', 'example.maude'))
 
 example = maude.getModule('EXAMPLE')
 initial = example.parseTerm('f(a, a)')

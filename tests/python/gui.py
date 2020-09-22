@@ -56,7 +56,7 @@ class ReduceWindow:
 
 
 if __name__ == '__main__':
-	maude.init()
+	maude.init(advise=False)
 
 	window = ReduceWindow()
 	window.run()

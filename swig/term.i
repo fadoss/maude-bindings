@@ -11,6 +11,8 @@
 #include "narrowingSequenceSearch3.hh"
 %}
 
+%import "config.h"
+
 //
 //	Simplified interface to Maude terms
 //	(defined and documented in easyTerm.cc/hh)
@@ -30,6 +32,38 @@ enum SearchType {
 	AT_LEAST_ONE_STEP,	///< ->+
 	ANY_STEPS,		///< ->*
 	NORMAL_FORM		///< ->!
+};
+
+%{
+using PrintFlags = Interpreter::PrintFlags;
+
+// using enum PrintFlags (in C++20)
+constexpr PrintFlags PRINT_CONCEAL = PrintFlags::PRINT_CONCEAL;
+constexpr PrintFlags PRINT_FORMAT = PrintFlags::PRINT_FORMAT;
+constexpr PrintFlags PRINT_MIXFIX = PrintFlags::PRINT_MIXFIX;
+constexpr PrintFlags PRINT_WITH_PARENS = PrintFlags::PRINT_WITH_PARENS;
+constexpr PrintFlags PRINT_COLOR = PrintFlags::PRINT_COLOR;
+constexpr PrintFlags PRINT_DISAMBIG_CONST = PrintFlags::PRINT_DISAMBIG_CONST;
+constexpr PrintFlags PRINT_WITH_ALIASES = PrintFlags::PRINT_WITH_ALIASES;
+constexpr PrintFlags PRINT_FLAT = PrintFlags::PRINT_FLAT;
+constexpr PrintFlags PRINT_NUMBER = PrintFlags::PRINT_NUMBER;
+constexpr PrintFlags PRINT_RAT = PrintFlags::PRINT_RAT;
+%}
+
+/**
+ * Print flags.
+ */
+enum PrintFlags {
+	PRINT_CONCEAL = 0x2,		///< respect concealed argument lists
+	PRINT_FORMAT = 0x4,		///< respect format attribute
+	PRINT_MIXFIX = 0x8,		///< mixfix notation
+	PRINT_WITH_PARENS = 0x10,	///< maximal parens
+	PRINT_COLOR = 0x20,		///< dag node coloring based on ctor/reduced status
+	PRINT_DISAMBIG_CONST = 0x40,	///< (c).s for every constant c
+	PRINT_WITH_ALIASES = 0x100,	///< for variables
+	PRINT_FLAT = 0x200,		///< for assoc symbols
+	PRINT_NUMBER = 0x400,		///< for nats & ints
+	PRINT_RAT = 0x800,		///< for rats
 };
 
 /**
@@ -173,10 +207,31 @@ public:
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
 					    int depth = -1, bool fold = false);
 
+	#if defined(USE_CVC4) || defined(USE_YICES2)
+	/**
+	 * Check an SMT formula.
+	 *
+	 * @return A string, either @c sat, @c unsat or @c undecided.
+	 */
+	const char* check();
+	#endif
+
 	/**
 	 * Iterate over the arguments of this term.
 	 */
 	DagArgumentIterator* arguments();
+
+	/**
+	 * Get the floating-point number represented by the given term or
+	 * zero otherwise.
+	 */
+	double toFloat() const;
+
+	/**
+	 * Get the integer number represented by the given term or
+	 * zero otherwise.
+	 */
+	long int toInt() const;
 
 	/**
 	 * Get a copy of this term.
@@ -187,6 +242,20 @@ public:
 	 * An empty condition to be used as a placeholder.
 	 */
 	static const Vector<ConditionFragment*> NO_CONDITION;
+
+	%extend {
+		/**
+		 * Pretty prints this term.
+		 *
+		 * @param flags Flags that affect the term output.
+		 */
+		const char* prettyPrint(PrintFlags flags) {
+			std::ostringstream stream;
+			$self->print(stream, flags);
+			printBuffer = stream.str();
+			return printBuffer.c_str();
+		}
+	}
 
 	%newobject match;
 	%newobject srewrite;

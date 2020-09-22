@@ -2,7 +2,7 @@ import maude
 import os.path
 
 maude.init(advise=False)
-maude.load(os.path.join(os.path.dirname(__file__), 'example.maude'))
+maude.load(os.path.join(os.path.dirname(__file__), '..', 'example.maude'))
 
 example = maude.getCurrentModule()
 nat = maude.getModule('NAT')
@@ -44,5 +44,5 @@ for sol, nrew in ans.srewrite(example.parseStrategy('swap *')):
 initial = example.parseTerm('f(a, a)')
 pattern = example.parseTerm('f(c, X:Symbol)')
 
-for sol, subs, path, nrew in ans.search(maude.ANY_STEPS, pattern):
+for sol, subs, path, nrew in initial.search(maude.ANY_STEPS, pattern):
 	print(sol, 'with', subs, 'by', path())

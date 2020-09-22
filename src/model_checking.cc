@@ -246,6 +246,25 @@ prepareModelChecker(BaseSystemAutomaton &system, RewritingContext* context, DagN
 	return true;
 }
 
+// Dirty hacks to access some private members
+// (not to modify Maude for the moment, as already
+// done in maude_wrappers.cc)
+
+template<typename Tag, typename Tag::type M>
+struct PrivateHack {
+	friend typename Tag::type get(Tag) {
+		return M;
+	}
+};
+
+struct HackBuchiAutomaton {
+	typedef BuchiAutomaton2 ModelChecker2::* type;
+	friend type get(HackBuchiAutomaton);
+};
+
+template struct PrivateHack<HackBuchiAutomaton, &ModelChecker2::propertyAutomaton>;
+
+
 ModelCheckResult*
 modelCheck(StateTransitionGraph &graph, DagNode* termFormula) {
 	SystemAutomaton system;
@@ -262,13 +281,17 @@ modelCheck(StateTransitionGraph &graph, DagNode* termFormula) {
 	ModelChecker2 mc(system, formula, top);
 	bool result = mc.findCounterexample();
 
+	const auto &buchiAut = mc.*get(HackBuchiAutomaton());
+	int nrBuchiStates = buchiAut.getNrStates();
+
 	if (result)
 		return new ModelCheckResult{false,
 			{mc.getLeadIn().begin(), mc.getLeadIn().end()},
-			{mc.getCycle().begin(), mc.getCycle().end()}
+			{mc.getCycle().begin(), mc.getCycle().end()},
+			nrBuchiStates
 		};
 	else
-		return new ModelCheckResult{true};
+		return new ModelCheckResult{true, {}, {}, nrBuchiStates};
 }
 
 ModelCheckResult*
@@ -287,11 +310,15 @@ modelCheck(StrategyTransitionGraph &graph, DagNode* termFormula) {
 	ModelChecker2 mc(system, formula, top);
 	bool result = mc.findCounterexample();
 
+	const auto &buchiAut = mc.*get(HackBuchiAutomaton());
+	int nrBuchiStates = buchiAut.getNrStates();
+
 	if (result)
 		return new ModelCheckResult{false,
 			{mc.getLeadIn().begin(), mc.getLeadIn().end()},
-			{mc.getCycle().begin(), mc.getCycle().end()}
+			{mc.getCycle().begin(), mc.getCycle().end()},
+			nrBuchiStates
 		};
 	else
-		return new ModelCheckResult{true};
+		return new ModelCheckResult{true, {}, {}, nrBuchiStates};
 }

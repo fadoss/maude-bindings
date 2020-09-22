@@ -15,6 +15,9 @@
 #include "stateTransitionGraph.hh"
 #include "strategyTransitionGraph.hh"
 #include "userLevelRewritingContext.hh"
+#include "importTranslation.hh"
+
+#include "helper_funcs.hh"
 %}
 
 //
@@ -93,6 +96,13 @@ public:
 
 	%extend {
 		/**
+		 * Check whether two sorts are the same.
+		 */
+		bool equal(Sort* other) {
+			return $self == other;
+		}
+
+		/**
 		 * Check if this sort is a subsort of the given sort.
 		 *
 		 * @param rhs The right-hand side of the comparison.
@@ -125,6 +135,15 @@ public:
 	 * @param index Sort index.
 	 */
 	Sort* sort(int index) const;
+
+	%extend {
+		/**
+		 * Check whether two kinds are the same.
+		 */
+		bool equal(ConnectedComponent* other) {
+			return $self == other;
+		}
+	}
 
 	%streamBasedPrint;
 };
@@ -185,6 +204,13 @@ public:
 	Sort* getRangeSort() const;
 
 	%extend {
+		/**
+		 * Check whether two symbols are the same.
+		 */
+		bool equal(Symbol* other) {
+			return $self == other;
+		}
+
 		/**
 		 * Get the declarations of the symbol.
 		 */
@@ -467,6 +493,7 @@ struct ModelCheckResult {
 	bool holds;			///< Whether the property holds.
 	std::vector<int> leadIn;	///< The counterexample path to the cycle.
 	std::vector<int> cycle;		///< The counterexample cycle.
+	int nrBuchiStates;		///< Number of states in the Büchi automaton.
 };
 
 /**
@@ -510,6 +537,14 @@ public:
 			if (it == $self->getStateFwdArcs(origin).end())
 				return nullptr;
 			return it->second.empty() ? nullptr : *it->second.begin();
+		}
+
+		/**
+		 * Get the number of rewrites used to generate this graph,
+		 * including the evaluation of atomic propositions.
+		 */
+		int getNrRewrites() {
+			return $self->getContext()->getTotalCount();
 		}
 
 		/**
@@ -611,7 +646,10 @@ public:
 			set<int> opaqueIds;
 			for (auto &name : opaques)
 				opaqueIds.insert(Token::encode(name.c_str()));
-			return new StrategyTransitionGraph(context, strat, opaqueIds, biased);
+			// Copy the given strategy, since it will be deleted with this structure
+			ImportTranslation translation(dynamic_cast<ImportModule*>(initial->getDag()->symbol()->getModule()));
+			StrategyExpression* stratCopy = ImportModule::deepCopyStrategyExpression(&translation, strat);
+			return new StrategyTransitionGraph(context, stratCopy, opaqueIds, biased);
 		}
 
 		/**
@@ -649,6 +687,14 @@ public:
 			if (it == $self->getStateFwdArcs(origin).end())
 				return nullptr;
 			return it->second.empty() ? nullptr : &*it->second.begin();
+		}
+
+		/**
+		 * Get the number of rewrites used to generate this graph,
+		 * including the evaluation of atomic propositions.
+		 */
+		int getNrRewrites() {
+			return $self->getContext()->getTotalCount();
 		}
 
 		/**

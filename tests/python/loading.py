@@ -2,11 +2,11 @@ import maude
 
 maude.init(advise=False)
 
-maude.load('tests/example.maude')
+maude.load('../example.maude')
 maude.load('tests/example.maude')
 maude.input('fmod TESTS is endfm')
 maude.input('fmod TESTS is endfm')
-maude.load('tests/example.maude')
+maude.load('../example.maude')
 maude.input('fmod TESTS is endfm')
 
 

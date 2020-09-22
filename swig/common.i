@@ -7,8 +7,13 @@
 std::string printBuffer;
 %}
 
+#if defined(SWIGJAVA)
+#define GETTER_METHOD get
+#define SETTER_METHOD set
+#else
 #define GETTER_METHOD __getitem__
 #define SETTER_METHOD __setitem__
+#endif
 
 #if defined(SWIGPYTHON)
 #define REPR_METHOD __repr__
@@ -18,6 +23,8 @@ std::string printBuffer;
 #define REPR_METHOD __str__
 #elif defined(SWIGR)
 #define REPR_METHOD show
+#elif defined(SWIGJAVASCRIPT)
+#define REPR_METHOD toString
 #else
 #warning Unsupported language
 #endif
@@ -115,7 +122,7 @@ std::string printBuffer;
 			int size = $self->size();
 			std::ostringstream stream;
 			for (int i = 0; i < size; i++)
-				stream << ", " << $self->variable(i) << "=" << self->value(i) << endl;
+				stream << ", " << $self->variable(i) << "=" << self->value(i);
 			printBuffer = stream.str();
 			return printBuffer.c_str() + 2;
 		}

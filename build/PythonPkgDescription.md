@@ -1,5 +1,5 @@
-Experimental Python bindings for Maude
-======================================
+Python bindings for Maude
+=========================
 
 Experimental Python bindings for [Maude](http://maude.cs.illinois.edu) using [SWIG](http://www.swig.org).
 

@@ -17,6 +17,7 @@
 #include "mixfix.hh"
 #include "rootContainer.hh"
 #include "vector.hh"
+#include "interpreter.hh"
 
 #include <iostream>
 #include <vector>
@@ -181,6 +182,15 @@ public:
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
 					    int depth = -1, bool fold = false);
 
+	#if defined(USE_CVC4) || defined(USE_YICES2)
+	/**
+	 * Check an SMT formula.
+	 *
+	 * @return A string, either @c sat, @c unsat or @c undecided.
+	 */
+	const char* check();
+	#endif
+
 	/**
 	 * Iterate over the arguments of this term.
 	 */
@@ -192,6 +202,26 @@ public:
 	 * @param out The stream where to print.
 	 */
 	void print(std::ostream &out) const;
+
+	/**
+	 * Pretty prints this term.
+	 *
+	 * @param out The stream where to print.
+	 * @param flags Flags that affect the term output.
+	 */
+	void print(std::ostream &out, Interpreter::PrintFlags flags) const;
+
+	/**
+	 * Get the floating-point number represented by the given term or
+	 * zero otherwise.
+	 */
+	double toFloat() const;
+
+	/**
+	 * Get the integer number represented by the given term or
+	 * zero otherwise.
+	 */
+	long int toInt() const;
 
 	/**
 	 * Get a copy of this term.
@@ -315,5 +345,18 @@ ostream& operator<<(ostream& s, const EasyTerm* term) {
 	term->print(s);
 	return s;
 }
+
+/**
+ * Get a module object from its metarepresentation in this
+ * module, which must include the @c META-LEVEL module.
+ *
+ * @param term The metarepresentation of a module, that is,
+ * a valid element of the @c Module sort in @c META-MODULE.
+ * The term will be reduced.
+ *
+ * @return The module object or null if the given term was not
+ * a valid module metarepresentation.
+ */
+VisibleModule* downModule(EasyTerm* term);
 
 #endif // EASY_TERM_H

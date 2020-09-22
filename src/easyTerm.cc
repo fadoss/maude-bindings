@@ -5,8 +5,11 @@
  */
 
 #include "easyTerm.hh"
+#include "helper_funcs.hh"
 
 #include "mixfix.hh"
+#include "meta.hh"
+
 #include "term.hh"
 #include "dagNode.hh"
 #include "userLevelRewritingContext.hh"
@@ -25,6 +28,20 @@
 #include "extensionInfo.hh"
 #include "dagArgumentIterator.hh"
 #include "variableDagNode.hh"
+#include "metaLevel.hh"
+#include "userLevelRewritingContext.hh"
+#include "visibleModule.hh"
+#include "metaModule.hh"
+#include "variableGenerator.hh"
+
+// for theory-specific functions
+#include "NA_Theory.hh"
+#include "floatTerm.hh"
+#include "floatDagNode.hh"
+#include "succSymbol.hh"
+#include "minusSymbol.hh"
+#include "SMT_NumberDagNode.hh"
+#include "SMT_NumberTerm.hh"
 
 using namespace std;
 
@@ -93,6 +110,83 @@ EasyTerm::getSort() const {
 void
 EasyTerm::print(std::ostream &out) const {
 	is_dag ? (out << dagNode) : (out << term);
+}
+
+void
+EasyTerm::print(std::ostream &out, Interpreter::PrintFlags flags) const {
+	//
+	// Temporarily set the print flags (a variable of the interpreter)
+	//
+	int oldFlags = interpreter.getPrintFlags();
+	// Set the selected print flags
+	for (int mask = 0x1; mask <= Interpreter::PRINT_RAT; mask <<= 1)
+		if ((flags & mask) != (oldFlags & mask))
+			interpreter.setPrintFlag(Interpreter::PrintFlags(mask), flags & mask);
+	is_dag ? (out << dagNode) : (out << term);
+	// Recover the old print flags
+	for (int mask = 0x1; mask <= Interpreter::PRINT_RAT; mask <<= 1)
+		if ((flags & mask) != (oldFlags & mask))
+			interpreter.setPrintFlag(Interpreter::PrintFlags(mask), oldFlags & mask);
+}
+
+double
+EasyTerm::toFloat() const {
+	if (is_dag) {
+		if (auto fdag = dynamic_cast<FloatDagNode*>(dagNode))
+			return fdag->getValue();
+		else if (auto fsym = dynamic_cast<SuccSymbol*>(dagNode->symbol()))
+			return fsym->isNat(dagNode) ? fsym->getNat(dagNode).get_d() : 0.0;
+		else if (auto fsym = dynamic_cast<MinusSymbol*>(dagNode->symbol())) {
+			mpz_class result;
+			return fsym->isNeg(dagNode) ? fsym->getNeg(dagNode, result).get_d() : 0.0;
+		}
+		else if (auto fdag = dynamic_cast<SMT_NumberDagNode*>(dagNode))
+			return fdag->getValue().get_d();
+	}
+	else {
+		if (auto fterm = dynamic_cast<FloatTerm*>(term))
+			return fterm->getValue();
+		else if (auto fsym = dynamic_cast<SuccSymbol*>(term->symbol()))
+			return fsym->isNat(term) ? fsym->getNat(term).get_d() : 0.0;
+		else if (auto fsym = dynamic_cast<MinusSymbol*>(term->symbol())) {
+			mpz_class result;
+			return fsym->isNeg(term) ? fsym->getNeg(term, result).get_d() : 0.0;
+		}
+		else if (auto fterm = dynamic_cast<SMT_NumberTerm*>(term))
+			return fterm->getValue().get_d();
+	}
+
+	return 0.0;
+}
+
+long int
+EasyTerm::toInt() const {
+	if (is_dag) {
+		if (auto fsym = dynamic_cast<SuccSymbol*>(dagNode->symbol()))
+			return fsym->isNat(dagNode) ? fsym->getNat(dagNode).get_si() : 0;
+		else if (auto fsym = dynamic_cast<MinusSymbol*>(dagNode->symbol())) {
+			mpz_class result;
+			return fsym->isNeg(dagNode) ? fsym->getNeg(dagNode, result).get_si() : 0;
+		}
+		else if (auto fdag = dynamic_cast<FloatDagNode*>(dagNode))
+			return fdag->getValue();
+		else if (auto fdag = dynamic_cast<SMT_NumberDagNode*>(dagNode))
+			return fdag->getValue().get_d();
+	}
+	else {
+		if (auto fsym = dynamic_cast<SuccSymbol*>(term->symbol()))
+			return fsym->isNat(term) ? fsym->getNat(term).get_si() : 0;
+		else if (auto fsym = dynamic_cast<MinusSymbol*>(term->symbol())) {
+			mpz_class result;
+			return fsym->isNeg(term) ? fsym->getNeg(term, result).get_si() : 0;
+		}
+		else if (auto fterm = dynamic_cast<FloatTerm*>(term))
+			return fterm->getValue();
+		else if (auto fterm = dynamic_cast<SMT_NumberTerm*>(term))
+			return fterm->getValue().get_d();
+	}
+
+	return 0;
 }
 
 void
@@ -366,6 +460,27 @@ EasyTerm::vu_narrow(SearchType type,
 			new FreshVariableSource(vmod));
 }
 
+#if defined(USE_CVC4) || defined(USE_YICES2)
+const char*
+EasyTerm::check()
+{
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	startUsingModule(vmod);
+
+	const SMT_Info& smtInfo = vmod->getSMT_Info();
+	VariableGenerator vg(smtInfo);
+	VariableGenerator::Result result = vg.checkDag(getDag());
+	vmod->unprotect();
+
+	if (result == VariableGenerator::BAD_DAG)
+		return nullptr;
+
+	else
+		return (result == VariableGenerator::SAT) ? "sat" :
+			((result == VariableGenerator::UNSAT) ? "unsat" : "undecided");
+}
+#endif
+
 DagArgumentIterator*
 EasyTerm::arguments() {
 	if (!is_dag)
@@ -487,4 +602,22 @@ EasySubstitution::instantiate(EasyTerm* term) const {
 		result->setDag(instantiated);
 
 	return result;
+}
+
+VisibleModule* downModule(EasyTerm* term) {
+	MetaLevel* metaLevel = getMetaLevel(safeCast(VisibleModule*, term->symbol()->getModule()));
+
+	if (metaLevel == nullptr)
+		return nullptr;
+
+	UserLevelRewritingContext context(term->getDag());
+	context.reduce();
+
+	VisibleModule* mod = metaLevel->downModule(context.root());
+
+	if (mod == nullptr)
+		return nullptr;
+
+	mod->protect();
+	return mod;
 }

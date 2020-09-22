@@ -1,6 +1,6 @@
 import maude
 
-maude.init()
+maude.init(advise=False)
 
 mod = maude.getModule('NAT')
 natk = mod.findSort('Nat').kind()

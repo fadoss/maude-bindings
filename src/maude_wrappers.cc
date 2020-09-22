@@ -73,7 +73,7 @@ tokenize(const char* str)
 }
 
 bool
-init(bool readPrelude, int randomSeed, bool advise)
+init(bool readPrelude, int randomSeed, bool advise, bool handleInterrupts)
 {
 	bool includeFile(const string& directory, const string& fileName, bool silent, int lineNr);
 	void createRootBuffer(FILE* fp, bool forceInteractive);
@@ -85,6 +85,9 @@ init(bool readPrelude, int randomSeed, bool advise)
 	// Set the random seed and the advisory flag
 	RandomOpSymbol::setGlobalSeed(randomSeed);
 	globalAdvisoryFlag = advise;
+
+	// Enable signal handling
+	UserLevelRewritingContext::setHandlers(handleInterrupts);
 
 	createRootBuffer(fp, false);
 	directoryManager.initialize();
@@ -245,6 +248,12 @@ getModules() {
 
 ostream &operator<<(ostream &out, ModuleHeader* mh) {
 	return out << MixfixModule::moduleTypeString(mh->type) << " " << mh->name;
+}
+
+View*
+getView(const char * name) {
+	View* view = interpreter.getView(Token::encode(name));
+	return view;
 }
 
 vector<View*>

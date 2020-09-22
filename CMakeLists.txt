@@ -25,6 +25,7 @@ set(EXTRA_INCLUDE_DIRS "" CACHE PATH "Additional include paths")
 set(EXTRA_INSTALL_FILES "" CACHE PATH "Additional files to be installed")
 set(EXTRA_SWIG_OPTIONS "" CACHE STRING "Additional options passed to swig")
 set(LANGUAGE "python" CACHE STRING "Generate wrappers for that language")
+set(JAVA_PACKAGE_NAME "es.ucm.maude.bindings" CACHE STRING "Name of the Java package for the bindings")
 
 find_package(SWIG REQUIRED)
 include(ExternalProject)
@@ -40,7 +41,7 @@ elseif (${LANGUAGE} STREQUAL java)
 	find_package(Java REQUIRED)
 	find_package(JNI REQUIRED)
 	include_directories(${JNI_INCLUDE_DIRS})
-	list(APPEND EXTRA_SWIG_OPTIONS -doxygen)
+	list(APPEND EXTRA_SWIG_OPTIONS "-doxygen;-package;${JAVA_PACKAGE_NAME}" )
 elseif (${LANGUAGE} STREQUAL go)
 	math(EXPR GOINTSIZE "8 * ${CMAKE_SIZEOF_VOID_P}")
 	list(APPEND EXTRA_SWIG_OPTIONS -intgosize ${GOINTSIZE})
@@ -56,6 +57,7 @@ elseif (${LANGUAGE} STREQUAL node)
 	include_directories(${NODEJS_INCLUDE_DIRS})
 	set(EXTRA_SWIG_OPTIONS "${EXTRA_SWIG_OPTIONS};-node")
 	set(LANGUAGE javascript)
+	add_definitions(-DBUILDING_NODE_EXTENSION)
 elseif (${LANGUAGE} STREQUAL php)
 	find_package(PHP4 REQUIRED)
 	include_directories(${PHP4_INCLUDE_PATH})
@@ -140,7 +142,8 @@ set_property(SOURCE swig/maude.i PROPERTY CPLUSPLUS ON)
 swig_add_library(_maude
 	TYPE MODULE
 	LANGUAGE ${LANGUAGE}
-	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc src/model_checking.cc src/narrowing.cc
+	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc
+	        src/model_checking.cc src/narrowing.cc src/hooks.cc
 )
 
 set_property(TARGET _maude PROPERTY SWIG_COMPILE_OPTIONS ${EXTRA_SWIG_OPTIONS})

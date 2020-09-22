@@ -2,7 +2,7 @@
 //	Experimental language bindings for Maude
 //
 
-%module maude
+%module(directors="1") maude
 %feature("flatnested", "1");
 
 %{
@@ -54,6 +54,8 @@ namespace std {
 %include specific/python.i
 #elif defined(SWIGLUA)
 %include specific/lua.i
+#elif defined(SWIGJAVA)
+%include specific/java.i
 #else
 %vectorPrint;
 %substitutionPrint;
@@ -90,8 +92,10 @@ namespace std {
  * @param randomSeed Seed for the pseudorandom number generator in
  * the @c RANDOM module.
  * @param advise Whether debug messages should be printed.
+ * @param handleInterrupts Whether interrupts are handled by Maude.
  */
-bool init(bool loadPrelude=true, int randomSeed = 0, bool advise = true);
+bool init(bool loadPrelude=true, int randomSeed = 0, bool advise = true,
+          bool handleInterrupts=true);
 
 /**
  * Load the file with the given name.
@@ -122,6 +126,19 @@ VisibleModule* getCurrentModule();
 VisibleModule* getModule(const char* name);
 
 /**
+ * Get a module object from its metarepresentation in this
+ * module, which must include the @c META-LEVEL module.
+ *
+ * @param term The metarepresentation of a module, that is,
+ * a valid element of the @c Module sort in @c META-MODULE.
+ * The term will be reduced.
+ *
+ * @return The module object or null if the given term was not
+ * a valid module metarepresentation.
+ */
+VisibleModule* downModule(EasyTerm* term);
+
+/**
  * Tokenize a string according to Maude lexer rules.
  *
  * @param tokenize The string to be tokenized.
@@ -136,6 +153,13 @@ std::vector<Token> tokenize(const char* str);
  * @return A list of module headers (this may change).
  */
 std::vector<ModuleHeader> getModules();
+
+/**
+ * Get a view by name.
+ *
+ * @param name Name of the view (view expressions are not allowed).
+ */
+View* getView(const char* name);
 
 /**
  * Get the list of loaded views.
@@ -158,3 +182,4 @@ struct ModuleHeader {
 %include term.i
 %include module.i
 %include view.i
+%include hook.i

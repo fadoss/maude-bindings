@@ -1,5 +1,5 @@
-Experimental language bindings for Maude
-========================================
+Kanguage bindings for Maude
+===========================
 
 Experimental bindings for the [Maude](http://maude.cs.illinois.edu) specification language using [SWIG](http://www.swig.org). They make use of a [modified version](https://github.com/fadoss/maudesmc) of Maude extended with a model checker for system controlled by strategies, which is also accessible through the bindings.
 
@@ -58,3 +58,5 @@ Documentation for the Python package is available [here](https://fadoss.github.i
 * Building terms from symbols in `buildTerm.py`.
 * Inspecting modules in `maudedoc.py`.
 * Loading files and input raw text in `loading.py`.
+* Metalevel manipulations in `metalevel.py`.
+* Custom special operators in `hooks.py`.
