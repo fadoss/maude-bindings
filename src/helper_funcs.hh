@@ -34,4 +34,10 @@ ModelCheckResult* modelCheck(StrategyTransitionGraph& graph, DagNode* formula);
  */
 MetaLevel* getMetaLevel(VisibleModule* mod);
 
+/**
+ * Get the module a strategy expression belongs to or null
+ * if it is module-independent.
+ */
+Module* getModule(StrategyExpression* expr);
+
 #endif // HELPER_FUNCS_HH

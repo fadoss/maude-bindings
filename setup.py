@@ -5,7 +5,7 @@ with open("build/PythonPkgDescription.md", "r") as fh:
 
 setup(
     name='maude',
-    version='0.5',
+    version='0.6',
     author='ningit',
     author_email='ningit@users.noreply.github.com',
     description='Python bindings for Maude',

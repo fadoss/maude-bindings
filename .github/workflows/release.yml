@@ -57,7 +57,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ['2.7', '3.6', '3.7', '3.8']
+        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
     steps:
 
     - name: Check out repository code
@@ -92,6 +92,13 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: true
+
+    - name: Apply the changes of the windows branch
+      run: |
+        pushd subprojects/maudesmc
+        git fetch --depth=1 origin +branching:branching +windows:windows
+        git diff branching windows | patch -p1
+        popd
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1

@@ -134,6 +134,7 @@ include_directories(
 	"${MAUDESMC_PATH}/src/S_Theory"
 	"${MAUDESMC_PATH}/src/Temporal"
 	"${MAUDESMC_PATH}/src/3rdParty"
+	"${MAUDESMC_PATH}/src/AU_Theory"
 	${EXTRA_INCLUDE_DIRS}
 )
 
@@ -144,6 +145,7 @@ swig_add_library(_maude
 	LANGUAGE ${LANGUAGE}
 	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc
 	        src/model_checking.cc src/narrowing.cc src/hooks.cc
+	        src/strategy_language.cc
 )
 
 set_property(TARGET _maude PROPERTY SWIG_COMPILE_OPTIONS ${EXTRA_SWIG_OPTIONS})

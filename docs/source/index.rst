@@ -10,7 +10,7 @@ Maude bindings documentation
 
 The experimental :mod:`maude` package allows manipulating terms, modules, and other entities of the Maude_ specification language as Python objects, whose methods expose the operations available as commands in the Maude interpreter. This documentation describes the Python bindings, but most of the API is available for other languages supported by SWIG_. These bindings are based on the latest Maude release extended with a `model checker`_ for systems controlled by the Maude `strategy language`_, which is accessible via the :py:meth:`StrategyRewriteGraph.modelCheck` method.
 
-.. seealso:: `Maude 3.0 manual <http://maude.lcc.uma.es/maude30-manual-html/maude-manual.html>`_ · `Source code <https://github.com/fadoss/maude-bindings>`_ ·  `Package at PyPI <https://pypi.org/project/maude>`_
+.. seealso:: `Maude 3.1 manual <http://maude.lcc.uma.es/maude31-manual-html/maude-manual.html>`_ · `Source code <https://github.com/fadoss/maude-bindings>`_ ·  `Package at PyPI <https://pypi.org/project/maude>`_
 
 .. toctree::
    :maxdepth: 2
@@ -19,7 +19,7 @@ The experimental :mod:`maude` package allows manipulating terms, modules, and ot
 First steps
 -----------
 
-After loading the :py:mod:`maude` module, the first step should be calling the :py:func:`init` function to initialize Maude and load its prelude. Other modules can be loaded from file with the :py:func:`load` function or inserted verbatim with :py:func:`input`. Any loaded module can be obtained as a :py:class:`Module` object with :py:func:`getModule` or :py:func:`getCurrentModule`, which allow parsing terms with their :py:meth:`~Module.parseTerm` method. The usual Maude commands are represented as homonym methods of the :py:class:`Term` class, except :py:meth:`~Module.unify` and :py:meth:`~Module.variant_unify` that belong to the :py:class:`Module` class.
+After loading the :py:mod:`maude` module, the first step should be calling the :py:func:`init` function to initialize Maude and load its prelude. Other modules can be loaded from file with the :py:func:`load` function or inserted verbatim with :py:func:`input`. Any loaded module can be obtained as a :py:class:`Module` object with :py:func:`getModule` or :py:func:`getCurrentModule`, which allow parsing terms with their :py:meth:`~Module.parseTerm` method. The usual Maude commands are represented as homonym methods of the :py:class:`Term` class, except :py:meth:`~Module.unify`, :py:meth:`~Module.variant_unify` and :py:meth:`~Module.variant_match` that belong to the :py:class:`Module` class.
 
 
 ::
@@ -38,7 +38,7 @@ For example, the snippet above parses the term ``2 * 3`` in the ``NAT`` module (
 
 
 .. automodule:: maude
-   :members: init, load, input, getCurrentModule, getModule, downModule, getModules, getView, getViews
+   :members: init, load, input, getCurrentModule, getModule, downModule, getModules, getView, getViews, setAllowFiles, setAllowProcesses
    :undoc-members:
 
 .. autoclass:: ModuleHeader

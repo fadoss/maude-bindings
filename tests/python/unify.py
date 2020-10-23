@@ -3,7 +3,7 @@ import itertools
 
 maude.init(advise=False)
 
-##### From Maude 3.0 manual, §13.4
+##### From Maude 3.1 manual, §13.4
 
 maude.input('''fmod UNIFICATION-EX1 is
 	protecting NAT .
@@ -53,7 +53,7 @@ print('Unsupported unification')
 result = uex3.unify([(uex3.parseTerm('f(f(X:Nat, Y:Nat), Z:Nat)'), uex3.parseTerm('f(A:Nat, B:Nat)'))])
 
 
-##### From Maude 3.0 manual, §13.4.4
+##### From Maude 3.1 manual, §13.4.4
 
 maude.input('''mod UNIF-VENDING-MACHINE is
 	sorts Coin Item Marking Money State .
@@ -79,12 +79,17 @@ print('Unify', uvm_p1)
 for unifier in uvmachine.unify([uvm_p1]):
 	print(unifier)
 
+print('Irredudant unify', uvm_p1)
+
+for unifier in uvmachine.unify([uvm_p1], True):
+	print(unifier)
+
 print('Variant unify', uvm_p1)
 
 for unifier in uvmachine.variant_unify([uvm_p1]):
 	print(unifier)
 
-##### From Maude 3.0 manual, §14.3
+##### From Maude 3.1 manual, §14.3
 
 maude.input('''mod VARIANT-VENDING-MACHINE is
 	sorts Coin Item Marking Money State .
@@ -112,6 +117,11 @@ print('Variant unify', vvm_p1)
 for unifier in vvmachine.variant_unify([vvm_p1]):
 	print(unifier)
 
+print('Filtered variant unify', vvm_p1)
+
+for unifier in vvmachine.variant_unify([vvm_p1], filtered=True):
+	print(unifier)
+
 ##### From §14.9
 
 print('Variant unify', vvm_p1, 'with constraints')
@@ -121,8 +131,20 @@ irreducible = list(map(vvmachine.parseTerm, ['q q X:Marking', 'q X:Marking', 'X:
 for unifier in vvmachine.variant_unify([vvm_p1], irreducible):
 	print(unifier)
 
+##### From §14.12
 
-##### From Maude manual 3.0, §14.1 and 14.10
+print('Variant match', vvm_p1)
+
+for matcher in vvmachine.variant_match([vvm_p1]):
+	print(matcher)
+
+print('Variant match', vvm_p1, 'with constraints')
+
+for matcher in vvmachine.variant_match([vvm_p1], irreducible):
+	print(matcher)
+
+
+##### From Maude manual 3.1, §14.1 and 14.10
 
 maude.input('''fmod NAT-VARIANT is
 	sort Nat .

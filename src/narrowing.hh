@@ -12,14 +12,31 @@
 
 #include "easyTerm.hh"
 
+/**
+ * Search iterator for multiple problems using variants.
+ */
 class VariantUnifierSearch {
 public:
-	VariantUnifierSearch(VariantSearch* search);
+	/**
+	 * Command that generated this search problem.
+	 */
+	enum Command {
+		UNIFY,
+		FILTERED_UNIFY,
+		MATCH
+	};
+
+	VariantUnifierSearch(VariantSearch* search, Command cmd);
 
 	/**
 	 * Whether some unifiers may have been missed due to incomplete unification algorithms.
 	 */
 	bool isIncomplete() const;
+
+	/**
+	 * Whether filetering was incomplete due to incomplete unification algorithms.
+	 */
+	bool filteringIncomplete() const;
 
 	/**
 	 * Get the next unifier.
@@ -29,6 +46,7 @@ public:
 	EasySubstitution* __next();
 private:
 	VariantSearch* search;
+	Command command;
 };
 
 #endif // NARROWING_H

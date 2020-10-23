@@ -11,8 +11,11 @@
 #include "vector.hh"
 #include "core.hh"
 #include "meta.hh"
+#include "objectSystem.hh"
 
 #include "visibleModule.hh"
+#include "fileManagerSymbol.hh"
+#include "processManagerSymbol.hh"
 #include "specialHubSymbol.hh"
 
 #include <vector>
@@ -65,7 +68,7 @@ bool input(const char* text);
  * @param handleInterrupts Whether interrupts are handled by Maude.
  */
 bool init(bool loadPrelude=true, int randomSeed=0, bool advise=false,
-          bool handleInterrupts=true);
+          bool handleInterrupts=false);
 
 /**
  * Get a module or theory by name.
@@ -118,6 +121,24 @@ struct ModelCheckResult {
 	std::vector<int> cycle;
 	int nrBuchiStates;
 };
+
+/**
+ * Allow or disallow running arbitrary executables from Maude code.
+ *
+ * @param flag Whether processes should be allowed.
+ */
+inline void setAllowProcesses(bool flag) {
+	ProcessManagerSymbol::setAllowProcesses(flag);
+}
+
+/**
+ * Allow or disallow operations on files from Maude code.
+ *
+ * @param flag Whether file access should be allowed.
+ */
+inline void setAllowFiles(bool flag) {
+	FileManagerSymbol::setAllowFiles(flag);
+}
 
 /**
  * Data associated to a hook and passed to its callback.

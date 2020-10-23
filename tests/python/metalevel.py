@@ -8,11 +8,13 @@ meta = maude.getModule('META-LEVEL')
 zero = nat.parseTerm('0')
 one  = nat.parseTerm('1')
 
-t = meta.parseTerm("match '0.Zero s.t. nil")
+t1 = meta.parseTerm("match '0.Zero s.t. nil")
 
-s = nat.downStrategy(t)
+s = nat.downStrategy(t1)
 
-print(t, '->', s)
+t2 = meta.upStrategy(s)
+
+print(t1, '->', s, '->', t2)
 print('Applied to', zero, '->', list(zero.srewrite(s)))
 print('Applied to', one, '->', list(one.srewrite(s)))
 

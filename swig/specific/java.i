@@ -100,3 +100,10 @@
 %makeIterable(VariantSearch, TermSubstitutionPair);
 %makeIterable(NarrowingSequenceSearch3, Term);
 
+//
+// Signal handlers (does nothing special)
+
+%{
+void install_target_signal_handlers(bool) {}
+%}
+

@@ -32,14 +32,12 @@
 
 %extend EasyTerm {
 %pythoncode %{
-	def __float__(self):
-		return self.toFloat()
-
-	def __int__(self):
-		return self.toInt()
-
 	def __eq__(self, other):
-		return self.equal(other)
+		return other is not None and self.equal(other)
+
+	__float__ = toFloat
+	__int__ = toInt
+	__hash__ = hash
 %}
 }
 
@@ -113,8 +111,7 @@
 	def __getitem__(self, index):
 		return self.variable(index), self.value(index)
 
-	def __len__(self):
-		return self.size()
+	__len__ = size
 
 	def __iter__(self):
 		return VectorIterator(self, self.size())
@@ -165,24 +162,21 @@
 	def __iter__(self):
 		return VectorIterator(self, len(self))
 
-	def __getitem__(self, n):
-		return self.sort(n)
-
-	def __len__(self):
-		return self.nrSorts()
+	__getitem__ = sort
+	__len__ = nrSorts
 
 	def __eq__(self, other):
-		return self.equal(other)
+		return other is not None and self.equal(other)
 %}
 }
 
 %extend Sort {
 %pythoncode %{
-	def __le__(self, other):
-		return self.leq(other)
-
 	def __eq__(self, other):
-		return self.equal(other)
+		return other is not None and self.equal(other)
+
+	__le__ = leq
+	__hash__ = hash
 %}
 }
 
@@ -192,7 +186,9 @@
 		return self.makeTerm(args)
 
 	def __eq__(self, other):
-		return self.equal(other)
+		return other is not None and self.equal(other)
+
+	__hash__ = hash
 %}
 }
 
@@ -231,8 +227,7 @@ class VectorIterator:
 		return 'empty' if self.empty() else (
 			', '.join([str(self[i]) for i in range(0, len(self))]))
 
-	def __len__(self):
-		return self.size()
+	__len__ = size
 %}
 }
 
@@ -285,3 +280,104 @@ bool convertVector(PyObject* input, Vector<T*>* &vect, swig_type_info* swig_elem
 		$1 = PySequence_Check($input) ? 1 : 0;
 	}
 }
+
+//
+// Signal handlers
+
+%{
+#ifdef _WIN32
+
+void install_target_signal_handlers(bool handledByMaude) { }
+
+#else
+
+#include <signal.h>
+#include "userLevelRewritingContext.hh"
+
+//
+// Hack to make Ctrl+C abort the current calculation without necessarily
+// terminating the program and without entering in an unusable debugger.
+// This implies setting the abortFlag of UserLevelRewritingContext, which
+// is a private static attribute. The correct way would be subclassing
+// UserLevelRewritingContext and redefining its virtual methods.
+//
+
+void setMaudeAbortFlags();
+
+template<bool* N>
+struct SetAbortFlagsHack {
+	friend void setMaudeAbortFlags() {
+		*N = true;
+	}
+};
+
+template struct SetAbortFlagsHack<&UserLevelRewritingContext::abortFlag>;
+
+// Signal handler for SIGINT (Ctrl+C)
+
+void (*user_pysigint)(int);
+
+void pysigint_handler(int sig) {
+	// Call the user signal handler
+	(*user_pysigint)(sig);
+
+	setMaudeAbortFlags();
+	UserLevelRewritingContext::setTraceStatus(true);
+}
+
+// Signal handler for other signals
+
+typedef void(*PyUserSignalHandler)(int);
+std::map<int, PyUserSignalHandler> user_pysigothers;
+
+void pysigother_handler(int sig) {
+	// Call the user signal handler (if using the Python's
+	// signal package, this will only mark the signal)
+	(*user_pysigothers[sig])(sig);
+
+	// Make Python execute the actual handler and terminate
+	// if an exception occurs during its execution
+	if (PyErr_CheckSignals() == -1)
+		_exit(0);
+}
+
+// Install the signal handlers
+
+inline void wrap_pysignal(int signal) {
+	struct sigaction sigact;
+
+	sigaction(signal, nullptr, &sigact);
+
+	if (sigact.sa_handler != SIG_IGN && sigact.sa_handler != SIG_DFL) {
+		user_pysigothers[signal] = sigact.sa_handler;
+		sigact.sa_handler = pysigother_handler;
+		sigaction(signal, &sigact, nullptr);
+	}
+}
+
+void install_target_signal_handlers(bool handledByMaude) {
+
+	if (handledByMaude)
+		return;
+
+	// Set up SIGINT (Ctrl+C)
+	struct sigaction sigact;
+	sigaction(SIGINT, nullptr, &sigact);
+
+	user_pysigint = sigact.sa_handler;
+	sigact.sa_handler = pysigint_handler;
+
+	sigaction(SIGINT, &sigact, nullptr);
+
+	// Install wrappers for other signals
+	wrap_pysignal(SIGILL);
+	wrap_pysignal(SIGSEGV);
+	wrap_pysignal(SIGBUS);
+	#ifdef SIGINFO
+	wrap_pysignal(SIGINFO);
+	#endif
+	wrap_pysignal(SIGUSR1);
+	wrap_pysignal(SIGUSR2);
+}
+#endif
+%}

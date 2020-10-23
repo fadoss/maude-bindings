@@ -57,8 +57,7 @@ namespace std {
 #elif defined(SWIGJAVA)
 %include specific/java.i
 #else
-%vectorPrint;
-%substitutionPrint;
+%include specific/fallback.i
 #endif
 
 //
@@ -95,7 +94,7 @@ namespace std {
  * @param handleInterrupts Whether interrupts are handled by Maude.
  */
 bool init(bool loadPrelude=true, int randomSeed = 0, bool advise = true,
-          bool handleInterrupts=true);
+          bool handleInterrupts=false);
 
 /**
  * Load the file with the given name.
@@ -177,6 +176,21 @@ struct ModuleHeader {
 
 	%streamBasedPrint;
 };
+
+/**
+ * Allow or disallow running arbitrary executables from Maude code.
+ *
+  * @param flag Whether file access should be allowed.
+ */
+void setAllowProcesses(bool flag);
+
+/**
+ * Allow or disallow operations on files from Maude code.
+ *
+  * @param flag Whether processes should be allowed.
+ */
+void setAllowFiles(bool flag);
+
 
 %include misc.i
 %include term.i

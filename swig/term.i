@@ -74,6 +74,14 @@ public:
 	EasyTerm() = delete;
 	~EasyTerm();
 
+	// Keyword arguments are used when available for some of the
+	// methods of this class to avoid writing unnecessary arguments
+
+	%feature("kwargs") match;
+	%feature("kwargs") get_variants;
+	%feature("kwargs") search;
+	%feature("kwargs") vu_narrow;
+
 	// Information about the term
 
 	/**
@@ -232,6 +240,11 @@ public:
 	 * zero otherwise.
 	 */
 	long int toInt() const;
+
+	/**
+	 * Get the hash value of the term.
+	 */
+	size_t hash() const;
 
 	/**
 	 * Get a copy of this term.
@@ -545,21 +558,22 @@ public:
 		 * @return The variant term or null if there is no more.
 		 */
 		std::pair<EasyTerm*, EasySubstitution*> * __next() {
-			int dummy, dummy2, dummy3; bool dummy4;
-			const Vector<DagNode*>* variant = $self->getNextVariant(dummy, dummy2, dummy3, dummy4);
 
-			if (variant == nullptr)
+			if (!$self->findNextVariant())
 				return nullptr;
 
-			int nrVariables = variant->size() - 1;
+			int nrFreeVariables, variableFamily;
+			const Vector<DagNode*>& variant = $self->getCurrentVariant(nrFreeVariables, variableFamily);
 
-			DagNode* d = (*variant)[nrVariables];
+			int nrVariables = variant.size() - 1;
+
+			DagNode* d = variant[nrVariables];
 
 			// Create a substitution
 			Substitution* subs = new Substitution(nrVariables);
 
 			for (int i = 0; i < nrVariables; i++)
-				subs->bind(i, (*variant)[i]);
+				subs->bind(i, variant[i]);
 
 			return new std::pair<EasyTerm*, EasySubstitution*>(new EasyTerm(d),
 			          new EasySubstitution(subs, &$self->getVariableInfo()));

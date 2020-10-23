@@ -41,6 +41,9 @@
 
 using namespace std;
 
+// Signal handlers installer that may depend on the target language
+extern void install_target_signal_handlers(bool handledByMaude);
+
 // Exported Maude and Flex functions
 extern const Vector<int>* tokenizeRope(const Rope& argumentRope);
 extern int yyparse(UserLevelRewritingContext::ParseResult*);
@@ -86,8 +89,18 @@ init(bool readPrelude, int randomSeed, bool advise, bool handleInterrupts)
 	RandomOpSymbol::setGlobalSeed(randomSeed);
 	globalAdvisoryFlag = advise;
 
-	// Enable signal handling
-	UserLevelRewritingContext::setHandlers(handleInterrupts);
+	// Signal handling can be tricky and language-dependent (for example,
+	// Python-defined signals will not be executed until the interpreter
+	// gets the control back). The option handleInterrups sets the Maude
+	// signal handlers, but this may print misleading messages attributing
+	// to Maude errors that may have been originated by a misuse of the
+	// library or to foreign code.
+
+	if (handleInterrupts)
+		UserLevelRewritingContext::setHandlers(true);
+
+	// Set up the language-specific actions for signals
+	install_target_signal_handlers(handleInterrupts);
 
 	createRootBuffer(fp, false);
 	directoryManager.initialize();

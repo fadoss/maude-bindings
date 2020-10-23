@@ -224,6 +224,11 @@ public:
 	long int toInt() const;
 
 	/**
+	 * Get the hash value of the term.
+	 */
+	size_t hash() const;
+
+	/**
 	 * Get a copy of this term.
 	 */
 	EasyTerm* copy() const;

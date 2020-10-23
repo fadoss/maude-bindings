@@ -110,9 +110,16 @@ public:
 		bool leq(Sort* rhs) const {
 			return $self->component() == rhs->component() && leq($self, rhs);
 		}
+
+		/**
+		 * Get the hash value of the sort.
+		 */
+		unsigned int hash() const {
+			return (unsigned int) (uintptr_t) $self;
+		}
 	}
 
-	%namedEntityPrint;
+	%streamBasedPrint;
 };
 
 %rename (Kind) ConnectedComponent;
@@ -185,6 +192,7 @@ public:
 	Symbol() = delete;
 
 	%rename (domainKind) domainComponent;
+	%rename (hash) getHashValue;
 
 	/**
 	 * Get the number of arguments.
@@ -202,6 +210,11 @@ public:
 	 * Get the range sort of the symbol.
 	 */
 	Sort* getRangeSort() const;
+
+	/**
+	 * Get the hash value of the symbol.
+	 */
+	unsigned int getHashValue() const;
 
 	%extend {
 		/**

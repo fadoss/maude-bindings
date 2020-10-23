@@ -189,6 +189,18 @@ EasyTerm::toInt() const {
 	return 0;
 }
 
+size_t
+EasyTerm::hash() const {
+	if (is_dag) {
+		return dagNode->getHashValue();
+	}
+	else {
+		// We should avoid normalizing if not necessary
+		term->normalize(true);
+		return term->getHashValue();
+	}
+}
+
 void
 EasyTerm::dagify() {
 	term = term->normalize(false);
@@ -432,8 +444,14 @@ EasyTerm::get_variants(bool irredundant, const std::vector<EasyTerm*> &irreducib
 	VariantSearch* search = new VariantSearch(new UserLevelRewritingContext(getDag()),
 						  blockerDags,
 						  new FreshVariableSource(vmod),
-						  false,
-						  irredundant);
+						  VariantSearch::DELETE_FRESH_VARIABLE_GENERATOR |
+						  VariantSearch::CHECK_VARIABLE_NAMES |
+						  (irredundant ? VariantSearch::IRREDUNDANT_MODE : 0));
+
+	if (!search->problemOK()) {
+		delete search;
+		return nullptr;
+	}
 
 	return search;
 }
@@ -455,9 +473,8 @@ EasyTerm::vu_narrow(SearchType type,
 			static_cast<NarrowingSequenceSearch::SearchType>(type),
 			target->getDag(),
 			depth,
-			fold,
-			false,
-			new FreshVariableSource(vmod));
+			new FreshVariableSource(vmod),
+			fold ? NarrowingSequenceSearch3::FOLD : 0);
 }
 
 #if defined(USE_CVC4) || defined(USE_YICES2)

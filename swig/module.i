@@ -7,6 +7,8 @@
 #include "metaModule.hh"
 #include "unificationProblem.hh"
 #include "freshVariableSource.hh"
+#include "filteredVariantUnifierSearch.hh"
+#include "irredundantUnificationProblem.hh"
 %}
 
 %rename (Module) VisibleModule;
@@ -43,6 +45,11 @@ public:
 
 	%rename (getKinds) getConnectedComponents;
 	%rename (getMembershipAxioms) getSortConstraints;
+
+	// Keyword arguments are used when available for some of the
+	// methods of this class to avoid writing unnecessary arguments
+
+	%feature("kwargs") variant_unify;
 
 	/**
 	 * Get the module type.
@@ -280,6 +287,30 @@ public:
 			copy->deepSelfDestruct();
 			return result == nullptr ? nullptr : new EasyTerm(result);
 		}
+
+		/**
+		 * Get the metarepresentation in this module of a strategy
+		 * expression in (possibly) another module. This module must
+		 * contain @c META-LEVEL.
+		 *
+		 * @param expr Any strategy expression.
+		 *
+		 * @return The metarepresented strategy or null.
+		 */
+		EasyTerm* upStrategy(StrategyExpression* expr) {
+			VisibleModule* otherModule = dynamic_cast<VisibleModule*>(getModule(expr));
+			MetaLevel* metaLevel = getMetaLevel($self);
+
+			if (metaLevel == nullptr)
+				return nullptr;
+
+			// If the strategy is module-independent, the current module is used
+			if (otherModule == nullptr)
+				otherModule = $self;
+
+			DagNode* result = metaLevel->upStratExpr(expr, otherModule);
+			return result == nullptr ? nullptr : new EasyTerm(result);
+		}
 	}
 
 	//
@@ -291,10 +322,12 @@ public:
 		 * Solves the given unification problem.
 		 *
 		 * @param problem A list of pairs of terms to be unified.
+		 * @param irredundant Whether to compute a minimal set of unifiers.
 		 *
 		 * @returns An object to iterate through unifiers.
 		 */
-		UnificationProblem* unify(const std::vector<std::pair<EasyTerm*, EasyTerm*>> &problem) {
+		UnificationProblem* unify(const std::vector<std::pair<EasyTerm*, EasyTerm*>> &problem,
+					  bool irredundant = false) {
 			size_t nrPairs = problem.size();
 
 			if (nrPairs == 0) {
@@ -312,7 +345,12 @@ public:
 			}
 
 			EasyTerm::startUsingModule($self);
-			UnificationProblem* unifProblem = new UnificationProblem(lhs, rhs, new FreshVariableSource($self));
+			FreshVariableSource* freshVariableSource = new FreshVariableSource($self);
+
+			UnificationProblem* unifProblem = irredundant ?
+				new IrredundantUnificationProblem(lhs, rhs, freshVariableSource) :
+				new UnificationProblem(lhs, rhs, freshVariableSource);
+
 			if (unifProblem->problemOK())
 				return unifProblem;
 
@@ -326,17 +364,21 @@ public:
 		 *
 		 * @param problem A list of pairs of terms to be unified.
 		 * @param irreducible Irreducible terms.
+		 * @param filtered Whether to compute a minimal set of unifiers.
 		 *
 		 * @returns An object to iterate through unifiers.
 		 */
 		VariantUnifierSearch* variant_unify(const std::vector<std::pair<EasyTerm*, EasyTerm*>> &problem,
-					            const std::vector<EasyTerm*> &irreducible = {}) {
+					            const std::vector<EasyTerm*> &irreducible = {},
+					            bool filtered = false) {
 			size_t nrPairs = problem.size();
 
 			if (nrPairs == 0) {
 				IssueWarning("the given unification problem is empty.");
 				return nullptr;
 			}
+
+			EasyTerm::startUsingModule($self);
 
 			Vector<Term*> lhs(nrPairs);
 			Vector<Term*> rhs(nrPairs);
@@ -355,13 +397,88 @@ public:
 			for (size_t i = 0; i < nrIrredTerm; i++)
 				blockerDags[i] = irreducible[i]->getDag();
 
+			UserLevelRewritingContext* context = new UserLevelRewritingContext(d);
+			FreshVariableGenerator* freshVariableGenerator = new FreshVariableSource($self);
+
+			VariantSearch* unifProblem = filtered ?
+				new FilteredVariantUnifierSearch(context,
+								 blockerDags,
+								 freshVariableGenerator,
+								 VariantSearch::IRREDUNDANT_MODE |
+								 VariantSearch::DELETE_FRESH_VARIABLE_GENERATOR |
+								 VariantSearch::CHECK_VARIABLE_NAMES) :
+				new VariantSearch(context,
+						  blockerDags,
+						  freshVariableGenerator,
+						  VariantSearch::UNIFICATION_MODE |
+						  VariantSearch::DELETE_FRESH_VARIABLE_GENERATOR |
+						  VariantSearch::CHECK_VARIABLE_NAMES);
+
+			return new VariantUnifierSearch(unifProblem, filtered ? VariantUnifierSearch::FILTERED_UNIFY
+									      : VariantUnifierSearch::UNIFY);
+		}
+
+		/**
+		 * Computes a complete set of order-sorted matches modulo the equations
+		 * declared with the variant attribute (which must satisfy the finite
+		 * variant property) plus the (supported) equational axioms in the
+		 * given module.
+		 *
+		 * @param problem A list of pairs of terms to be matched.
+		 * @param irreducible Irreducible terms.
+		 *
+		 * @returns An object to iterate through unifiers.
+		 */
+		VariantUnifierSearch* variant_match(const std::vector<std::pair<EasyTerm*, EasyTerm*>> &problem,
+					            const std::vector<EasyTerm*> &irreducible = {}) {
+			size_t nrPairs = problem.size();
+
+			if (nrPairs == 0) {
+				IssueWarning("the given matching problem is empty.");
+				return nullptr;
+			}
+
 			EasyTerm::startUsingModule($self);
-			VariantSearch* unifProblem = new VariantSearch(new UserLevelRewritingContext(d),
-								       blockerDags,
-								       new FreshVariableSource($self),
-								       true,
-								       false);
-			return new VariantUnifierSearch(unifProblem);
+
+			Vector<Term*> lhs(nrPairs);
+			Vector<Term*> rhs(nrPairs);
+
+			for (size_t i = 0; i < nrPairs; i++) {
+				// Terms are deleted by makeMatchProblemDags
+				lhs[i] = problem[i].first->termCopy();
+				rhs[i] = problem[i].second->termCopy();
+			}
+
+			auto mp = $self->makeMatchProblemDags(lhs, rhs);
+
+			UserLevelRewritingContext* patternContext = new UserLevelRewritingContext(mp.first);
+			UserLevelRewritingContext* subjectContext = new UserLevelRewritingContext(mp.second);
+
+			size_t nrIrredTerm = irreducible.size();
+			Vector<DagNode*> blockerDags(nrIrredTerm);
+
+			for (size_t i = 0; i < nrIrredTerm; i++)
+				blockerDags[i] = irreducible[i]->getDag();
+
+			VariantSearch* vs = new VariantSearch(patternContext,
+							      blockerDags,
+							      new FreshVariableSource($self),
+							      VariantSearch::MATCH_MODE |
+							      VariantSearch::DELETE_FRESH_VARIABLE_GENERATOR |
+							      VariantSearch::DELETE_LAST_VARIANT_MATCHING_PROBLEM |
+							      VariantSearch::CHECK_VARIABLE_NAMES);
+
+			if (vs->problemOK()) {
+				patternContext->addInCount(*subjectContext);
+				(void) vs->makeVariantMatchingProblem(subjectContext);
+			}
+			else {
+				delete vs;
+				$self->unprotect();
+				return nullptr;
+			}
+
+			return new VariantUnifierSearch(vs, VariantUnifierSearch::MATCH);
 		}
 	}
 
@@ -370,8 +487,10 @@ public:
 	%newobject downTerm;
 	%newobject downStrategy;
 	%newobject upTerm;
+	%newobject upStrategy;
 	%newobject unify;
 	%newobject variant_unify;
+	%newobject variant_match;
 
 	%namedEntityPrint;
 };
@@ -401,7 +520,7 @@ public:
 };
 
 /**
- * An iterator through unifiers for variant unification.
+ * An iterator through unifiers or matchers for variant unification or matching.
  */
 class VariantUnifierSearch {
 public:
@@ -411,6 +530,11 @@ public:
 	 * Whether some unifiers may have been missed due to incomplete unification algorithms.
 	 */
 	bool isIncomplete() const;
+
+	/**
+	 * Whether filetering was incomplete due to incomplete unification algorithms.
+	 */
+	bool filteringIncomplete() const;
 
 	/**
 	 * Get the next unifier.

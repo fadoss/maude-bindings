@@ -66,6 +66,11 @@ Move-Item libmaude-pkg\libmaude.dll.a subprojects\maudesmc\installdir\lib
 Download-File $webclient $AUXFILES_PKG
 Extract-Archive (Split-Path -Leaf $AUXFILES_PKG) "-osubprojects\maudesmc\build"
 
+# Remove some Unix-specific code
+
+$pseudoThreadPath = "subprojects\maudesmc\src\ObjectSystem\pseudoThread.hh"
+(Get-Content $pseudoThreadPath).replace('POLLIN', '0').replace('POLLOUT', '1') | Set-Content $pseudoThreadPath
+
 #
 ## Install required build tools
 

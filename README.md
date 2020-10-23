@@ -1,7 +1,7 @@
 Language bindings for Maude
 ===========================
 
-Experimental bindings for the [Maude](http://maude.cs.illinois.edu) specification language using [SWIG](http://www.swig.org). They make use of a [modified version](https://github.com/fadoss/maudesmc) of Maude extended with a model checker for system controlled by strategies, which is also accessible through the bindings.
+Language bindings for the [Maude](http://maude.cs.illinois.edu) specification language using [SWIG](http://www.swig.org). They make use of a [modified version](https://github.com/fadoss/maudesmc) of Maude extended with a model checker for system controlled by strategies, which is also accessible through the bindings.
 
 The Python package is available at [PyPI](https://pypi.org/project/maude). After installing it using `pip install maude`, it can be directly used since Maude is embedded in the package:
 
