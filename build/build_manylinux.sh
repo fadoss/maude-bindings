@@ -42,7 +42,11 @@ sudo ln -sf /opt/python/cp38-cp38/bin/cmake /usr/bin/cmake
 #
 ## Build for each Python version
 
-versions=(cp27-cp27m cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39)
+if [ "$1" = "1" ]; then
+	versions=(cp27-cp27m cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39)
+else
+	versions=(cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39)
+fi
 
 for version in "${versions[@]}"; do
 	/opt/python/${version}/bin/python setup.py bdist_wheel -- -DBUILD_LIBMAUDE=OFF

@@ -74,6 +74,12 @@ public:
 	EasyTerm() = delete;
 	~EasyTerm();
 
+	%newobject match;
+	%newobject srewrite;
+	%newobject search;
+	%newobject arguments;
+	%newobject copy;
+
 	// Keyword arguments are used when available for some of the
 	// methods of this class to avoid writing unnecessary arguments
 
@@ -262,19 +268,12 @@ public:
 		 *
 		 * @param flags Flags that affect the term output.
 		 */
-		const char* prettyPrint(PrintFlags flags) {
+		std::string prettyPrint(PrintFlags flags) {
 			std::ostringstream stream;
 			$self->print(stream, flags);
-			printBuffer = stream.str();
-			return printBuffer.c_str();
+			return stream.str();
 		}
 	}
-
-	%newobject match;
-	%newobject srewrite;
-	%newobject search;
-	%newobject arguments;
-	%newobject copy;
 
 	%streamBasedPrint;
 };
@@ -289,6 +288,8 @@ public:
 class StrategicSearch {
 public:
 	StrategicSearch() = delete;
+
+	%newobject __next;
 
 	%extend {
 		/**
@@ -309,8 +310,6 @@ public:
 			return d == nullptr ? nullptr : new EasyTerm(d);
 		}
 	}
-
-	%newobject __next;
 };
 
 /**
@@ -319,6 +318,12 @@ public:
 class EasySubstitution {
 public:
 	EasySubstitution() = delete;
+
+	%newobject variable;
+	%newobject value;
+	%newobject matchedPortion;
+	%newobject find;
+	%newobject instantiate;
 
 	/**
 	 * Get the number of variables in the substitution.
@@ -367,12 +372,6 @@ public:
 	 * @return The instantiated term.
 	 */
 	EasyTerm* instantiate(EasyTerm* term) const;
-
-	%newobject variable;
-	%newobject value;
-	%newobject matchedPortion;
-	%newobject find;
-	%newobject instantiate;
 };
 
 /**
@@ -381,6 +380,8 @@ public:
 class MatchSearchState {
 public:
 	MatchSearchState() = delete;
+
+	%newobject __next;
 
 	%extend {
 		/**
@@ -397,8 +398,6 @@ public:
 					 : nullptr;
 		}
 	}
-
-	%newobject __next;
 };
 
 /**
@@ -407,6 +406,10 @@ public:
 class RewriteSequenceSearch {
 public:
 	StrategicSearch() = delete;
+
+	%newobject getSubstitution;
+	%newobject getStateTerm;
+	%newobject __next;
 
 	%extend {
 		/**
@@ -458,10 +461,6 @@ public:
 		}
 	}
 
-	%newobject getSubstitution;
-	%newobject getStateTerm;
-	%newobject __next;
-
 	/**
 	 * Get an internal state number that allows reconstructing 
 	 * the path to this term.
@@ -484,6 +483,10 @@ public:
 class NarrowingSequenceSearch3 {
 public:
 	NarrowingSequenceSearch3() = delete;
+
+	%newobject __next;
+	%newobject getSubstitution;
+	%newobject getUnifier;
 
 	/**
 	 * Whether some solutions may have been missed due to incomplete unification algorithms.
@@ -533,10 +536,6 @@ public:
 			return new EasySubstitution(subs, &$self->getUnifierVariableInfo());
 		}
 	}
-
-	%newobject __next;
-	%newobject getSubstitution;
-	%newobject getUnifier;
 };
 
 /**
@@ -545,6 +544,8 @@ public:
 class VariantSearch {
 public:
 	VariantSearch() = delete;
+
+	%newobject __next;
 
 	/**
 	 * Whether some variants may have been missed due to incomplete unification algorithms.
@@ -579,8 +580,6 @@ public:
 			          new EasySubstitution(subs, &$self->getVariableInfo()));
 		}
 	};
-
-	%newobject __next;
 };
 
 /**
@@ -589,6 +588,8 @@ public:
 class DagArgumentIterator {
 public:
 	DagArgumentIterator() = delete;
+
+	%newobject argument;
 
 	/**
 	 * Is this iterator pointing to a valid argument?
@@ -610,6 +611,4 @@ public:
 			return new EasyTerm($self->argument());
 		}
 	}
-
-	%newobject argument;
 };

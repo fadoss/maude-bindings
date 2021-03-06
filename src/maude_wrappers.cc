@@ -76,6 +76,43 @@ tokenize(const char* str)
 }
 
 bool
+containsSpecialChars(const char* str)
+{
+	if (str != nullptr)
+		for (char last = 0; *str != '\0'; last = *str, str++)
+			if (Token::specialChar(*str) && last != '`')
+				return true;
+
+	return false;
+}
+
+string
+escapeWithBackquotes(const char* str)
+{
+	string escaped;
+
+	// Add backquotes before special characters if not already there
+	for (char last = 0; *str != '\0'; last = *str, str++) {
+		if (Token::specialChar(*str) && last != '`')
+			escaped.push_back('`');
+		escaped.push_back(*str);
+	}
+
+	return escaped;
+}
+
+int
+encodeEscapedToken(const char* str)
+{
+	// Escape the string only if it is needed
+	if (!containsSpecialChars(str))
+		return Token::encode(str);
+
+	string escaped = escapeWithBackquotes(str);
+	return Token::encode(escaped.c_str());
+}
+
+bool
 init(bool readPrelude, int randomSeed, bool advise, bool handleInterrupts)
 {
 	bool includeFile(const string& directory, const string& fileName, bool silent, int lineNr);

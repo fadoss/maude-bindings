@@ -68,6 +68,14 @@
 	SWIG_arg += 2;
 }
 
+// Trim the strings returned by all function named getMetadata
+// to efficiently get rid of the quotes in the internal Maude strings
+
+%typemap(out) const char* getMetadata {
+	lua_pushlstring(L, ($1 ? $1 + 1 : 0), ($1 ? strlen($1) - 2 : 0));
+	SWIG_arg++;
+}
+
 //
 // Classes could also be extended (see Stack Overflow question 16360012)
 

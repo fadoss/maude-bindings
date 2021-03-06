@@ -6,6 +6,11 @@
 #error Python-specific bindings
 #endif
 
+// Include the version number in the package
+%pythoncode %{
+__version__ = '0.7'
+%}
+
 %define %makeIterable(CLASS)
 %extend CLASS {
 %pythoncode %{
@@ -192,6 +197,12 @@
 %}
 }
 
+// Trim the strings returned by all function named getMetadata
+// to efficiently get rid of the quotes in the internal Maude strings
+%typemap(out) const char* getMetadata {
+	$result = SWIG_FromCharPtrAndSize(($1 ? $1 + 1 : 0), ($1 ? strlen($1) - 2 : 0));
+}
+
 
 //
 // Defined in vector.i
@@ -279,7 +290,18 @@ bool convertVector(PyObject* input, Vector<T*>* &vect, swig_type_info* swig_elem
 	%typemap(typecheck) const Vector<_Tp> & {
 		$1 = PySequence_Check($input) ? 1 : 0;
 	}
+
+	%typemap(freearg) const Vector<_Tp> & {
+		delete $1;
+	}
+
+	%typemap(freearg) const Vector<ConditionFragment*> & {
+		// The NO_CONDITION constant must not be freed
+		if ($1 != &EasyTerm::NO_CONDITION)
+			delete $1;
+	}
 }
+
 
 //
 // Signal handlers

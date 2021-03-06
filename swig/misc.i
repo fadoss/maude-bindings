@@ -70,6 +70,8 @@ public:
 	const Vector<ConditionFragment*>& getCondition() const;
 
 	%streamBasedPrint;
+	%getMetadataItem(EQUATION);
+	%getLineNumber;
 };
 
 /**
@@ -120,6 +122,7 @@ public:
 	}
 
 	%streamBasedPrint;
+	%getLineNumber;
 };
 
 %rename (Kind) ConnectedComponent;
@@ -164,6 +167,8 @@ class SortConstraint {
 public:
 	SortConstraint() = delete;
 
+	%newobject getLhs;
+
 	%extend {
 		/**
 		 * Get the term of the membership axiom.
@@ -178,10 +183,10 @@ public:
 	 */
 	Sort* getSort() const;
 
-	%newobject getLhs;
-
 	%labeledObject;
 	%streamBasedPrint;
+	%getMetadataItem(MEMB_AX);
+	%getLineNumber;
 };
 
 /**
@@ -244,9 +249,22 @@ public:
 				dargs[i] = args[i]->getDag();
 			return new EasyTerm($self->makeDagNode(dargs));
 		}
+
+		/**
+		 * Get the metadata attribute of the given declaration of this symbol.
+		 *
+		 * @param index Index of the operator declaration.
+		 */
+		const char* getMetadata(int index) {
+			int metadata_code = safeCast(VisibleModule*,
+				$self->getModule())->getMetadata($self, index);
+
+			return metadata_code == NONE ? nullptr : Token::name(metadata_code);
+		}
 	}
 
 	%namedEntityPrint;
+	%getLineNumber;
 };
 
 /**
@@ -293,6 +311,8 @@ public:
 	const Vector<ConditionFragment*>& getCondition() const;
 
 	%streamBasedPrint;
+	%getMetadataItem(RULE);
+	%getLineNumber;
 };
 
 /**
@@ -339,6 +359,8 @@ public:
 
 	%namedEntityGetName;
 	%streamBasedPrint;
+	%getMetadataItem(STRAT_DECL);
+	%getLineNumber;
 };
 
 /**
@@ -347,6 +369,8 @@ public:
 class StrategyDefinition : public ModuleItem {
 public:
 	StrategyDefinition() = delete;
+
+	%newobject getLhs;
 
 	%extend {
 		/**
@@ -372,10 +396,10 @@ public:
 	 */
 	bool isNonexec() const;
 
-	%newobject getLhs;
-
 	%labeledObject;
 	%streamBasedPrint;
+	%getMetadataItem(STRAT_DEF);
+	%getLineNumber;
 };
 
 /**
@@ -474,6 +498,9 @@ public:
  */
 class SortTestConditionFragment : public ConditionFragment {
 public:
+
+	%newobject getLhs;
+
 	%extend {
 		SortTestConditionFragment(EasyTerm* lhs, Sort* rhs)
 		{
@@ -492,8 +519,6 @@ public:
 	 * Get the sort of the sort test.
 	 */
 	Sort* getSort() const;
-
-	%newobject getLhs;
 
 	%streamBasedPrint;
 };
@@ -515,6 +540,9 @@ struct ModelCheckResult {
 class StateTransitionGraph {
 public:
 	StateTransitionGraph() = delete;
+
+	%newobject getStateTerm;
+	%newobject modelCheck;
 
 	%extend {
 		/**
@@ -572,9 +600,6 @@ public:
 		}
 	}
 
-	%newobject getStateTerm;
-	%newobject modelCheck;
-
 	/**
 	 * Get the number of states in the graph.
 	 */
@@ -604,6 +629,9 @@ public:
 class StrategyTransitionGraph {
 public:
 	StrategyTransitionGraph() = delete;
+
+	%newobject getStateTerm;
+	%newobject modelCheck;
 
 	/**
 	 * Cause of the transition in the graph.
@@ -662,6 +690,10 @@ public:
 			// Copy the given strategy, since it will be deleted with this structure
 			ImportTranslation translation(dynamic_cast<ImportModule*>(initial->getDag()->symbol()->getModule()));
 			StrategyExpression* stratCopy = ImportModule::deepCopyStrategyExpression(&translation, strat);
+			TermSet nothing;
+			VariableInfo vinfo;
+			stratCopy->check(vinfo, nothing);
+			stratCopy->process();
 			return new StrategyTransitionGraph(context, stratCopy, opaqueIds, biased);
 		}
 
@@ -722,13 +754,14 @@ public:
 		}
 	}
 
-	%newobject getStateTerm;
-	%newobject modelCheck;
-
 	/**
 	 * Get the number of states in the graph.
 	 */
 	int getNrStates() const;
+	/**
+	 * Get the number of real (not merged) states in the graph (in linear time).
+	 */
+	int getNrRealStates() const;
 	/**
 	 * List the successors of a state in the graph.
 	 *

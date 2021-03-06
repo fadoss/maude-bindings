@@ -20,6 +20,16 @@ class VisibleModule {
 public:
 	VisibleModule() = delete;
 
+	%newobject parseTerm;
+	%newobject parseStrategy;
+	%newobject downTerm;
+	%newobject downStrategy;
+	%newobject upTerm;
+	%newobject upStrategy;
+	%newobject unify;
+	%newobject variant_unify;
+	%newobject variant_match;
+
 	%extend {
 		~VisibleModule() {
 			// Modules are protected so that they are not deleted
@@ -151,7 +161,7 @@ public:
 		 * @return The sort or null if it does not exist.
 		 */
 		Sort* findSort(const char* name) const {
-			return $self->findSort(Token::encode(name));
+			return $self->findSort(encodeEscapedToken(name));
 		}
 
 		/**
@@ -164,9 +174,9 @@ public:
 		 * @return The symbol or null if it does not exist.
 		 */
 		Symbol* findSymbol(const char* name,
-				 const Vector<ConnectedComponent*>& domainKinds,
-				 ConnectedComponent* rangeKind) {
-			return $self->findSymbol(Token::encode(name), domainKinds, rangeKind);
+		                   const Vector<ConnectedComponent*>& domainKinds,
+		                   ConnectedComponent* rangeKind) {
+			return $self->findSymbol(encodeEscapedToken(name), domainKinds, rangeKind);
 		}
 	}
 
@@ -482,16 +492,6 @@ public:
 		}
 	}
 
-	%newobject parseTerm;
-	%newobject parseStrategy;
-	%newobject downTerm;
-	%newobject downStrategy;
-	%newobject upTerm;
-	%newobject upStrategy;
-	%newobject unify;
-	%newobject variant_unify;
-	%newobject variant_match;
-
 	%namedEntityPrint;
 };
 
@@ -501,6 +501,8 @@ public:
 class UnificationProblem {
 public:
 	UnificationProblem() = delete;
+
+	%newobject __next;
 
 	%extend {
 		/**
@@ -515,8 +517,6 @@ public:
 					 : nullptr;
 		}
 	}
-
-	%newobject __next;
 };
 
 /**
@@ -525,6 +525,8 @@ public:
 class VariantUnifierSearch {
 public:
 	VariantUnifierSearch() = delete;
+
+	%newobject __next;
 
 	/**
 	 * Whether some unifiers may have been missed due to incomplete unification algorithms.
@@ -542,6 +544,4 @@ public:
 	 * @return The next unifier or null if there is no more.
 	 */
 	EasySubstitution* __next();
-
-	%newobject __next;
 };

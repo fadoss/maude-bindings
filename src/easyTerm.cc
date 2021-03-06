@@ -290,7 +290,7 @@ EasyTerm::rewrite(int limit) {
 	if (!is_dag)
 		dagify();
 
-	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
+	RewritingContext* context = new UserLevelRewritingContext(dagNode);
 
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
 		vmod->resetRules();
@@ -314,7 +314,7 @@ EasyTerm::frewrite(int limit, int gas) {
 	if (!is_dag)
 		dagify();
 
-	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
+	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
 	context->setObjectMode(ObjectSystemRewritingContext::FAIR);
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
 		vmod->resetRules();
@@ -337,7 +337,7 @@ EasyTerm::erewrite(int limit, int gas) {
 	if (!is_dag)
 		dagify();
 
-	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
+	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
 	context->setObjectMode(ObjectSystemRewritingContext::EXTERNAL);
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
 		vmod->resetRules();
@@ -371,7 +371,7 @@ EasyTerm::srewrite(StrategyExpression* expr, bool depthSearch) {
 
 	strategy->process();
 
-	ObjectSystemRewritingContext* context = new ObjectSystemRewritingContext(dagNode);
+	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
 	context->setObjectMode(ObjectSystemRewritingContext::EXTERNAL);
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_RULES))
 		vmod->resetRules();
@@ -418,7 +418,7 @@ EasyTerm::search(SearchType type,
 	if (target->is_dag)
 		target->termify();
 
-	Pattern* pattern = new Pattern(target->term, false, condition);
+	Pattern* pattern = new Pattern(target->termCopy(), false, condition);
 
 	RewriteSequenceSearch* state =
 		new RewriteSequenceSearch(new UserLevelRewritingContext(getDag()),
@@ -614,7 +614,7 @@ EasySubstitution::instantiate(EasyTerm* term) const {
 	// Set ground flags
 	result->getDag()->computeBaseSortForGroundSubterms(false);
 
-	DagNode* instantiated = result->getDag()->instantiate(*subs);
+	DagNode* instantiated = result->getDag()->instantiate(*subs, true);
 	if (instantiated != nullptr)
 		result->setDag(instantiated);
 

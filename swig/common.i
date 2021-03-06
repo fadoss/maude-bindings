@@ -4,7 +4,6 @@
 
 %{
 #include <sstream>
-std::string printBuffer;
 %}
 
 #if defined(SWIGJAVA)
@@ -34,11 +33,10 @@ std::string printBuffer;
 %define %streamBasedPrint
 	#if defined(REPR_METHOD)
 	%extend {
-		const char* REPR_METHOD() {
+		std::string REPR_METHOD() {
 			std::ostringstream stream;
 			stream << $self;
-			printBuffer = stream.str();
-			return printBuffer.c_str();
+			return stream.str();
 		}
 	}
 	#endif
@@ -66,9 +64,46 @@ std::string printBuffer;
 	}
 %enddef
 
+// Extend the class with a getter for metadata
+%define %getMetadataItem(itype)
+	%extend {
+		/**
+		 * Get the free text @c metadata attribute of this statement.
+		 */
+		const char * getMetadata() {
+			VisibleModule* mod = safeCast(VisibleModule*, $self->getModule());
+			int metadata = mod->getMetadata(MixfixModule::itype, $self);
+			return metadata == NONE ? nullptr : Token::name(metadata);
+		}
+	}
+%enddef
+
+// Extend the class with a getter for line number information
+%define %getLineNumber
+	%extend {
+		/**
+		 * Get the line number information for this item as formatted by Maude.
+		 *
+		 * The format of the string is usually <code>filename, line line (module)</code>
+		 * where the second @c line is the integral line number, and @c module is
+		 * the module type and name where this item was originally defined. The
+		 * @c filename may be an actual quoted filename or some special name
+		 * between angle brackets.
+		 */
+		std::string getLineNumber() const {
+			ostringstream stream;
+			stream << *$self;
+			return stream.str();
+		}
+	}
+%enddef
+
 // Extend the class with getters for the left and right hand side
 // terms of a two sided object
 %define %twoSidedObject
+	%newobject getLhs;
+	%newobject getRhs;
+
 	%extend {
 		/**
 		 * Get the left-hand-side term.
@@ -84,9 +119,6 @@ std::string printBuffer;
 			return new EasyTerm($self->getRhs(), false);
 		}
 	}
-
-	%newobject getLhs;
-	%newobject getRhs;
 %enddef
 
 // Extend the class with the getLabel function for preequations
@@ -105,11 +137,10 @@ std::string printBuffer;
 %define %vectorPrint
 	#if defined(REPR_METHOD)
 	%extend Vector {
-		const char* REPR_METHOD() {
+		std::string REPR_METHOD() {
 			std::ostringstream stream;
 			stream << "$parentclasssymname with " << $self->size() << " elements";
-			printBuffer = stream.str();
-			return printBuffer.c_str();
+			return stream.str();
 		}
 	}
 	#endif
@@ -118,13 +149,13 @@ std::string printBuffer;
 %define %substitutionPrint
 	#if defined(REPR_METHOD)
 	%extend EasySubstitution {
-		const char* REPR_METHOD() {
+		std::string REPR_METHOD() {
 			int size = $self->size();
 			std::ostringstream stream;
 			for (int i = 0; i < size; i++)
-				stream << ", " << $self->variable(i) << "=" << self->value(i);
-			printBuffer = stream.str();
-			return printBuffer.c_str() + 2;
+				stream << (i > 0 ? ", " : "")
+				       << $self->variable(i) << "=" << self->value(i);
+			return stream.str();
 		}
 	}
 	#endif

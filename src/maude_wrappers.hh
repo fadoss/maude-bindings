@@ -42,6 +42,27 @@ void tokenize(const char* str, Vector<Token> &token);
 std::vector<Token> tokenize(const char* str);
 
 /**
+ * Check whether a string contains unescaped special characters.
+ *
+ * @param str That string.
+ */
+bool containsSpecialChars(const char* str);
+
+/**
+ * Escape the special characters of a string with backquotes.
+ *
+ * @param str The string to be escaped (must not be null).
+ */
+std::string escapeWithBackquotes(const char* str);
+
+/**
+ * Get the token code of the given string once special characters are escaped.
+ *
+ * @param str That string.
+ */
+int encodeEscapedToken(const char* str);
+
+/**
  * Load the file with the given name.
  *
  * @param name The name of the file (absolute or relative to the current

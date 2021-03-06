@@ -101,6 +101,23 @@
 %makeIterable(NarrowingSequenceSearch3, Term);
 
 //
+// Defined in misc.i
+
+// Trim the strings returned by all function named getMetadata
+// to get rid of the quotes in the internal Maude strings
+%typemap(out) const char* getMetadata {
+	// The JNI does not support creating a string with a length,
+	// so we have to make a temporary copy
+	if ($1 == nullptr)
+		$result = nullptr;
+	else {
+		std::string tmp($1 + 1, strlen($1) - 2);
+		$result = jenv->NewStringUTF(tmp.c_str());
+	}
+}
+
+
+//
 // Signal handlers (does nothing special)
 
 %{
