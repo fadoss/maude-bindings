@@ -10,6 +10,11 @@ LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmau
 #
 ## Install required libraries
 
+# Fix a bug in the dockcross2010 image
+if [ "$1" = "2010" ]; then
+	sudo sed 's/\/lib\//\/lib64\//' -i /usr/local/bin/yum
+fi
+
 sudo yum install -y xz libsigsegv-devel gmp-devel
 
 # A prebuilt package that includes Swig 4 and Buddy and Yices2 headers
@@ -45,7 +50,7 @@ sudo ln -sf /opt/python/cp38-cp38/bin/cmake /usr/bin/cmake
 if [ "$1" = "1" ]; then
 	versions=(cp27-cp27m cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39)
 else
-	versions=(cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39)
+	versions=(cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39 cp310-cp310)
 fi
 
 for version in "${versions[@]}"; do

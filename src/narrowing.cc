@@ -57,10 +57,10 @@ VariantUnifierSearch::__next() {
 	int nrVariables = unifier.size();
 
 	// Create a substitution
-	Substitution* subs = new Substitution(nrVariables);
+	Substitution subs(nrVariables);
 
 	for (int i = 0; i < nrVariables; i++)
-		subs->bind(i, unifier[i]);
+		subs.bind(i, unifier[i]);
 
-	return new EasySubstitution(subs, &search->getVariableInfo());
+	return new EasySubstitution(&subs, &search->getVariableInfo());
 }

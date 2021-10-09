@@ -32,6 +32,11 @@ enum SearchType {
 	NORMAL_FORM		///< ->!
 };
 
+/*
+ * Forward declaration of EasySubstititon to be used in EasyTerm.
+ */
+class EasySubstitution;
+
 /**
  * Maude term with its associated operations.
  */
@@ -142,7 +147,9 @@ public:
 	 */
 	MatchSearchState* match(EasyTerm* pattern,
 			        const Vector<ConditionFragment*> &condition = NO_CONDITION,
-				bool withExtension = false);
+				bool withExtension = false,
+				int minDepth = 0,
+				int maxDepth = -1);
 
 	/**
 	 * Search states that match into a given pattern and satisfy a given
@@ -158,6 +165,24 @@ public:
 	RewriteSequenceSearch* search(SearchType type, EasyTerm* target,
 				      const Vector<ConditionFragment*> &condition = NO_CONDITION,
 				      int depth = -1);
+				      ///StrategyExpression* strategy = nullp
+
+	/**
+	 * Search states that match into a given pattern and satisfy a given
+	 * condition by rewriting from this term.
+	 *
+	 * @param type Type of search (number of steps).
+	 * @param target Patterm term.
+	 * @param condition Condition that solutions must satisfy.
+	 # @param strategy Straetegy expression to control the search.
+	 * @param depth Depth bound.
+	 *
+	 * @return An object to iterate through matches.
+	 */
+	StrategySequenceSearch* search(SearchType type, EasyTerm* target,
+			               StrategyExpression* strategy,
+				       const Vector<ConditionFragment*> &condition = NO_CONDITION,
+				       int depth = -1);
 
 	/**
 	 * Compute the most general variants of this term.
@@ -181,6 +206,19 @@ public:
 	 */
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
 					    int depth = -1, bool fold = false);
+
+	/**
+	 * Apply any rule with the given label.
+	 *
+	 * @param label Rule label (or null for any executable rule).
+	 * @param substitution Initial substitution that will be applied on the rule before matching.
+	 * @param minDepth Minimum matching depth.
+	 * @param maxDepth Maximum matching depth.
+	 *
+	 * @return An object to iterate through the rewritten terms.
+	 */
+	RewriteSearchState* apply(const char* label, EasySubstitution* substitution = nullptr,
+	                          int minDepth = 0, int maxDepth = UNBOUNDED);
 
 	#if defined(USE_CVC4) || defined(USE_YICES2)
 	/**
@@ -222,6 +260,17 @@ public:
 	 * zero otherwise.
 	 */
 	long int toInt() const;
+
+	/**
+	 * Get whether the term is a variable.
+	 */
+	bool isVariable() const;
+
+	/**
+	 * Get the name of the variable if the current term is a variable or
+	 * a null value otherwise.
+	 */
+	const char* getVarName() const;
 
 	/**
 	 * Get the hash value of the term.
@@ -272,16 +321,17 @@ private:
 /**
  * Substitution (mapping from variables to terms).
  */
-class EasySubstitution {
+class EasySubstitution : private RootContainer {
 public:
 	EasySubstitution(const Substitution* subs,
 			 const VariableInfo* vinfo,
 			 const ExtensionInfo* extension = nullptr);
 
 	EasySubstitution(const Substitution* subs,
-			 const NarrowingVariableInfo* vinfo,
-			 bool ownsSubstitution = true);
+			 const NarrowingVariableInfo* vinfo);
 
+	EasySubstitution(const std::vector<EasyTerm*> &variables,
+			 const std::vector<EasyTerm*> &values);
 
 	~EasySubstitution();
 
@@ -290,17 +340,11 @@ public:
 	 */
 	int size() const;
 	/**
-	 * Get the variable at the given index.
+	 * Get the value of a given variable.
 	 *
-	 * @param index The index of the variable.
+	 * @param variable The variable whose value is looked up.
 	 */
-	EasyTerm* variable(int index) const;
-	/**
-	 * Get the value at the given index.
-	 *
-	 * @param index The index of the value.
-	 */
-	EasyTerm* value(int index) const;
+	EasyTerm* value(EasyTerm* variable) const;
 	/**
 	 * Get the matched portion when matching with extension.
 	 *
@@ -330,19 +374,35 @@ public:
 	 */
 	EasyTerm* instantiate(EasyTerm* term) const;
 
-private:
-	const Substitution* subs;
-	union {
-		const VariableInfo* vinfo;
-		const NarrowingVariableInfo* nvinfo;
-	};
-	const ExtensionInfo* extension;
+	/**
+	 * Get variables and values of the substitution.
+	 *
+	 * @param variables Vector where to fill the variables in the substitution.
+ 	 * @param values Vector where to fill the corresponding values.
+	 */
+	void getSubstitution(Vector<Term*> &variables, Vector<DagRoot*> &values);
 
-	enum Flags {
-		OWNS_SUBSTITUTION = 0x1,
-		NARROWING = 0x2
+	class Iterator {
+	public:
+		Iterator(const EasySubstitution* subs);
+		void nextAssignment();
+
+		EasyTerm* getVariable() const;
+		EasyTerm* getValue() const;
+
+	private:
+		const EasySubstitution* subs;
+		std::map<std::pair<int, Sort*>, DagNode*>::const_iterator it;
 	};
-	int flags;
+
+private:
+	using Mapping = std::map<std::pair<int, Sort*>, DagNode*>;
+
+	void markReachableNodes();
+	Term* makeVariable(const Mapping::const_iterator &it) const;
+
+	Mapping mapping;
+	const ExtensionInfo* extension;
 };
 
 inline

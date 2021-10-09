@@ -49,6 +49,7 @@ Documentation for the Python package is available [here](https://fadoss.github.i
 
 * Loading files, parsing terms, reducing, rewriting, rewriting with strategies, and searching in `test.py`.
 * Matching in `match.py`.
+* Applying rules selectively in `apply.py`.
 * Unification in `unify.py`.
 * Manipulating the rewrite graph in `graph.py`.
 * Model checking in `modelcheck.py`.

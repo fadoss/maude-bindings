@@ -5,10 +5,13 @@
 %{
 #include "strategicSearch.hh"
 #include "rewriteSequenceSearch.hh"
+#include "strategySequenceSearch.hh"
 #include "variantSearch.hh"
 #include "pattern.hh"
 #include "dagArgumentIterator.hh"
 #include "narrowingSequenceSearch3.hh"
+#include "rewriteSearchState.hh"
+#include "variableDagNode.hh"
 %}
 
 %import "config.h"
@@ -74,6 +77,7 @@ public:
 	EasyTerm() = delete;
 	~EasyTerm();
 
+	%newobject apply;
 	%newobject match;
 	%newobject srewrite;
 	%newobject search;
@@ -85,8 +89,8 @@ public:
 
 	%feature("kwargs") match;
 	%feature("kwargs") get_variants;
-	%feature("kwargs") search;
 	%feature("kwargs") vu_narrow;
+	%feature("kwargs") apply;
 
 	// Information about the term
 
@@ -163,13 +167,19 @@ public:
 	 *
 	 * @param pattern Pattern term.
 	 * @param condition Equational condition that solutions must satisfy.
-	 * @param withExtension Whether the matching should be done with extension modulo axioms.
+	 * @param withExtension Whether the matching should be done with extension modulo axioms
+	 * (deprecated, use @c maxDepth=0 instead).
+	 * @param minDepth Minimum matching depth.
+	 * @param maxDepth Maximum matching depth (@c -1 to match on top without extension, @c 0
+	 * to match on top with extension, @c UNBOUNDED to match anywhere, or any intermediate value).
 	 *
 	 * @returns An object to iterate through matches.
 	 */
 	MatchSearchState* match(EasyTerm* pattern,
 				const Vector<ConditionFragment*> &condition = NO_CONDITION,
-				bool withExtension = false);
+				bool withExtension = false,
+				int minDepth = 0,
+				int maxDepth = -1);
 
 	/**
 	 * Rewrite a term following a strategy.
@@ -197,6 +207,22 @@ public:
 				      int depth = -1);
 
 	/**
+	 * Search states that match into a given pattern and satisfy a given
+	 * condition by rewriting from this term using a strategy.
+	 *
+	 * @param type Type of search (number of steps).
+	 * @param target Patterm term.
+	 * @param strategy Strategy to control the search.
+	 * @param condition Condition that solutions must satisfy.
+	 * @param depth Depth bound.
+	 *
+	 * @return An object to iterate through matches.
+	 */
+	StrategySequenceSearch* search(SearchType type, EasyTerm* target, StrategyExpression* strategy,
+				       const Vector<ConditionFragment*> &condition = NO_CONDITION,
+				       int depth = -1);
+
+	/**
 	 * Compute the most general variants of this term.
 	 *
 	 * @param irredundant Whether to obtain irredundant variants
@@ -220,6 +246,19 @@ public:
 	 */
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
 					    int depth = -1, bool fold = false);
+
+	/**
+	 * Apply any rule with the given label.
+	 *
+	 * @param label Rule label (or null for any executable rule).
+	 * @param substitution Initial substitution that will be applied on the rule before matching.
+	 * @param minDepth Minimum matching depth.
+	 * @param maxDepth Maximum matching depth.
+	 *
+	 * @return An object to iterate through the rewritten terms.
+	 */
+	RewriteSearchState* apply(const char* label, EasySubstitution* substitution = nullptr,
+	                          int minDepth = 0, int maxDepth = UNBOUNDED);
 
 	#if defined(USE_CVC4) || defined(USE_YICES2)
 	/**
@@ -246,6 +285,17 @@ public:
 	 * zero otherwise.
 	 */
 	long int toInt() const;
+
+	/**
+	 * Get whether the term is a variable.
+	 */
+	bool isVariable() const;
+
+	/**
+	 * Get the name of the variable if the current term is a variable or
+	 * a null value otherwise.
+	 */
+	const char* getVarName() const;
 
 	/**
 	 * Get the hash value of the term.
@@ -310,6 +360,8 @@ public:
 			return d == nullptr ? nullptr : new EasyTerm(d);
 		}
 	}
+
+	%unprotectDestructor(StrategicSearch);
 };
 
 /**
@@ -319,11 +371,20 @@ class EasySubstitution {
 public:
 	EasySubstitution() = delete;
 
-	%newobject variable;
 	%newobject value;
 	%newobject matchedPortion;
 	%newobject find;
 	%newobject instantiate;
+	%newobject iterator;
+
+	/**
+	 * Create a substitution with the given variables and values.
+	 *
+	 * @param vars Variables in the substitution.
+	 * @param values values Values for these variables in the substitution.
+	 */
+	EasySubstitution(const std::vector<EasyTerm*> &vars,
+	                 const std::vector<EasyTerm*> &values);
 
 	/**
 	 * Get the number of variables in the substitution.
@@ -331,18 +392,11 @@ public:
 	int size() const;
 
 	/**
-	 * Get the variable at the given index.
+	 * Get the value of a given variable.
 	 *
-	 * @param index The index of the variable.
+	 * @param variable The variable whose value is looked up.
 	 */
-	EasyTerm* variable(int index) const;
-
-	/**
-	 * Get the value of the variable at the given index.
-	 *
-	 * @param index The index of the variable.
-	 */
-	EasyTerm* value(int index) const;
+	EasyTerm* value(EasyTerm* variable) const;
 
 	/**
 	 * Get the matched portion when matching with extension.
@@ -372,6 +426,29 @@ public:
 	 * @return The instantiated term.
 	 */
 	EasyTerm* instantiate(EasyTerm* term) const;
+
+	class Iterator {
+	public:
+		Iterator() = delete;
+
+		%newobject getVariable;
+		%newobject getValue;
+
+		void nextAssignment();
+
+		EasyTerm* getVariable() const;
+		EasyTerm* getValue() const;
+	};
+
+	%extend {
+		/**
+		 * Get an iterator to the substitution assignments.
+		 */
+		Iterator* iterator() const {
+			return new EasySubstitution::Iterator($self);
+		}
+	}
+
 };
 
 /**
@@ -397,6 +474,17 @@ public:
 								$self->getExtensionInfo())
 					 : nullptr;
 		}
+
+		/**
+		 * Get the context of the match filled with the given term.
+		 *
+		 * @param term Term to fill the context.
+		 *
+		 * @return The original term with the matched subterm replaced by the given term.
+		 */
+		EasyTerm* fillContext(EasyTerm* term) const {
+			return new EasyTerm($self->rebuildDag(term->getDag()).first);
+		}
 	}
 };
 
@@ -420,8 +508,7 @@ public:
 		}
 
 		/**
-		 * Get the substitution the matching substitution of the
-		 * solution into the pattern.
+		 * Get the matching substitution of the solution into the pattern.
 		 */
 		EasySubstitution* getSubstitution() {
 			return new EasySubstitution($self->getSubstitution(),
@@ -478,6 +565,97 @@ public:
 };
 
 /**
+ * An iterator through the solutions of a strategy-controlled search.
+ */
+class StrategySequenceSearch {
+public:
+	StrategicSearch() = delete;
+
+	%newobject getSubstitution;
+	%newobject getStateTerm;
+	%newobject __next;
+
+	%extend {
+		/**
+		 * Get the number of rewrites until this term has been found.
+		 */
+		int getRewriteCount() {
+			return $self->getContext()->getTotalCount();
+		}
+
+		/**
+		 * Get the matching substitution of the solution into the pattern.
+		 */
+		EasySubstitution* getSubstitution() {
+			return new EasySubstitution($self->getSubstitution(),
+						    $self->getGoal(),
+						    nullptr);
+		}
+
+		/**
+		 * Get the transition leading to the given state.
+		 * 
+		 * @param stateNr The number of a state in the search graph
+		 * or -1 for the current one.
+		 *
+		 * @return The transition between the parent of the given state and the
+		 * state itself.
+		 */
+		const StrategyTransitionGraph::Transition& getTransition(int stateNr = -1) {
+			return $self->getStateTransition(stateNr == -1
+				? $self->getStateNr() : stateNr);
+		}
+
+		/**
+		 * Get the term of a given state.
+		 * 
+		 * @param stateNr The number of a state in the search graph.
+		 */
+		EasyTerm* getStateTerm(int stateNr) {
+			return new EasyTerm($self->getStateDag(stateNr));
+		}
+
+		/**
+		 * Get the next strategy to be executed from the given state.
+		 *
+		 * @param stateNr The number of a state in the search graph
+		 * or -1 for the current one.
+		 */
+		StrategyExpression* getStrategyContinuation(int stateNr = -1) {
+			return $self->getStrategyContinuation(stateNr == -1
+					? $self->getStateNr() : stateNr);
+		}
+
+		/**
+		 * Get the next match.
+		 *
+		 * @return A term or a null pointer if there is no more matches.
+		 */
+		EasyTerm* __next() {
+			bool hasNext = $self->findNextMatch();
+			return hasNext ? new EasyTerm($self->getStateDag($self->getStateNr())) : nullptr;
+		}
+	}
+
+	/**
+	 * Get an internal state number that allows reconstructing 
+	 * the path to this term.
+	 */
+	int getStateNr() const;
+
+	/**
+	 * Get the parent state.
+	 *
+	 * @param stateNr The number of a state in the search graph.
+	 *
+	 * @return The number of the parent or -1 for the root.
+	 */
+	int getStateParent(int stateNr) const;
+
+	%unprotectDestructor(StrategySequenceSearch);
+};
+
+/**
  * An iterator through narrowing solutions.
  */
 class NarrowingSequenceSearch3 {
@@ -518,7 +696,7 @@ public:
 			Substitution* substitution;
 
 			$self->getStateInfo(stateDag, variableFamily, substitution);
-			return new EasySubstitution(substitution, &$self->getInitialVariableInfo(), false);
+			return new EasySubstitution(substitution, &$self->getInitialVariableInfo());
 		}
 
 		/**
@@ -528,14 +706,16 @@ public:
 			const Vector<DagNode*>* unifier = $self->getUnifier();
 			size_t nrVariables = unifier->size();
 
-			Substitution* subs = new Substitution(nrVariables);
+			Substitution subs(nrVariables);
 
 			for (size_t i = 0; i < nrVariables; i++)
-				subs->bind(i, (*unifier)[i]);
+				subs.bind(i, (*unifier)[i]);
 
-			return new EasySubstitution(subs, &$self->getUnifierVariableInfo());
+			return new EasySubstitution(&subs, &$self->getUnifierVariableInfo());
 		}
 	}
+
+	%unprotectDestructor(NarrowingSequenceSearch3);
 };
 
 /**
@@ -571,15 +751,66 @@ public:
 			DagNode* d = variant[nrVariables];
 
 			// Create a substitution
-			Substitution* subs = new Substitution(nrVariables);
+			Substitution subs(nrVariables);
 
 			for (int i = 0; i < nrVariables; i++)
-				subs->bind(i, variant[i]);
+				subs.bind(i, variant[i]);
 
 			return new std::pair<EasyTerm*, EasySubstitution*>(new EasyTerm(d),
-			          new EasySubstitution(subs, &$self->getVariableInfo()));
+			          new EasySubstitution(&subs, &$self->getVariableInfo()));
 		}
 	};
+
+	%unprotectDestructor(VariantSearch);
+};
+
+/**
+ * An iterator through rewriting solutions.
+ */
+class RewriteSearchState {
+public:
+	RewriteSearchState() = delete;
+
+	%newobject __next;
+	%newobject getSubstitution;
+	%newobject fillContext;
+
+	/**
+	 * Get the applied rule.
+	 */
+	Rule* getRule() const;
+
+	%extend {
+		/**
+		 * Get the next solution of the rewriting search.
+		 */
+		EasyTerm* __next() {
+			if (!$self->findNextRewrite())
+				return nullptr;
+
+			return new EasyTerm($self->rebuildDag($self->getReplacement()).first);
+		}
+
+		/**
+		 * Get the matching substitution.
+		 */
+		EasySubstitution* getSubstitution() const {
+			return new EasySubstitution($self->getContext(), $self->getRule());
+		}
+
+		/**
+		 * Get the context of the match filled with the given term.
+		 *
+		 * @param term Term to fill the context.
+		 *
+		 * @return The original term with the matched subterm replaced by the given term.
+		 */
+		EasyTerm* fillContext(EasyTerm* term) const {
+			return new EasyTerm($self->rebuildDag(term->getDag()).first);
+		}
+	};
+
+	%unprotectDestructor(RewriteSearchState);
 };
 
 /**

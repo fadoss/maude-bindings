@@ -19,3 +19,9 @@ expr = splus.makeTerm((mod.parseTerm('4'),
 print(expr.getSort(), ':', expr)
 expr.reduce()
 print(expr)
+
+# Constructs a variable by parsing
+var = mod.parseTerm('N:Nat')
+
+print(var, var.isVariable(), var.getVarName())
+print(expr, expr.isVariable(), expr.getVarName())

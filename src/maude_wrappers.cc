@@ -321,6 +321,13 @@ getViews() {
 	return views;
 }
 
+void setRandomSeed(int seed) {
+	RandomOpSymbol::setGlobalSeed(seed);
+	#ifdef WITH_PROBABILISTIC_SLANG
+	setChoiceSeed(seed);
+	#endif
+}
+
 MetaLevel*
 getMetaLevel(VisibleModule* vmod) {
 	// Finds an operator of type MetaLevelOpSymbol for which to obtain

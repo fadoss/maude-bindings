@@ -180,17 +180,26 @@ struct ModuleHeader {
 /**
  * Allow or disallow running arbitrary executables from Maude code.
  *
-  * @param flag Whether file access should be allowed.
+ * @param flag Whether file access should be allowed.
  */
 void setAllowProcesses(bool flag);
 
 /**
  * Allow or disallow operations on files from Maude code.
  *
-  * @param flag Whether processes should be allowed.
+ * @param flag Whether processes should be allowed.
  */
 void setAllowFiles(bool flag);
 
+/**
+ * Set the pseudorandom number generator seed.
+ *
+ * @param seed New pseudorandom number generator seed.
+ */
+void setRandomSeed(int randomSeed);
+
+// Global constants
+constexpr int UNBOUNDED = INT_MAX;
 
 %include misc.i
 %include term.i

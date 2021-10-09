@@ -88,7 +88,19 @@ The following classes can be used as usual Python iterators, albeit some offer a
    :members:
    :undoc-members:
 
-   It iterates over matching substitutions of type :py:class:`Substitution`.
+   It iterates over (:py:class:`Substitution`, function) pairs including the matching
+   substitution and a function from :py:class:`Term` to :py:class:`Term` that returns the
+   matching context filled with the given term.
+
+.. autoclass:: RewriteSearchState
+   :members:
+   :undoc-members:
+   
+
+   It iterates over (:py:class:`Term`, :py:class:`Substitution`, function, :py:class:`Rule`)
+   tuples including the resulting term, the matching substitution, a :py:class:`Term`
+   to :py:class:`Term` function that provides the matching context filled with the given term,
+   and the rule that has been applied.
 
 .. autoclass:: RewriteSequenceSearch
    :members:
@@ -96,6 +108,17 @@ The following classes can be used as usual Python iterators, albeit some offer a
 
    It iterates over (:py:class:`Term`, :py:class:`Substitution`, function, :py:class:`int`)
    tuples consisting of the solution term, the matching substitution, and the
+   number of rewrites until it has been found. The third coordinate is a
+   function that returns, when called without arguments, a path to the
+   solution, as described in :py:meth:`pathTo`.
+
+.. autoclass:: StrategySequenceSearch
+   :members:
+   :undoc-members:
+
+   It iterates over (:py:class:`Term`, :py:class:`Substitution`, function,
+   :py:class:`StrategyExpression`, :py:class:`int`) tuples consisting of the solution term,
+   the matching substitution, the next strategy to be executed from the current term, and the
    number of rewrites until it has been found. The third coordinate is a
    function that returns, when called without arguments, a path to the
    solution, as described in :py:meth:`pathTo`.

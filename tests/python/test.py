@@ -46,3 +46,8 @@ pattern = example.parseTerm('f(c, X:Symbol)')
 
 for sol, subs, path, nrew in initial.search(maude.ANY_STEPS, pattern):
 	print(sol, 'with', subs, 'by', path())
+
+s = example.parseStrategy('ab ; bc ; ab')
+
+for sol, subs, path, nexts, nrew in initial.search(maude.ANY_STEPS, pattern, s):
+	print(sol, 'with', subs, 'by', path(), 'before applying', nexts)

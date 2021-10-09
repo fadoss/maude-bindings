@@ -150,13 +150,31 @@
 	#if defined(REPR_METHOD)
 	%extend EasySubstitution {
 		std::string REPR_METHOD() {
-			int size = $self->size();
+			Vector<Term*> variables;
+			Vector<DagRoot*> values;
+
+			$self->getSubstitution(variables, values);
+			size_t size = variables.size();
+
 			std::ostringstream stream;
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; ++i) {
 				stream << (i > 0 ? ", " : "")
-				       << $self->variable(i) << "=" << self->value(i);
+				       << variables[i] << "=" << values[i]->getNode();
+				variables[i]->deepSelfDestruct();
+			}
 			return stream.str();
 		}
 	}
 	#endif
+%enddef
+
+// Destructor of SearchState that removes the protection
+// added to the module before the search
+%define %unprotectDestructor(name)
+	%extend {
+		~name() {
+			dynamic_cast<ImportModule*>($self->getContext()->root()->symbol()->getModule())->unprotect();
+			delete $self;
+		}
+	}
 %enddef

@@ -23,6 +23,8 @@
 #include "rewriteSequenceSearch.hh"
 #include "narrowingSequenceSearch.hh"
 #include "narrowingSequenceSearch3.hh"
+#include "strategySequenceSearch.hh"
+#include "rewriteSearchState.hh"
 #include "freshVariableSource.hh"
 #include "pattern.hh"
 #include "extensionInfo.hh"
@@ -187,6 +189,26 @@ EasyTerm::toInt() const {
 	}
 
 	return 0;
+}
+
+bool
+EasyTerm::isVariable() const {
+	return (is_dag && dynamic_cast<VariableDagNode*>(dagNode) != nullptr)
+	       || dynamic_cast<VariableTerm*>(term) != nullptr;
+}
+
+const char*
+EasyTerm::getVarName() const {
+	if (is_dag) {
+		if (auto vard = dynamic_cast<VariableDagNode*>(dagNode))
+			return Token::name(vard->id());
+	}
+	else {
+		if (auto vart = dynamic_cast<VariableTerm*>(term))
+			return Token::name(vart->id());
+	}
+
+	return nullptr;
 }
 
 size_t
@@ -386,20 +408,27 @@ EasyTerm::srewrite(StrategyExpression* expr, bool depthSearch) {
 }
 
 MatchSearchState*
-EasyTerm::match(EasyTerm* target, const Vector<ConditionFragment*>& condition, bool withExtension)
+EasyTerm::match(EasyTerm* target, const Vector<ConditionFragment*>& condition,
+                bool withExtension, int minDepth, int maxDepth)
 {
 	if (!is_dag)
 		dagify();
 
-	Pattern* pattern = new Pattern(target->termCopy(), withExtension, condition);
+	// Patterns take ownership of the condition, so we need to pass them a copy.
+	// For efficiency, Pattern may be modified to optionally borrow conditions,
+	// if we prevent their destruction at the user side during the search.
+	Vector<ConditionFragment*> conditionCopy;
+	ImportModule::deepCopyCondition(nullptr, condition, conditionCopy);
+
+	Pattern* pattern = new Pattern(target->termCopy(), withExtension || maxDepth != -1, conditionCopy);
 	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
 	dagNode->computeTrueSort(*context);
 
 	MatchSearchState* state = new MatchSearchState(context,
 			 pattern,
 			 MatchSearchState::GC_PATTERN | MatchSearchState::GC_CONTEXT,
-			 0,
-			 withExtension ? 0 : NONE);
+			 minDepth,
+			 (withExtension && maxDepth == -1) ? 0 : maxDepth);
 
 	return state;
 }
@@ -418,12 +447,54 @@ EasyTerm::search(SearchType type,
 	if (target->is_dag)
 		target->termify();
 
-	Pattern* pattern = new Pattern(target->termCopy(), false, condition);
+	// Patterns take ownership of the condition, so we need to pass them a copy.
+	Vector<ConditionFragment*> conditionCopy;
+	ImportModule::deepCopyCondition(nullptr, condition, conditionCopy);
+
+	Pattern* pattern = new Pattern(target->termCopy(), false, conditionCopy);
 
 	RewriteSequenceSearch* state =
 		new RewriteSequenceSearch(new UserLevelRewritingContext(getDag()),
 				  static_cast<RewriteSequenceSearch::SearchType>(type),
 				  pattern,
+				  depth);
+
+	return state;
+}
+
+StrategySequenceSearch*
+EasyTerm::search(SearchType type,
+		 EasyTerm* target,
+		 StrategyExpression* strategy,
+		 const Vector<ConditionFragment*> &condition,
+		 int depth)
+{
+	if (this == target) {
+		IssueWarning("the target of the search cannot be the initial term itself.");
+		return nullptr;
+	}
+
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	startUsingModule(vmod);
+
+	if (target->is_dag)
+		target->termify();
+
+	// Patterns take ownership of the condition, so we need to pass them a copy.
+	Vector<ConditionFragment*> conditionCopy;
+	ImportModule::deepCopyCondition(nullptr, condition, conditionCopy);
+
+	// Copy the given strategy, since it will be deleted with this structure
+	ImportTranslation translation(dynamic_cast<ImportModule*>(getDag()->symbol()->getModule()));
+	StrategyExpression* stratCopy = ImportModule::deepCopyStrategyExpression(&translation, strategy);
+
+	Pattern* pattern = new Pattern(target->termCopy(), false, conditionCopy);
+
+	StrategySequenceSearch* state =
+		new StrategySequenceSearch(new UserLevelRewritingContext(getDag()),
+				  static_cast<RewriteSequenceSearch::SearchType>(type),
+				  pattern,
+				  stratCopy,
 				  depth);
 
 	return state;
@@ -462,12 +533,13 @@ EasyTerm::vu_narrow(SearchType type,
 		    int depth,
 		    bool fold)
 {
-	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
-
 	if (this == target) {
 		IssueWarning("the target of the search cannot be the initial term itself.");
 		return nullptr;
 	}
+
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	startUsingModule(vmod);
 
 	return new NarrowingSequenceSearch3(new UserLevelRewritingContext(getDag()),
 			static_cast<NarrowingSequenceSearch::SearchType>(type),
@@ -475,6 +547,42 @@ EasyTerm::vu_narrow(SearchType type,
 			depth,
 			new FreshVariableSource(vmod),
 			fold ? NarrowingSequenceSearch3::FOLD : 0);
+}
+
+RewriteSearchState*
+EasyTerm::apply(const char* label, EasySubstitution* substitution,
+	        int minDepth, int maxDepth)
+{
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
+
+	if (!is_dag)
+		dagify();
+
+	UserLevelRewritingContext* context = new UserLevelRewritingContext(dagNode);
+	startUsingModule(vmod);
+	context->reduce();
+
+	// If no label is provided, any executable rule can be applied
+	int label_id = label != nullptr ? Token::encode(label) : UNDEFINED;
+
+	RewriteSearchState* state =
+		new RewriteSearchState(context,
+		                       label_id,
+			               RewriteSearchState::GC_CONTEXT |
+      			               RewriteSearchState::GC_SUBSTITUTION |
+			               (label != nullptr ? RewriteSearchState::ALLOW_NONEXEC : 0),
+			               minDepth,
+			               maxDepth);
+
+	// Set the initial substitution
+	if (substitution != nullptr && substitution->size() > 0) {
+		Vector<Term*> variables;
+		Vector<DagRoot*> values;
+		substitution->getSubstitution(variables, values);
+		state->setInitialSubstitution(variables, values);
+	}
+
+	return state;
 }
 
 #if defined(USE_CVC4) || defined(USE_YICES2)
@@ -519,40 +627,63 @@ EasyTerm::markReachableNodes() {
 EasySubstitution::EasySubstitution(const Substitution* subs,
 				   const VariableInfo* vinfo,
 				   const ExtensionInfo* extension)
- : subs(subs), vinfo(vinfo), extension(extension), flags(0) {
+ : extension(extension) {
+	for (int i = 0; i < vinfo->getNrRealVariables(); ++i) {
+		VariableTerm* var = dynamic_cast<VariableTerm*>(vinfo->index2Variable(i));
+		mapping[{var->id(), var->symbol()->getRangeSort()}] = subs->value(i);
+	}
 
+	link();
 }
 
 EasySubstitution::EasySubstitution(const Substitution* subs,
-				   const NarrowingVariableInfo* nvinfo,
-				   bool ownsSubstitution)
- : subs(subs), nvinfo(nvinfo), extension(nullptr), flags(NARROWING) {
-	if (ownsSubstitution)
-		flags |= OWNS_SUBSTITUTION;
+				   const NarrowingVariableInfo* nvinfo)
+ : extension(nullptr) {
+	for (int i = 0; i < subs->nrFragileBindings(); ++i) {
+		VariableDagNode* var = nvinfo->index2Variable(i);
+		mapping[{var->id(), var->symbol()->getRangeSort()}] = subs->value(i);
+	}
+
+	link();
+}
+
+EasySubstitution::EasySubstitution(const vector<EasyTerm*> &variables,
+				   const vector<EasyTerm*> &values)
+ : extension(nullptr) {
+ 	int nrVariables = variables.size();
+
+	for (int i = 0; i < nrVariables; ++i) {
+		VariableDagNode* var = dynamic_cast<VariableDagNode*>(variables[i]->getDag());
+		if (var != nullptr)
+			mapping[{var->id(), var->symbol()->getRangeSort()}] = values[i]->getDag();
+	}
+
+	link();
 }
 
 EasySubstitution::~EasySubstitution() {
-	if (flags & OWNS_SUBSTITUTION)
-		delete subs;
+	mapping.clear();
+	unlink();
 }
 
 int
 EasySubstitution::size() const {
-	return (flags & NARROWING)
-			? subs->nrFragileBindings()
-			: vinfo->getNrRealVariables();
+	return mapping.size();
 }
 
 EasyTerm*
-EasySubstitution::variable(int index) const {
-	return (flags & NARROWING)
-			? new EasyTerm(nvinfo->index2Variable(index))
-			: new EasyTerm(vinfo->index2Variable(index), false);
-}
+EasySubstitution::value(EasyTerm* variable) const {
 
-EasyTerm*
-EasySubstitution::value(int index) const {
-	return new EasyTerm(subs->value(index));
+	VariableDagNode* var = dynamic_cast<VariableDagNode*>(variable->getDag());
+
+	if (var != nullptr) {
+		auto it = mapping.find({var->id(), var->symbol()->getRangeSort()});
+
+		if (it != mapping.end())
+			return new EasyTerm(it->second);
+	}
+
+	return nullptr;
 }
 
 EasyTerm*
@@ -564,61 +695,107 @@ EasySubstitution::matchedPortion() const {
 
 EasyTerm*
 EasySubstitution::find(const char* name, Sort* sort) const {
+
+	decltype(mapping)::const_iterator it;
 	int code = Token::encode(name);
-	int nrRealVariables = size();
 
-	for (int i = 0; i < nrRealVariables; i++) {
-		int varId;
-		Sort* varSort;
-
-		if (flags & NARROWING) {
-			VariableDagNode* var = nvinfo->index2Variable(i);
-			varId = var->id();
-			varSort = var->getSort();
-		}
-		else {
-			VariableTerm* var = dynamic_cast<VariableTerm*>(vinfo->index2Variable(i));
-			varId = var->id();
-			varSort = var->getSort();
-		}
-
-		if (varId == code && (sort == nullptr || varSort == sort))
-			return new EasyTerm(subs->value(i));
+	if (sort != nullptr) {
+		if ((it = mapping.find({code, sort})) == mapping.end())
+			return nullptr;
 	}
+	// When no sort is provided, an arbitrary variable with that name is returned
+	else if ((it = mapping.upper_bound({code, nullptr})) == mapping.end() || it->first.first != code)
+		return nullptr;
+
+	return new EasyTerm(it->second);
+}
+
+EasyTerm*
+EasySubstitution::instantiate(EasyTerm* term) const {
+	EasyTerm* result = new EasyTerm(term->getDag());
+	NarrowingVariableInfo vinfo;
+
+	DagNode* dag = result->getDag();
+
+	dag->computeBaseSortForGroundSubterms(false);
+	dag->indexVariables(vinfo, 0);
+
+	// Construct the substitution
+	// (DagNode::instantiate requires that all variables in the term are defined
+	// in the substitution, so identity mappings are added for them)
+	int nrVariables = vinfo.getNrVariables();
+
+	Substitution subs(nrVariables);
+
+	for (int i = 0; i < nrVariables; ++i) {
+		VariableDagNode* var = vinfo.index2Variable(i);
+		auto it = mapping.find({var->id(), var->symbol()->getRangeSort()});
+
+		subs.bind(i, it != mapping.end() ? it->second : var);
+	}
+
+	DagNode* instantiated = dag->instantiate(subs, true);
+
+	if (instantiated != nullptr)
+		result->setDag(instantiated);
+
+	return result;
+}
+
+void
+EasySubstitution::markReachableNodes() {
+	for (auto &pair : mapping)
+		pair.second->mark();
+}
+
+Term*
+EasySubstitution::makeVariable(const Mapping::const_iterator &it) const {
+	MixfixModule* mxmod = dynamic_cast<MixfixModule*>(it->second->symbol()->getModule());
+	VariableSymbol* varSymbol = static_cast<VariableSymbol*>(mxmod->instantiateVariable(it->first.second));
+
+	return new VariableTerm(varSymbol, it->first.first);
+}
+
+void
+EasySubstitution::getSubstitution(Vector<Term*> &variables, Vector<DagRoot*> &values) {
+	size_t nrVars = mapping.size();
+
+	variables.resize(nrVars);
+	values.resize(nrVars);
+
+	auto it = mapping.begin();
+
+	for (size_t i = 0; i < nrVars; ++i) {
+		variables[i] = makeVariable(it);
+		values[i] = new DagRoot(it->second);
+		++it;
+	}
+}
+
+EasySubstitution::Iterator::Iterator(const EasySubstitution* subs)
+ : subs(subs), it(subs->mapping.cbegin()) {
+
+}
+
+void
+EasySubstitution::Iterator::nextAssignment() {
+	++it;
+}
+
+EasyTerm*
+EasySubstitution::Iterator::getVariable() const {
+	if (it != subs->mapping.end())
+		return new EasyTerm(subs->makeVariable(it), true);
 
 	return nullptr;
 }
 
 EasyTerm*
-EasySubstitution::instantiate(EasyTerm* term) const {
-	// This implementation could be more efficient
+EasySubstitution::Iterator::getValue() const {
+	if (it != subs->mapping.end())
+		return new EasyTerm(it->second);
 
-	EasyTerm* result;
-
-	// Index variables
-	if (flags & NARROWING) {
-		DagNode* dagNode = term->getDag();
-		NarrowingVariableInfo vinfoCopy;
-		vinfoCopy.copy(*nvinfo);
-		dagNode->indexVariables(vinfoCopy, 0);
-		result = new EasyTerm(dagNode);
-	}
-	else {
-		Term* termCopy = term->termCopy();
-		VariableInfo vinfoCopy = *vinfo;
-		termCopy->indexVariables(vinfoCopy);
-		result = new EasyTerm(termCopy);
-		termCopy->dagify();
-	}
-
-	// Set ground flags
-	result->getDag()->computeBaseSortForGroundSubterms(false);
-
-	DagNode* instantiated = result->getDag()->instantiate(*subs, true);
-	if (instantiated != nullptr)
-		result->setDag(instantiated);
-
-	return result;
+	return nullptr;
 }
 
 VisibleModule* downModule(EasyTerm* term) {

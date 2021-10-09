@@ -49,8 +49,12 @@
 // Defined in term.i
 
 %makeIterable(StrategicSearch, Term);
+%makeIterable(RewriteSearchState, Term);
 %makeIterable(MatchSearchState, Substitution);
 %makeIterable(RewriteSequenceSearch, Term);
+%makeIterable(StrategySequenceSearch, Term);
+%makeIterable(VariantSearch, TermSubstitutionPair);
+%makeIterable(NarrowingSequenceSearch3, Term);
 
 // DagArgumentIterator
 
@@ -78,27 +82,8 @@
 %}
 
 // Substitution
+%substitutionPrint;
 
-%typemap(javacode) EasySubstitution %{
-	public String toString() {
-		int length = size();
-
-		if (length == 0)
-			return "empty";
-
-		StringBuilder repr = new StringBuilder();
-
-		repr.append(variable(0) + "=" + value(0));
-
-		for (int i = 1; i < length; i++)
-			repr.append(", " + variable(i) + "=" + value(i));
-
-		return repr.toString();
-	}
-%}
-
-%makeIterable(VariantSearch, TermSubstitutionPair);
-%makeIterable(NarrowingSequenceSearch3, Term);
 
 //
 // Defined in misc.i

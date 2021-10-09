@@ -27,6 +27,8 @@
 #include "testStrategy.hh"
 #include "subtermStrategy.hh"
 #include "callStrategy.hh"
+#include "choiceStrategy.hh"
+#include "sampleStrategy.hh"
 
 Module* getModule(StrategyExpression* expr) {
 
@@ -76,13 +78,24 @@ Module* getModule(StrategyExpression* expr) {
 		return getModule(i->getStrategy());
 
 	else if (BranchStrategy* b = dynamic_cast<BranchStrategy*>(expr)) {
+		Module* md = nullptr;
+
 		if (b->getInitialStrategy() != nullptr)
-			return getModule(b->getInitialStrategy());
-		if (b->getSuccessStrategy() != nullptr)
-			return getModule(b->getSuccessStrategy());
-		if (b->getFailureStrategy() != nullptr)
-			return getModule(b->getFailureStrategy());
+			md = getModule(b->getInitialStrategy());
+		if (md == nullptr && b->getSuccessStrategy() != nullptr)
+			md = getModule(b->getSuccessStrategy());
+		if (md == nullptr && b->getFailureStrategy() != nullptr)
+			md = getModule(b->getFailureStrategy());
+
+		return md;
 	}
+#if WITH_PROBABILISTIC_SLANG
+	else if (ChoiceStrategy* c = dynamic_cast<ChoiceStrategy*>(expr))
+		return c->getWeights()[0].getTerm()->symbol()->getModule();
+
+	else if (SampleStrategy* s = dynamic_cast<SampleStrategy*>(expr))
+		return s->getVariable()->symbol()->getModule();
+#endif
 
     	// Should not happen
 	return nullptr;

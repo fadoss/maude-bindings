@@ -162,6 +162,13 @@ inline void setAllowFiles(bool flag) {
 }
 
 /**
+ * Set the pseudorandom number generator seed.
+ *
+ * @param seed New pseudorandom number generator seed.
+ */
+void setRandomSeed(int seed);
+
+/**
  * Data associated to a hook and passed to its callback.
  */
 class HookData {

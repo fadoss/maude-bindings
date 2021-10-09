@@ -11,6 +11,12 @@ public class Test {
 		System.out.print("]");
 	}
 
+	private static void printPath(StrategySequenceSearch search) {
+		System.out.print("[");
+		printPath(search, search.getStateNr());
+		System.out.print("]");
+	}
+
 	private static void printPath(RewriteSequenceSearch search, int stateNr) {
 
 		int parent = search.getStateParent(stateNr);
@@ -21,6 +27,19 @@ public class Test {
 		else {
 			printPath(search, parent);
 			System.out.print(", " + search.getRule(stateNr) + ", " + search.getStateTerm(stateNr));
+		}
+	}
+
+	private static void printPath(StrategySequenceSearch search, int stateNr) {
+
+		int parent = search.getStateParent(stateNr);
+
+		if (parent < 0) {
+			System.out.print(search.getStateTerm(stateNr));
+		}
+		else {
+			printPath(search, parent);
+			System.out.print(", " + search.getTransition(stateNr) + ", " + search.getStateTerm(stateNr));
 		}
 	}
 
@@ -71,12 +90,26 @@ public class Test {
 		Term initial = example.parseTerm("f(a, a)");
 		Term pattern = example.parseTerm("f(c, X:Symbol)");
 
-		var sresults = initial.search(SearchType.ANY_STEPS, pattern);
+		{
+			var sresults = initial.search(SearchType.ANY_STEPS, pattern);
 
-		for (var result : sresults) {
-			System.out.print(result + " with " + sresults.getSubstitution().toString() + " by ");
-			printPath(sresults);
-			System.out.println();
+			for (var result : sresults) {
+				System.out.print(result + " with " + sresults.getSubstitution().toString() + " by ");
+				printPath(sresults);
+				System.out.println();
+			}
+		}
+
+		StrategyExpression s = example.parseStrategy("ab ; bc ; ab");
+
+		{
+			var sresults = initial.search(SearchType.ANY_STEPS, pattern, s);
+
+			for (var result : sresults) {
+				System.out.print(String.format("%s with %s by ", result, sresults.getSubstitution()));
+				printPath(sresults);
+				System.out.println(" before applying " + sresults.getStrategyContinuation());
+			}
 		}
 	}
 };

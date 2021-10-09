@@ -225,7 +225,7 @@ public:
 		/**
 		 * Check whether two symbols are the same.
 		 */
-		bool equal(Symbol* other) {
+		bool equal(Symbol* other) const {
 			return $self == other;
 		}
 
@@ -260,6 +260,13 @@ public:
 				$self->getModule())->getMetadata($self, index);
 
 			return metadata_code == NONE ? nullptr : Token::name(metadata_code);
+		}
+
+		/**
+		 * Whether the symbol is associative.
+		 */
+		bool isAssoc() const {
+			return dynamic_cast<const AssociativeSymbol*>($self) != 0;
 		}
 	}
 
@@ -395,6 +402,14 @@ public:
 	 * Whether the strategy definition has the @c nonexec attribute.
 	 */
 	bool isNonexec() const;
+	/**
+	 * Whether the strategy definition has a condition.
+	 */
+	bool hasCondition() const;
+	/**
+	 * Get the condition of the strategy definition.
+	 */
+	const Vector<ConditionFragment*>& getCondition() const;
 
 	%labeledObject;
 	%streamBasedPrint;
@@ -669,6 +684,23 @@ public:
 		 * is not an opaque strategy.
 		 */
 		RewriteStrategy* getStrategy() const;
+
+		%extend {
+			std::string REPR_METHOD() {
+				ostringstream stream;
+				switch ($self->getType()) {
+					case StrategyTransitionGraph::RULE_APPLICATION:
+						stream << $self->getRule();
+						return stream.str();
+					case StrategyTransitionGraph::OPAQUE_STRATEGY:
+						stream << $self->getStrategy();
+						return stream.str();
+					case StrategyTransitionGraph::SOLUTION:
+					default:
+						return "solution";
+				}
+			}
+		}
 	};
 
 	%extend {

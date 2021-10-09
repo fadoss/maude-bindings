@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '0.7'
+__version__ = '1.0'
 %}
 
 %define %makeIterable(CLASS)
@@ -36,14 +36,62 @@ __version__ = '0.7'
 // Defined in term.i
 
 %extend EasyTerm {
-%pythoncode %{
-	def __eq__(self, other):
-		return other is not None and self.equal(other)
 
-	__float__ = toFloat
-	__int__ = toInt
-	__hash__ = hash
-%}
+	%define %searchSignature(with_strat)
+		search(SearchType type, EasyTerm* target,
+		       #if with_strat
+		       StrategyExpression* strategy,
+		       #endif
+	               const Vector<ConditionFragment*> &condition = NO_CONDITION,
+		       int depth = -1)
+	%enddef
+
+	%rename (_search) %searchSignature(1);
+	%feature("shadow") %searchSignature(1) %{ %}
+
+	%feature("shadow") %searchSignature(0) %{
+		def search(self, type, target, strategy=None, condition=None, depth=-1):
+			r"""
+			Search states that match into a given pattern and satisfy a given condition
+			by rewriting from this term.
+
+			:type type: int
+			:param type: Type of search (number of steps).
+			:type target: :py:class:`Term`
+			:param target: Pattern term.
+			:type strategy: :py:class:`StrategyExpression`, optional
+			:param strategy: Strategy to control the search.
+			:type condition: :py:class:`Condition` or sequence of condition fragments, optional
+			:param condition: Condition that solutions must satisfy.
+			:type depth: int, optional
+			:param depth: Depth bound
+
+			:rtype: either :py:class:`StrategySequenceSearch` if a strategy is provided or :py:class:`RewriteSequenceSearch`
+			:return: An object to iterate through matches.
+			"""
+			# Fix the case where a condition and not a strategy has been specified
+			if strategy is not None and not isinstance(strategy, StrategyExpression):
+				if condition is not None:
+					depth = condition
+				condition, strategy = strategy, None
+
+			if condition is None:
+				condition = _maude.cvar.Term_NO_CONDITION
+
+			if strategy is not None:
+				return _maude.Term__search(self, type, target, strategy, condition, depth)
+			else:
+				return _maude.Term_search(self, type, target, condition, depth)
+	%}
+
+	%pythoncode %{
+		def __eq__(self, other):
+			return other is not None and self.equal(other)
+
+		__float__ = toFloat
+		__int__ = toInt
+		__hash__ = hash
+	%}
 }
 
 %extend StrategicSearch {
@@ -59,7 +107,18 @@ __version__ = '0.7'
 %}
 }
 
-%makeIterable(MatchSearchState);
+%extend MatchSearchState {
+%pythoncode %{
+	def __iter__(self):
+		return self
+
+	def __next__(self):
+		nxt = self.__next()
+		if nxt is None:
+			raise StopIteration
+		return nxt, lambda t: self.fillContext(t)
+%}
+}
 
 %extend RewriteSequenceSearch {
 %pythoncode %{
@@ -97,6 +156,43 @@ __version__ = '0.7'
 %}
 }
 
+%extend StrategySequenceSearch {
+%pythoncode %{
+	def __iter__(self):
+		return self
+
+	def pathTo(self, stateNr):
+		r"""
+		Get the path from the initial to the given state.
+
+		:type stateNr: int
+		:param stateNr: State index.
+
+		:rtype: list of :py:class:`Term` and :py:class:`StrategyGraphTransition`
+		:return: A list interleaving terms and transitions that connect
+		  them from the initial to the given state.
+		"""
+		parent = self.getStateParent(stateNr)
+
+		if parent < 0:
+			path = [self.getStateTerm(stateNr)]
+		else:
+			path = self.pathTo(parent)
+
+			path.append(self.getTransition(stateNr))
+			path.append(self.getStateTerm(stateNr))
+
+		return path
+
+	def __next__(self):
+		term = self.__next()
+		if term is None:
+			raise StopIteration
+		return (term, self.getSubstitution(), lambda: self.pathTo(self.getStateNr()),
+		        self.getStrategyContinuation(), self.getRewriteCount())
+%}
+}
+
 %extend DagArgumentIterator {
 %pythoncode %{
 	def __iter__(self):
@@ -112,14 +208,28 @@ __version__ = '0.7'
 }
 
 %extend EasySubstitution {
+
+	%rename (__iter__) iterator;
+	%rename (SubstitutionIterator) Iterator;
+
 %pythoncode %{
-	def __getitem__(self, index):
-		return self.variable(index), self.value(index)
+	_raw_init = __init__
+
+	def __init__(self, *args):
+		if len(args) == 2:
+			self._raw_init(*args)
+		elif len(args) == 1 and isinstance(args[0], dict):
+			self._raw_init(list(args[0].keys()), list(args[0].values()))
+		else:
+			raise TypeError('__init__() takes either a dictionary or two sequences of Term.')
+
+	def __getitem__(self, variable):
+		if isinstance(variable, str):
+			return self.find(variable)
+		else:
+			return self.value(variable)
 
 	__len__ = size
-
-	def __iter__(self):
-		return VectorIterator(self, self.size())
 
 	def __repr__(self):
 		return 'Subtitution with {} variables'.format(self.size())
@@ -128,8 +238,21 @@ __version__ = '0.7'
 		if len(self) == 0:
 			return 'empty'
 
-		return ', '.join(['{}={}'.format(self.variable(i), self.value(i))
-				for i in range(0, len(self))])
+		return ', '.join(['{}={}'.format(variable, value) for variable, value in self])
+%}
+}
+
+%extend EasySubstitution::Iterator {
+%pythoncode %{
+	def __next__(self):
+		variable, value = self.getVariable(), self.getValue()
+
+		if variable is None:
+			raise StopIteration
+
+		self.nextAssignment()
+
+		return variable, value
 %}
 }
 
@@ -156,6 +279,19 @@ __version__ = '0.7'
 		if nxt is None:
 			raise StopIteration
 		return nxt, self.getSubstitution(), self.getUnifier()
+%}
+}
+
+%extend RewriteSearchState {
+%pythoncode %{
+	def __iter__(self):
+		return self
+
+	def __next__(self):
+		nxt = self.__next()
+		if nxt is None:
+			raise StopIteration
+		return nxt, self.getSubstitution(), lambda t: self.fillContext(t), self.getRule()
 %}
 }
 
@@ -260,10 +396,12 @@ bool convertVector(PyObject* input, Vector<T*>* &vect, swig_type_info* swig_elem
 		T* f;
 		if (!SWIG_IsOK(SWIG_ConvertPtr(o, (void **) &f, swig_elem_type, 0))) {
 			delete vect;
+			Py_XDECREF(o);
 			return false;
 		}
 
 		(*vect)[i] = f;
+		Py_XDECREF(o);
 	}
 
 	return true;
@@ -302,6 +440,13 @@ bool convertVector(PyObject* input, Vector<T*>* &vect, swig_type_info* swig_elem
 	}
 }
 
+// Instruction so that ConditionFragments returned by functions are
+// automatically casted to the corresponding subtype
+
+%include factory.i
+
+%factory(ConditionFragment*, EqualityConditionFragment, AssignmentConditionFragment,
+         SortTestConditionFragment, RewriteConditionFragment);
 
 //
 // Signal handlers
