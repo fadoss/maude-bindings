@@ -1,0 +1,1133 @@
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+<title>Module</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="dc.created" content="2025-01-02">
+<meta name="description" content="declaration: package: es.ucm.maude.bindings, class: Module">
+<meta name="generator" content="javadoc/ClassWriter">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../script-files/script.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-ui.min.js"></script>
+</head>
+<body class="class-declaration-page">
+<script type="text/javascript">const pathtoroot = "../../../../";
+loadScripts(document, 'script');</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<header role="banner">
+<nav role="navigation">
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="top-nav" id="navbar-top">
+<div class="nav-content">
+<div class="nav-menu-button"><button id="navbar-toggle-button" aria-controls="navbar-top" aria-expanded="false" aria-label="Toggle navigation links"><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span></button></div>
+<div class="skip-nav"><a href="#skip-navbar-top" title="Skip navigation links">Skip navigation links</a></div>
+<ul id="navbar-top-firstrow" class="nav-list" title="Navigation">
+<li><a href="package-summary.html">Package</a></li>
+<li class="nav-bar-cell1-rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../search.html">Search</a></li>
+<li><a href="../../../../help-doc.html#class">Help</a></li>
+</ul>
+</div>
+</div>
+<div class="sub-nav">
+<div class="nav-content">
+<ol class="sub-nav-list">
+<li><a href="package-summary.html">es.ucm.maude.bindings</a></li>
+<li><a href="Module.html" class="current-selection">Module</a></li>
+</ol>
+<div class="nav-list-search">
+<input type="text" id="search-input" disabled placeholder="Search" aria-label="Search in documentation" autocomplete="off">
+<input type="reset" id="reset-search" disabled value="Reset">
+</div>
+</div>
+</div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<span class="skip-nav" id="skip-navbar-top"></span></nav>
+</header>
+<div class="main-grid">
+<nav role="navigation" class="toc" aria-label="Table of contents">
+<div class="toc-header">Contents&nbsp;
+<input type="text" class="filter-input" disabled placeholder="Filter" aria-label="Filter table of contents" autocomplete="off">
+<input type="reset" class="reset-filter" disabled value="Reset">
+</div>
+<button class="hide-sidebar"><span>Hide sidebar&nbsp;</span>&#10094;</button><button class="show-sidebar">&#10095;<span>&nbsp;Show sidebar</span></button>
+<ol class="toc-list">
+<li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#nested-class-summary" tabindex="0">Nested Class Summary</a></li>
+<li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#delete()" tabindex="0">delete()</a></li>
+<li><a href="#getModuleType()" tabindex="0">getModuleType()</a></li>
+<li><a href="#getSorts()" tabindex="0">getSorts()</a></li>
+<li><a href="#getSymbols()" tabindex="0">getSymbols()</a></li>
+<li><a href="#getKinds()" tabindex="0">getKinds()</a></li>
+<li><a href="#getMembershipAxioms()" tabindex="0">getMembershipAxioms()</a></li>
+<li><a href="#getEquations()" tabindex="0">getEquations()</a></li>
+<li><a href="#getRules()" tabindex="0">getRules()</a></li>
+<li><a href="#getStrategies()" tabindex="0">getStrategies()</a></li>
+<li><a href="#getStrategyDefinitions()" tabindex="0">getStrategyDefinitions()</a></li>
+<li><a href="#getNrParameters()" tabindex="0">getNrParameters()</a></li>
+<li><a href="#hasFreeParameters()" tabindex="0">hasFreeParameters()</a></li>
+<li><a href="#getNrImportedSorts()" tabindex="0">getNrImportedSorts()</a></li>
+<li><a href="#getNrImportedSymbols()" tabindex="0">getNrImportedSymbols()</a></li>
+<li><a href="#getNrImportedStrategies()" tabindex="0">getNrImportedStrategies()</a></li>
+<li><a href="#getNrOriginalEquations()" tabindex="0">getNrOriginalEquations()</a></li>
+<li><a href="#getNrOriginalRules()" tabindex="0">getNrOriginalRules()</a></li>
+<li><a href="#getNrOriginalStrategyDefinitions()" tabindex="0">getNrOriginalStrategyDefinitions()</a></li>
+<li><a href="#getParameterTheory(int)" tabindex="0">getParameterTheory(int)</a></li>
+<li><a href="#getParameterName(int)" tabindex="0">getParameterName(int)</a></li>
+<li><a href="#findSort(java.lang.String)" tabindex="0">findSort(String)</a></li>
+<li><a href="#findSymbol(java.lang.String,es.ucm.maude.bindings.KindVector,es.ucm.maude.bindings.Kind)" tabindex="0">findSymbol(String, KindVector, Kind)</a></li>
+<li><a href="#parseTerm(es.ucm.maude.bindings.TokenVector,es.ucm.maude.bindings.Kind)" tabindex="0">parseTerm(TokenVector, Kind)</a></li>
+<li><a href="#parseTerm(es.ucm.maude.bindings.TokenVector)" tabindex="0">parseTerm(TokenVector)</a></li>
+<li><a href="#parseTerm(java.lang.String,es.ucm.maude.bindings.Kind,es.ucm.maude.bindings.TermVector)" tabindex="0">parseTerm(String, Kind, TermVector)</a></li>
+<li><a href="#parseTerm(java.lang.String,es.ucm.maude.bindings.Kind)" tabindex="0">parseTerm(String, Kind)</a></li>
+<li><a href="#parseTerm(java.lang.String)" tabindex="0">parseTerm(String)</a></li>
+<li><a href="#parseStrategy(java.lang.String,es.ucm.maude.bindings.TermVector)" tabindex="0">parseStrategy(String, TermVector)</a></li>
+<li><a href="#parseStrategy(java.lang.String)" tabindex="0">parseStrategy(String)</a></li>
+<li><a href="#downTerm(es.ucm.maude.bindings.Term)" tabindex="0">downTerm(Term)</a></li>
+<li><a href="#downStrategy(es.ucm.maude.bindings.Term)" tabindex="0">downStrategy(Term)</a></li>
+<li><a href="#upTerm(es.ucm.maude.bindings.Term)" tabindex="0">upTerm(Term)</a></li>
+<li><a href="#upStrategy(es.ucm.maude.bindings.StrategyExpression)" tabindex="0">upStrategy(StrategyExpression)</a></li>
+<li><a href="#unify(es.ucm.maude.bindings.TermPairVector,boolean)" tabindex="0">unify(TermPairVector, boolean)</a></li>
+<li><a href="#unify(es.ucm.maude.bindings.TermPairVector)" tabindex="0">unify(TermPairVector)</a></li>
+<li><a href="#variant_unify(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector,boolean)" tabindex="0">variant_unify(TermPairVector, TermVector, boolean)</a></li>
+<li><a href="#variant_unify(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector)" tabindex="0">variant_unify(TermPairVector, TermVector)</a></li>
+<li><a href="#variant_unify(es.ucm.maude.bindings.TermPairVector)" tabindex="0">variant_unify(TermPairVector)</a></li>
+<li><a href="#variant_match(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector)" tabindex="0">variant_match(TermPairVector, TermVector)</a></li>
+<li><a href="#variant_match(es.ucm.maude.bindings.TermPairVector)" tabindex="0">variant_match(TermPairVector)</a></li>
+<li><a href="#vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term,int,int)" tabindex="0">vu_narrow(TermVector, SearchType, Term, int, int)</a></li>
+<li><a href="#vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term,int)" tabindex="0">vu_narrow(TermVector, SearchType, Term, int)</a></li>
+<li><a href="#vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term)" tabindex="0">vu_narrow(TermVector, SearchType, Term)</a></li>
+<li><a href="#toLatex(boolean)" tabindex="0">toLatex(boolean)</a></li>
+<li><a href="#toLatex()" tabindex="0">toLatex()</a></li>
+<li><a href="#toString()" tabindex="0">toString()</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+<main role="main">
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<h1 title="Class Module" class="title">Class Module</h1>
+</div>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance">es.ucm.maude.bindings.Module</div>
+</div>
+<section class="class-description" id="class-description">
+<div class="horizontal-scroll">
+<hr>
+<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Module</span>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">A Maude module.</div>
+</div>
+</section>
+<section class="summary">
+<ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="Module.ModuleType.html" class="type-name-link" title="class in es.ucm.maude.bindings">Module.ModuleType</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Module or theory type (function, system or strategy).</div>
+</div>
+</div>
+</section>
+</li>
+<!-- ========== METHOD SUMMARY =========== -->
+<li>
+<section class="method-summary" id="method-summary">
+<h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delete()" class="member-name-link">delete</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#downStrategy(es.ucm.maude.bindings.Term)" class="member-name-link">downStrategy</a><wbr>(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get a strategy expression in this module from its<br>
+ metarepresentation in (possibly) another module.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#downTerm(es.ucm.maude.bindings.Term)" class="member-name-link">downTerm</a><wbr>(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get a term in this module from its metarepresentation<br>
+ in (possibly) another module.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Sort.html" title="class in es.ucm.maude.bindings">Sort</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findSort(java.lang.String)" class="member-name-link">findSort</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Finds a sort by its name in the module.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Symbol.html" title="class in es.ucm.maude.bindings">Symbol</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findSymbol(java.lang.String,es.ucm.maude.bindings.KindVector,es.ucm.maude.bindings.Kind)" class="member-name-link">findSymbol</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="KindVector.html" title="class in es.ucm.maude.bindings">KindVector</a>&nbsp;domainKinds,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;rangeKind)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Find a symbol by its name and signature in the module.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="EquationVector.html" title="class in es.ucm.maude.bindings">EquationVector</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEquations()" class="member-name-link">getEquations</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the equations defined in the module.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="KindVector.html" title="class in es.ucm.maude.bindings">KindVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKinds()" class="member-name-link">getKinds</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the kinds defined in the module.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SubsortVector.html" title="class in es.ucm.maude.bindings">SubsortVector</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMembershipAxioms()" class="member-name-link">getMembershipAxioms</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the membership axioms defined in the module.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Module.ModuleType.html" title="class in es.ucm.maude.bindings">Module.ModuleType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getModuleType()" class="member-name-link">getModuleType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the module type.<br>
+ <br>
+ This allows distinguishing modules from theories, and the<br>
+ functional, system and strategy variants within them.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNrImportedSorts()" class="member-name-link">getNrImportedSorts</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of sorts imported from other modules or parameters.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNrImportedStrategies()" class="member-name-link">getNrImportedStrategies</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of strategies imported from other modules or parameters.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNrImportedSymbols()" class="member-name-link">getNrImportedSymbols</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of symbols imported from other modules or parameters.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNrOriginalEquations()" class="member-name-link">getNrOriginalEquations</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of equations from this module.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNrOriginalRules()" class="member-name-link">getNrOriginalRules</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of rules from this module.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNrOriginalStrategyDefinitions()" class="member-name-link">getNrOriginalStrategyDefinitions</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of strategy definitions from this module.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNrParameters()" class="member-name-link">getNrParameters</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of parameters of the parameterized module.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameterName(int)" class="member-name-link">getParameterName</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the name of a module parameter.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Module.html" title="class in es.ucm.maude.bindings">Module</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameterTheory(int)" class="member-name-link">getParameterTheory</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the theory of the given parameter.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="RuleVector.html" title="class in es.ucm.maude.bindings">RuleVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRules()" class="member-name-link">getRules</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the rules defined in the module.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SortVector.html" title="class in es.ucm.maude.bindings">SortVector</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSorts()" class="member-name-link">getSorts</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the sorts declared in the module.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StratVector.html" title="class in es.ucm.maude.bindings">StratVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStrategies()" class="member-name-link">getStrategies</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the strategies declared in the module.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StratDefVector.html" title="class in es.ucm.maude.bindings">StratDefVector</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStrategyDefinitions()" class="member-name-link">getStrategyDefinitions</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the strategy definitions defined in the module.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SymbolVector.html" title="class in es.ucm.maude.bindings">SymbolVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSymbols()" class="member-name-link">getSymbols</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the symbols declared in the module.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasFreeParameters()" class="member-name-link">hasFreeParameters</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Is this a parameterized module with free parameters?</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseStrategy(java.lang.String)" class="member-name-link">parseStrategy</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;strat_str)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Parse a strategy expression.<br>
+ <br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseStrategy(java.lang.String,es.ucm.maude.bindings.TermVector)" class="member-name-link">parseStrategy</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;strat_str,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;vars)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Parse a strategy expression.<br>
+ <br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseTerm(es.ucm.maude.bindings.TokenVector)" class="member-name-link">parseTerm</a><wbr>(<a href="TokenVector.html" title="class in es.ucm.maude.bindings">TokenVector</a>&nbsp;bubble)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Parse a term.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseTerm(es.ucm.maude.bindings.TokenVector,es.ucm.maude.bindings.Kind)" class="member-name-link">parseTerm</a><wbr>(<a href="TokenVector.html" title="class in es.ucm.maude.bindings">TokenVector</a>&nbsp;bubble,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;kind)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Parse a term.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseTerm(java.lang.String)" class="member-name-link">parseTerm</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;term_str)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Parse a term.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseTerm(java.lang.String,es.ucm.maude.bindings.Kind)" class="member-name-link">parseTerm</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;term_str,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;kind)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Parse a term.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseTerm(java.lang.String,es.ucm.maude.bindings.Kind,es.ucm.maude.bindings.TermVector)" class="member-name-link">parseTerm</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;term_str,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;kind,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;vars)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Parse a term.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLatex()" class="member-name-link">toLatex</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Obtain the LaTeX representation of this module.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLatex(boolean)" class="member-name-link">toLatex</a><wbr>(boolean&nbsp;all)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Obtain the LaTeX representation of this module.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="UnificationProblem.html" title="class in es.ucm.maude.bindings">UnificationProblem</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unify(es.ucm.maude.bindings.TermPairVector)" class="member-name-link">unify</a><wbr>(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Solves the given unification problem.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="UnificationProblem.html" title="class in es.ucm.maude.bindings">UnificationProblem</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unify(es.ucm.maude.bindings.TermPairVector,boolean)" class="member-name-link">unify</a><wbr>(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ boolean&nbsp;irredundant)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Solves the given unification problem.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#upStrategy(es.ucm.maude.bindings.StrategyExpression)" class="member-name-link">upStrategy</a><wbr>(<a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a>&nbsp;expr)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the metarepresentation in this module of a strategy<br>
+ expression in (possibly) another module.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#upTerm(es.ucm.maude.bindings.Term)" class="member-name-link">upTerm</a><wbr>(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the metarepresentation in this module of a term<br>
+ in (possibly) another module.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#variant_match(es.ucm.maude.bindings.TermPairVector)" class="member-name-link">variant_match</a><wbr>(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Computes a complete set of order-sorted matches modulo the equations<br>
+ declared with the variant attribute (which must satisfy the finite<br>
+ variant property) plus the (supported) equational axioms in the<br>
+ given module.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#variant_match(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector)" class="member-name-link">variant_match</a><wbr>(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;irreducible)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Computes a complete set of order-sorted matches modulo the equations<br>
+ declared with the variant attribute (which must satisfy the finite<br>
+ variant property) plus the (supported) equational axioms in the<br>
+ given module.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#variant_unify(es.ucm.maude.bindings.TermPairVector)" class="member-name-link">variant_unify</a><wbr>(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Solves the given unification problem using variants.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#variant_unify(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector)" class="member-name-link">variant_unify</a><wbr>(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;irreducible)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Solves the given unification problem using variants.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#variant_unify(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector,boolean)" class="member-name-link">variant_unify</a><wbr>(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;irreducible,
+ boolean&nbsp;filtered)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Solves the given unification problem using variants.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="NarrowingSequenceSearch.html" title="class in es.ucm.maude.bindings">NarrowingSequenceSearch</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term)" class="member-name-link">vu_narrow</a><wbr>(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;subject,
+ <a href="SearchType.html" title="class in es.ucm.maude.bindings">SearchType</a>&nbsp;type,
+ <a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Narrowing-based search of terms that unify with the given target<br>
+ with multiple initial states.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="NarrowingSequenceSearch.html" title="class in es.ucm.maude.bindings">NarrowingSequenceSearch</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term,int)" class="member-name-link">vu_narrow</a><wbr>(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;subject,
+ <a href="SearchType.html" title="class in es.ucm.maude.bindings">SearchType</a>&nbsp;type,
+ <a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;target,
+ int&nbsp;depth)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Narrowing-based search of terms that unify with the given target<br>
+ with multiple initial states.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="NarrowingSequenceSearch.html" title="class in es.ucm.maude.bindings">NarrowingSequenceSearch</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term,int,int)" class="member-name-link">vu_narrow</a><wbr>(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;subject,
+ <a href="SearchType.html" title="class in es.ucm.maude.bindings">SearchType</a>&nbsp;type,
+ <a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;target,
+ int&nbsp;depth,
+ int&nbsp;flags)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Narrowing-based search of terms that unify with the given target<br>
+ with multiple initial states.<br>
+ <br></div>
+</div>
+</div>
+</div>
+</div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="delete()">
+<h3>delete</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">delete</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getModuleType()">
+<h3>getModuleType</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Module.ModuleType.html" title="class in es.ucm.maude.bindings">Module.ModuleType</a></span>&nbsp;<span class="element-name">getModuleType</span>()</div>
+<div class="block">Get the module type.<br>
+ <br>
+ This allows distinguishing modules from theories, and the<br>
+ functional, system and strategy variants within them.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getSorts()">
+<h3>getSorts</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SortVector.html" title="class in es.ucm.maude.bindings">SortVector</a></span>&nbsp;<span class="element-name">getSorts</span>()</div>
+<div class="block">Get the sorts declared in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getSymbols()">
+<h3>getSymbols</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SymbolVector.html" title="class in es.ucm.maude.bindings">SymbolVector</a></span>&nbsp;<span class="element-name">getSymbols</span>()</div>
+<div class="block">Get the symbols declared in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getKinds()">
+<h3>getKinds</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="KindVector.html" title="class in es.ucm.maude.bindings">KindVector</a></span>&nbsp;<span class="element-name">getKinds</span>()</div>
+<div class="block">Get the kinds defined in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getMembershipAxioms()">
+<h3>getMembershipAxioms</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SubsortVector.html" title="class in es.ucm.maude.bindings">SubsortVector</a></span>&nbsp;<span class="element-name">getMembershipAxioms</span>()</div>
+<div class="block">Get the membership axioms defined in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getEquations()">
+<h3>getEquations</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="EquationVector.html" title="class in es.ucm.maude.bindings">EquationVector</a></span>&nbsp;<span class="element-name">getEquations</span>()</div>
+<div class="block">Get the equations defined in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getRules()">
+<h3>getRules</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="RuleVector.html" title="class in es.ucm.maude.bindings">RuleVector</a></span>&nbsp;<span class="element-name">getRules</span>()</div>
+<div class="block">Get the rules defined in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getStrategies()">
+<h3>getStrategies</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StratVector.html" title="class in es.ucm.maude.bindings">StratVector</a></span>&nbsp;<span class="element-name">getStrategies</span>()</div>
+<div class="block">Get the strategies declared in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getStrategyDefinitions()">
+<h3>getStrategyDefinitions</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StratDefVector.html" title="class in es.ucm.maude.bindings">StratDefVector</a></span>&nbsp;<span class="element-name">getStrategyDefinitions</span>()</div>
+<div class="block">Get the strategy definitions defined in the module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getNrParameters()">
+<h3>getNrParameters</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNrParameters</span>()</div>
+<div class="block">Number of parameters of the parameterized module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasFreeParameters()">
+<h3>hasFreeParameters</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasFreeParameters</span>()</div>
+<div class="block">Is this a parameterized module with free parameters?</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getNrImportedSorts()">
+<h3>getNrImportedSorts</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNrImportedSorts</span>()</div>
+<div class="block">Number of sorts imported from other modules or parameters.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getNrImportedSymbols()">
+<h3>getNrImportedSymbols</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNrImportedSymbols</span>()</div>
+<div class="block">Number of symbols imported from other modules or parameters.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getNrImportedStrategies()">
+<h3>getNrImportedStrategies</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNrImportedStrategies</span>()</div>
+<div class="block">Number of strategies imported from other modules or parameters.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getNrOriginalEquations()">
+<h3>getNrOriginalEquations</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNrOriginalEquations</span>()</div>
+<div class="block">Number of equations from this module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getNrOriginalRules()">
+<h3>getNrOriginalRules</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNrOriginalRules</span>()</div>
+<div class="block">Number of rules from this module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getNrOriginalStrategyDefinitions()">
+<h3>getNrOriginalStrategyDefinitions</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNrOriginalStrategyDefinitions</span>()</div>
+<div class="block">Number of strategy definitions from this module.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getParameterTheory(int)">
+<h3>getParameterTheory</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Module.html" title="class in es.ucm.maude.bindings">Module</a></span>&nbsp;<span class="element-name">getParameterTheory</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="block">Get the theory of the given parameter.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getParameterName(int)">
+<h3>getParameterName</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getParameterName</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="block">Get the name of a module parameter.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>index</code> - Index of the parameter.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="findSort(java.lang.String)">
+<h3>findSort</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Sort.html" title="class in es.ucm.maude.bindings">Sort</a></span>&nbsp;<span class="element-name">findSort</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="block">Finds a sort by its name in the module.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - The name of the sort.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The sort or null if it does not exist.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="findSymbol(java.lang.String,es.ucm.maude.bindings.KindVector,es.ucm.maude.bindings.Kind)">
+<h3>findSymbol</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Symbol.html" title="class in es.ucm.maude.bindings">Symbol</a></span>&nbsp;<span class="element-name">findSymbol</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="KindVector.html" title="class in es.ucm.maude.bindings">KindVector</a>&nbsp;domainKinds,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;rangeKind)</span></div>
+<div class="block">Find a symbol by its name and signature in the module.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - The name of the sort.<br></dd>
+<dd><code>domainKinds</code> - Kinds of the symbol domain.<br></dd>
+<dd><code>rangeKind</code> - Range kind of the symbol.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The symbol or null if it does not exist.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="parseTerm(es.ucm.maude.bindings.TokenVector,es.ucm.maude.bindings.Kind)">
+<h3>parseTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">parseTerm</span><wbr><span class="parameters">(<a href="TokenVector.html" title="class in es.ucm.maude.bindings">TokenVector</a>&nbsp;bubble,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;kind)</span></div>
+<div class="block">Parse a term.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>bubble</code> - Tokenized term.<br></dd>
+<dd><code>kind</code> - Restrict parsing to terms of the given kind.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="parseTerm(es.ucm.maude.bindings.TokenVector)">
+<h3>parseTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">parseTerm</span><wbr><span class="parameters">(<a href="TokenVector.html" title="class in es.ucm.maude.bindings">TokenVector</a>&nbsp;bubble)</span></div>
+<div class="block">Parse a term.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>bubble</code> - Tokenized term.<br></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="parseTerm(java.lang.String,es.ucm.maude.bindings.Kind,es.ucm.maude.bindings.TermVector)">
+<h3>parseTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">parseTerm</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;term_str,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;kind,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;vars)</span></div>
+<div class="block">Parse a term.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>term_str</code> - A term represented as a string.<br></dd>
+<dd><code>kind</code> - Restrict parsing to terms of the given kind.<br></dd>
+<dd><code>vars</code> - Variables that may appear without explicit type<br>
+ annotation in the strategy.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="parseTerm(java.lang.String,es.ucm.maude.bindings.Kind)">
+<h3>parseTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">parseTerm</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;term_str,
+ <a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a>&nbsp;kind)</span></div>
+<div class="block">Parse a term.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>term_str</code> - A term represented as a string.<br></dd>
+<dd><code>kind</code> - Restrict parsing to terms of the given kind.<br></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="parseTerm(java.lang.String)">
+<h3>parseTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">parseTerm</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;term_str)</span></div>
+<div class="block">Parse a term.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>term_str</code> - A term represented as a string.<br>
+ <br></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="parseStrategy(java.lang.String,es.ucm.maude.bindings.TermVector)">
+<h3>parseStrategy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a></span>&nbsp;<span class="element-name">parseStrategy</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;strat_str,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;vars)</span></div>
+<div class="block">Parse a strategy expression.<br>
+ <br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>vars</code> - Variables that may appear without explicit type<br>
+ annotation in the strategy.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="parseStrategy(java.lang.String)">
+<h3>parseStrategy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a></span>&nbsp;<span class="element-name">parseStrategy</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;strat_str)</span></div>
+<div class="block">Parse a strategy expression.<br>
+ <br>
+ <br></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="downTerm(es.ucm.maude.bindings.Term)">
+<h3>downTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">downTerm</span><wbr><span class="parameters">(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</span></div>
+<div class="block">Get a term in this module from its metarepresentation<br>
+ in (possibly) another module.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>term</code> - The metarepresentation of a term, that is,<br>
+ a valid element of the <code>Term</code> sort in <code>META-TERM</code>.<br>
+ This term must belong to a module where the <code>META-LEVEL</code><br>
+ module is included. The term will be reduced.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The term or null if the metarepresentation was<br>
+ not valid.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="downStrategy(es.ucm.maude.bindings.Term)">
+<h3>downStrategy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a></span>&nbsp;<span class="element-name">downStrategy</span><wbr><span class="parameters">(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</span></div>
+<div class="block">Get a strategy expression in this module from its<br>
+ metarepresentation in (possibly) another module.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>term</code> - The metarepresentation of a strategy, that is,<br>
+ a valid element of the <code>Strategy</code> sort in <code>META-STRATEGY</code>.<br>
+ This term must belong to a module where the <code>META-LEVEL</code><br>
+ module is included. The term will be reduced.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The strategy expression or null if the<br>
+ metarepresentation was not valid.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="upTerm(es.ucm.maude.bindings.Term)">
+<h3>upTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">upTerm</span><wbr><span class="parameters">(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</span></div>
+<div class="block">Get the metarepresentation in this module of a term<br>
+ in (possibly) another module. This module must contain<br>
+ <code>META-LEVEL</code>.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>term</code> - Any term.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The metarepresentation term or null.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="upStrategy(es.ucm.maude.bindings.StrategyExpression)">
+<h3>upStrategy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">upStrategy</span><wbr><span class="parameters">(<a href="StrategyExpression.html" title="class in es.ucm.maude.bindings">StrategyExpression</a>&nbsp;expr)</span></div>
+<div class="block">Get the metarepresentation in this module of a strategy<br>
+ expression in (possibly) another module. This module must<br>
+ contain <code>META-LEVEL</code>.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>expr</code> - Any strategy expression.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The metarepresented strategy or null.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="unify(es.ucm.maude.bindings.TermPairVector,boolean)">
+<h3>unify</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="UnificationProblem.html" title="class in es.ucm.maude.bindings">UnificationProblem</a></span>&nbsp;<span class="element-name">unify</span><wbr><span class="parameters">(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ boolean&nbsp;irredundant)</span></div>
+<div class="block">Solves the given unification problem.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>problem</code> - A list of pairs of terms to be unified.<br></dd>
+<dd><code>irredundant</code> - Whether to compute a minimal set of unifiers.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>An object to iterate through unifiers.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="unify(es.ucm.maude.bindings.TermPairVector)">
+<h3>unify</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="UnificationProblem.html" title="class in es.ucm.maude.bindings">UnificationProblem</a></span>&nbsp;<span class="element-name">unify</span><wbr><span class="parameters">(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem)</span></div>
+<div class="block">Solves the given unification problem.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>problem</code> - A list of pairs of terms to be unified.<br>
+ <br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>An object to iterate through unifiers.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="variant_unify(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector,boolean)">
+<h3>variant_unify</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></span>&nbsp;<span class="element-name">variant_unify</span><wbr><span class="parameters">(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;irreducible,
+ boolean&nbsp;filtered)</span></div>
+<div class="block">Solves the given unification problem using variants.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>problem</code> - A list of pairs of terms to be unified.<br></dd>
+<dd><code>irreducible</code> - Irreducible terms.<br></dd>
+<dd><code>filtered</code> - Whether to compute a minimal set of unifiers.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>An object to iterate through unifiers.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="variant_unify(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector)">
+<h3>variant_unify</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></span>&nbsp;<span class="element-name">variant_unify</span><wbr><span class="parameters">(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;irreducible)</span></div>
+<div class="block">Solves the given unification problem using variants.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>problem</code> - A list of pairs of terms to be unified.<br></dd>
+<dd><code>irreducible</code> - Irreducible terms.<br>
+ <br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>An object to iterate through unifiers.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="variant_unify(es.ucm.maude.bindings.TermPairVector)">
+<h3>variant_unify</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></span>&nbsp;<span class="element-name">variant_unify</span><wbr><span class="parameters">(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem)</span></div>
+<div class="block">Solves the given unification problem using variants.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>problem</code> - A list of pairs of terms to be unified.<br>
+ <br>
+ <br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>An object to iterate through unifiers.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="variant_match(es.ucm.maude.bindings.TermPairVector,es.ucm.maude.bindings.TermVector)">
+<h3>variant_match</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></span>&nbsp;<span class="element-name">variant_match</span><wbr><span class="parameters">(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;irreducible)</span></div>
+<div class="block">Computes a complete set of order-sorted matches modulo the equations<br>
+ declared with the variant attribute (which must satisfy the finite<br>
+ variant property) plus the (supported) equational axioms in the<br>
+ given module.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>problem</code> - A list of pairs of terms to be matched.<br></dd>
+<dd><code>irreducible</code> - Irreducible terms.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>An object to iterate through unifiers.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="variant_match(es.ucm.maude.bindings.TermPairVector)">
+<h3>variant_match</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="VariantUnifierSearch.html" title="class in es.ucm.maude.bindings">VariantUnifierSearch</a></span>&nbsp;<span class="element-name">variant_match</span><wbr><span class="parameters">(<a href="TermPairVector.html" title="class in es.ucm.maude.bindings">TermPairVector</a>&nbsp;problem)</span></div>
+<div class="block">Computes a complete set of order-sorted matches modulo the equations<br>
+ declared with the variant attribute (which must satisfy the finite<br>
+ variant property) plus the (supported) equational axioms in the<br>
+ given module.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>problem</code> - A list of pairs of terms to be matched.<br>
+ <br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>An object to iterate through unifiers.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term,int,int)">
+<h3>vu_narrow</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="NarrowingSequenceSearch.html" title="class in es.ucm.maude.bindings">NarrowingSequenceSearch</a></span>&nbsp;<span class="element-name">vu_narrow</span><wbr><span class="parameters">(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;subject,
+ <a href="SearchType.html" title="class in es.ucm.maude.bindings">SearchType</a>&nbsp;type,
+ <a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;target,
+ int&nbsp;depth,
+ int&nbsp;flags)</span></div>
+<div class="block">Narrowing-based search of terms that unify with the given target<br>
+ with multiple initial states.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>subject</code> - Subject terms where to start the search.<br></dd>
+<dd><code>type</code> - Type of the search (number of steps).<br></dd>
+<dd><code>target</code> - Term that found states must unify with.<br></dd>
+<dd><code>depth</code> - Depth bound (<code>-1</code> for unbounded)<br></dd>
+<dd><code>flags</code> - Narrowing search flags (<code>fold</code>, <code>vfold</code>, <code>path</code>, <code>delay</code>, or <code>filter</code> flag).</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term,int)">
+<h3>vu_narrow</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="NarrowingSequenceSearch.html" title="class in es.ucm.maude.bindings">NarrowingSequenceSearch</a></span>&nbsp;<span class="element-name">vu_narrow</span><wbr><span class="parameters">(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;subject,
+ <a href="SearchType.html" title="class in es.ucm.maude.bindings">SearchType</a>&nbsp;type,
+ <a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;target,
+ int&nbsp;depth)</span></div>
+<div class="block">Narrowing-based search of terms that unify with the given target<br>
+ with multiple initial states.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>subject</code> - Subject terms where to start the search.<br></dd>
+<dd><code>type</code> - Type of the search (number of steps).<br></dd>
+<dd><code>target</code> - Term that found states must unify with.<br></dd>
+<dd><code>depth</code> - Depth bound (<code>-1</code> for unbounded)<br></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="vu_narrow(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.SearchType,es.ucm.maude.bindings.Term)">
+<h3>vu_narrow</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="NarrowingSequenceSearch.html" title="class in es.ucm.maude.bindings">NarrowingSequenceSearch</a></span>&nbsp;<span class="element-name">vu_narrow</span><wbr><span class="parameters">(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;subject,
+ <a href="SearchType.html" title="class in es.ucm.maude.bindings">SearchType</a>&nbsp;type,
+ <a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;target)</span></div>
+<div class="block">Narrowing-based search of terms that unify with the given target<br>
+ with multiple initial states.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>subject</code> - Subject terms where to start the search.<br></dd>
+<dd><code>type</code> - Type of the search (number of steps).<br></dd>
+<dd><code>target</code> - Term that found states must unify with.<br>
+ <br></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toLatex(boolean)">
+<h3>toLatex</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toLatex</span><wbr><span class="parameters">(boolean&nbsp;all)</span></div>
+<div class="block">Obtain the LaTeX representation of this module.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>all</code> - Whether to show all statements by transitivity.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toLatex()">
+<h3>toLatex</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toLatex</span>()</div>
+<div class="block">Obtain the LaTeX representation of this module.<br>
+ <br></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toString()">
+<h3>toString</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+</ul>
+</section>
+<!-- ========= END OF CLASS DATA ========= -->
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+<title>Symbol</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="dc.created" content="2025-01-02">
+<meta name="description" content="declaration: package: es.ucm.maude.bindings, class: Symbol">
+<meta name="generator" content="javadoc/ClassWriter">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../script-files/script.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-ui.min.js"></script>
+</head>
+<body class="class-declaration-page">
+<script type="text/javascript">const pathtoroot = "../../../../";
+loadScripts(document, 'script');</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<header role="banner">
+<nav role="navigation">
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="top-nav" id="navbar-top">
+<div class="nav-content">
+<div class="nav-menu-button"><button id="navbar-toggle-button" aria-controls="navbar-top" aria-expanded="false" aria-label="Toggle navigation links"><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span></button></div>
+<div class="skip-nav"><a href="#skip-navbar-top" title="Skip navigation links">Skip navigation links</a></div>
+<ul id="navbar-top-firstrow" class="nav-list" title="Navigation">
+<li><a href="package-summary.html">Package</a></li>
+<li class="nav-bar-cell1-rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../search.html">Search</a></li>
+<li><a href="../../../../help-doc.html#class">Help</a></li>
+</ul>
+</div>
+</div>
+<div class="sub-nav">
+<div class="nav-content">
+<ol class="sub-nav-list">
+<li><a href="package-summary.html">es.ucm.maude.bindings</a></li>
+<li><a href="Symbol.html" class="current-selection">Symbol</a></li>
+</ol>
+<div class="nav-list-search">
+<input type="text" id="search-input" disabled placeholder="Search" aria-label="Search in documentation" autocomplete="off">
+<input type="reset" id="reset-search" disabled value="Reset">
+</div>
+</div>
+</div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<span class="skip-nav" id="skip-navbar-top"></span></nav>
+</header>
+<div class="main-grid">
+<nav role="navigation" class="toc" aria-label="Table of contents">
+<div class="toc-header">Contents&nbsp;
+<input type="text" class="filter-input" disabled placeholder="Filter" aria-label="Filter table of contents" autocomplete="off">
+<input type="reset" class="reset-filter" disabled value="Reset">
+</div>
+<button class="hide-sidebar"><span>Hide sidebar&nbsp;</span>&#10094;</button><button class="show-sidebar">&#10095;<span>&nbsp;Show sidebar</span></button>
+<ol class="toc-list">
+<li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#delete()" tabindex="0">delete()</a></li>
+<li><a href="#arity()" tabindex="0">arity()</a></li>
+<li><a href="#domainKind(int)" tabindex="0">domainKind(int)</a></li>
+<li><a href="#getRangeSort()" tabindex="0">getRangeSort()</a></li>
+<li><a href="#hash()" tabindex="0">hash()</a></li>
+<li><a href="#equal(es.ucm.maude.bindings.Symbol)" tabindex="0">equal(Symbol)</a></li>
+<li><a href="#getOpDeclarations()" tabindex="0">getOpDeclarations()</a></li>
+<li><a href="#makeTerm(es.ucm.maude.bindings.TermVector)" tabindex="0">makeTerm(TermVector)</a></li>
+<li><a href="#getMetadata(int)" tabindex="0">getMetadata(int)</a></li>
+<li><a href="#hasAttr(int)" tabindex="0">hasAttr(int)</a></li>
+<li><a href="#getIdentity()" tabindex="0">getIdentity()</a></li>
+<li><a href="#getStrategy()" tabindex="0">getStrategy()</a></li>
+<li><a href="#getFrozen()" tabindex="0">getFrozen()</a></li>
+<li><a href="#getFormat()" tabindex="0">getFormat()</a></li>
+<li><a href="#getPrec()" tabindex="0">getPrec()</a></li>
+<li><a href="#getIdHooks()" tabindex="0">getIdHooks()</a></li>
+<li><a href="#toString()" tabindex="0">toString()</a></li>
+<li><a href="#getLineNumber()" tabindex="0">getLineNumber()</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+<main role="main">
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<h1 title="Class Symbol" class="title">Class Symbol</h1>
+</div>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance"><a href="ModuleItem.html" title="class in es.ucm.maude.bindings">es.ucm.maude.bindings.ModuleItem</a>
+<div class="inheritance">es.ucm.maude.bindings.Symbol</div>
+</div>
+</div>
+<section class="class-description" id="class-description">
+<div class="horizontal-scroll">
+<hr>
+<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Symbol</span>
+<span class="extends-implements">extends <a href="ModuleItem.html" title="class in es.ucm.maude.bindings">ModuleItem</a></span></div>
+<div class="block">A Maude symbol (operator at the kind level).</div>
+</div>
+</section>
+<section class="summary">
+<ul class="summary-list">
+<!-- ========== METHOD SUMMARY =========== -->
+<li>
+<section class="method-summary" id="method-summary">
+<h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#arity()" class="member-name-link">arity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the number of arguments.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delete()" class="member-name-link">delete</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#domainKind(int)" class="member-name-link">domainKind</a><wbr>(int&nbsp;argNr)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the kind for the given argument.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equal(es.ucm.maude.bindings.Symbol)" class="member-name-link">equal</a><wbr>(<a href="Symbol.html" title="class in es.ucm.maude.bindings">Symbol</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Check whether two symbols are the same.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StringVector.html" title="class in es.ucm.maude.bindings">StringVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFormat()" class="member-name-link">getFormat</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the format attribute of the symbol.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="IntVector.html" title="class in es.ucm.maude.bindings">IntVector</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFrozen()" class="member-name-link">getFrozen</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the frozen attribute of the symbol.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIdentity()" class="member-name-link">getIdentity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the identity element for this symbol (if any).</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StringVectorVector.html" title="class in es.ucm.maude.bindings">StringVectorVector</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIdHooks()" class="member-name-link">getIdHooks</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the id-hooks of the special operator (or an empty sequence otherwise).<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLineNumber()" class="member-name-link">getLineNumber</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the line number information for this item as formatted by Maude.<br>
+ <br>
+ The format of the string is usually <code>filename, line line (module)</code><br>
+ where the second <code>line</code> is the integral line number, and <code>module</code> is<br>
+ the module type and name where this item was originally defined.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMetadata(int)" class="member-name-link">getMetadata</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the metadata attribute of the given declaration of this symbol.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="OpDeclVector.html" title="class in es.ucm.maude.bindings">OpDeclVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOpDeclarations()" class="member-name-link">getOpDeclarations</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the declarations of the symbol.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPrec()" class="member-name-link">getPrec</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the syntactic precedence of the symbol.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Sort.html" title="class in es.ucm.maude.bindings">Sort</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRangeSort()" class="member-name-link">getRangeSort</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the range sort of the symbol.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="IntVector.html" title="class in es.ucm.maude.bindings">IntVector</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStrategy()" class="member-name-link">getStrategy</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the reduction strategy of the symbol.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasAttr(int)" class="member-name-link">hasAttr</a><wbr>(int&nbsp;attr)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the symbol has the given attribute.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hash()" class="member-name-link">hash</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the hash value of the symbol.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#makeTerm(es.ucm.maude.bindings.TermVector)" class="member-name-link">makeTerm</a><wbr>(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;args)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Build a term with this symbol and the given terms as arguments.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+</div>
+</div>
+</div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-es.ucm.maude.bindings.ModuleItem">Methods inherited from class&nbsp;es.ucm.maude.bindings.<a href="ModuleItem.html" title="class in es.ucm.maude.bindings">ModuleItem</a></h3>
+<code><a href="ModuleItem.html#getModule()">getModule</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="delete()">
+<h3>delete</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">delete</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="ModuleItem.html#delete()">delete</a></code>&nbsp;in class&nbsp;<code><a href="ModuleItem.html" title="class in es.ucm.maude.bindings">ModuleItem</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="arity()">
+<h3>arity</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">arity</span>()</div>
+<div class="block">Get the number of arguments.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="domainKind(int)">
+<h3>domainKind</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Kind.html" title="class in es.ucm.maude.bindings">Kind</a></span>&nbsp;<span class="element-name">domainKind</span><wbr><span class="parameters">(int&nbsp;argNr)</span></div>
+<div class="block">Get the kind for the given argument.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>argNr</code> - The argument index.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getRangeSort()">
+<h3>getRangeSort</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Sort.html" title="class in es.ucm.maude.bindings">Sort</a></span>&nbsp;<span class="element-name">getRangeSort</span>()</div>
+<div class="block">Get the range sort of the symbol.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hash()">
+<h3>hash</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">hash</span>()</div>
+<div class="block">Get the hash value of the symbol.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="equal(es.ucm.maude.bindings.Symbol)">
+<h3>equal</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">equal</span><wbr><span class="parameters">(<a href="Symbol.html" title="class in es.ucm.maude.bindings">Symbol</a>&nbsp;other)</span></div>
+<div class="block">Check whether two symbols are the same.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getOpDeclarations()">
+<h3>getOpDeclarations</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="OpDeclVector.html" title="class in es.ucm.maude.bindings">OpDeclVector</a></span>&nbsp;<span class="element-name">getOpDeclarations</span>()</div>
+<div class="block">Get the declarations of the symbol.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="makeTerm(es.ucm.maude.bindings.TermVector)">
+<h3>makeTerm</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">makeTerm</span><wbr><span class="parameters">(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;args)</span></div>
+<div class="block">Build a term with this symbol and the given terms as arguments.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getMetadata(int)">
+<h3>getMetadata</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getMetadata</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="block">Get the metadata attribute of the given declaration of this symbol.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>index</code> - Index of the operator declaration.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasAttr(int)">
+<h3>hasAttr</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasAttr</span><wbr><span class="parameters">(int&nbsp;attr)</span></div>
+<div class="block">Whether the symbol has the given attribute.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>attr</code> - One of the <code>OP_*</code> constants for operator attributes.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getIdentity()">
+<h3>getIdentity</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">getIdentity</span>()</div>
+<div class="block">Get the identity element for this symbol (if any).</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getStrategy()">
+<h3>getStrategy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="IntVector.html" title="class in es.ucm.maude.bindings">IntVector</a></span>&nbsp;<span class="element-name">getStrategy</span>()</div>
+<div class="block">Get the reduction strategy of the symbol.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getFrozen()">
+<h3>getFrozen</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="IntVector.html" title="class in es.ucm.maude.bindings">IntVector</a></span>&nbsp;<span class="element-name">getFrozen</span>()</div>
+<div class="block">Get the frozen attribute of the symbol.<br>
+ <br></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The sequence of indices in the frozen attribute,<br>
+ where arguments are numbered from 0 instead of 1.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getFormat()">
+<h3>getFormat</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StringVector.html" title="class in es.ucm.maude.bindings">StringVector</a></span>&nbsp;<span class="element-name">getFormat</span>()</div>
+<div class="block">Get the format attribute of the symbol.<br>
+ <br></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The sequence of instruction words of the format<br>
+ specification, each of them a string.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getPrec()">
+<h3>getPrec</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getPrec</span>()</div>
+<div class="block">Get the syntactic precedence of the symbol.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getIdHooks()">
+<h3>getIdHooks</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StringVectorVector.html" title="class in es.ucm.maude.bindings">StringVectorVector</a></span>&nbsp;<span class="element-name">getIdHooks</span>()</div>
+<div class="block">Get the id-hooks of the special operator (or an empty sequence otherwise).<br>
+ <br></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A sequence of string sequences representing each an id-hook of<br>
+ the operator with its name followed by its arguments.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toString()">
+<h3>toString</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getLineNumber()">
+<h3>getLineNumber</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getLineNumber</span>()</div>
+<div class="block">Get the line number information for this item as formatted by Maude.<br>
+ <br>
+ The format of the string is usually <code>filename, line line (module)</code><br>
+ where the second <code>line</code> is the integral line number, and <code>module</code> is<br>
+ the module type and name where this item was originally defined. The<br>
+ <code>filename</code> may be an actual quoted filename or some special name<br>
+ between angle brackets.</div>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+</ul>
+</section>
+<!-- ========= END OF CLASS DATA ========= -->
+</main>
+</div>
+</body>
+</html>

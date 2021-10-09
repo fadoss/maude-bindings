@@ -1,0 +1,359 @@
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+<title>EquationVector</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="dc.created" content="2025-01-02">
+<meta name="description" content="declaration: package: es.ucm.maude.bindings, class: EquationVector">
+<meta name="generator" content="javadoc/ClassWriter">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../script-files/script.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-ui.min.js"></script>
+</head>
+<body class="class-declaration-page">
+<script type="text/javascript">const pathtoroot = "../../../../";
+loadScripts(document, 'script');</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<header role="banner">
+<nav role="navigation">
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="top-nav" id="navbar-top">
+<div class="nav-content">
+<div class="nav-menu-button"><button id="navbar-toggle-button" aria-controls="navbar-top" aria-expanded="false" aria-label="Toggle navigation links"><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span></button></div>
+<div class="skip-nav"><a href="#skip-navbar-top" title="Skip navigation links">Skip navigation links</a></div>
+<ul id="navbar-top-firstrow" class="nav-list" title="Navigation">
+<li><a href="package-summary.html">Package</a></li>
+<li class="nav-bar-cell1-rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../search.html">Search</a></li>
+<li><a href="../../../../help-doc.html#class">Help</a></li>
+</ul>
+</div>
+</div>
+<div class="sub-nav">
+<div class="nav-content">
+<ol class="sub-nav-list">
+<li><a href="package-summary.html">es.ucm.maude.bindings</a></li>
+<li><a href="EquationVector.html" class="current-selection">EquationVector</a></li>
+</ol>
+<div class="nav-list-search">
+<input type="text" id="search-input" disabled placeholder="Search" aria-label="Search in documentation" autocomplete="off">
+<input type="reset" id="reset-search" disabled value="Reset">
+</div>
+</div>
+</div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<span class="skip-nav" id="skip-navbar-top"></span></nav>
+</header>
+<div class="main-grid">
+<nav role="navigation" class="toc" aria-label="Table of contents">
+<div class="toc-header">Contents&nbsp;
+<input type="text" class="filter-input" disabled placeholder="Filter" aria-label="Filter table of contents" autocomplete="off">
+<input type="reset" class="reset-filter" disabled value="Reset">
+</div>
+<button class="hide-sidebar"><span>Hide sidebar&nbsp;</span>&#10094;</button><button class="show-sidebar">&#10095;<span>&nbsp;Show sidebar</span></button>
+<ol class="toc-list">
+<li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
+<li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
+<ol class="toc-list">
+<li><a href="#%3Cinit%3E(long)" tabindex="0">EquationVector(long)</a></li>
+<li><a href="#%3Cinit%3E()" tabindex="0">EquationVector()</a></li>
+</ol>
+</li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#delete()" tabindex="0">delete()</a></li>
+<li><a href="#empty()" tabindex="0">empty()</a></li>
+<li><a href="#size()" tabindex="0">size()</a></li>
+<li><a href="#capacity()" tabindex="0">capacity()</a></li>
+<li><a href="#swap(es.ucm.maude.bindings.EquationVector)" tabindex="0">swap(EquationVector)</a></li>
+<li><a href="#get(long)" tabindex="0">get(long)</a></li>
+<li><a href="#set(long,es.ucm.maude.bindings.Equation)" tabindex="0">set(long, Equation)</a></li>
+<li><a href="#append(es.ucm.maude.bindings.Equation)" tabindex="0">append(Equation)</a></li>
+<li><a href="#clear()" tabindex="0">clear()</a></li>
+<li><a href="#resize(long)" tabindex="0">resize(long)</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+<main role="main">
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<h1 title="Class EquationVector" class="title">Class EquationVector</h1>
+</div>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance">es.ucm.maude.bindings.EquationVector</div>
+</div>
+<section class="class-description" id="class-description">
+<div class="horizontal-scroll">
+<hr>
+<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">EquationVector</span>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Internal Maude vector.</div>
+</div>
+</section>
+<section class="summary">
+<ul class="summary-list">
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<li>
+<section class="constructor-summary" id="constructor-summary">
+<h2>Constructor Summary</h2>
+<div class="caption"><span>Constructors</span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">EquationVector</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a vector.<br>
+ <br></div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(long)" class="member-name-link">EquationVector</a><wbr>(long&nbsp;length)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a vector.<br>
+ <br></div>
+</div>
+</div>
+</section>
+</li>
+<!-- ========== METHOD SUMMARY =========== -->
+<li>
+<section class="method-summary" id="method-summary">
+<h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#append(es.ucm.maude.bindings.Equation)" class="member-name-link">append</a><wbr>(<a href="Equation.html" title="class in es.ucm.maude.bindings">Equation</a>&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Append a new element to the vector.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#capacity()" class="member-name-link">capacity</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Reserved capacity of the vector.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clear()" class="member-name-link">clear</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set the vector length to zero.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delete()" class="member-name-link">delete</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#empty()" class="member-name-link">empty</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Is the vector empty?</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Equation.html" title="class in es.ucm.maude.bindings">Equation</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#get(long)" class="member-name-link">get</a><wbr>(long&nbsp;n)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get a vector position value.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resize(long)" class="member-name-link">resize</a><wbr>(long&nbsp;new_size)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Resize the vector.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(long,es.ucm.maude.bindings.Equation)" class="member-name-link">set</a><wbr>(long&nbsp;n,
+ <a href="Equation.html" title="class in es.ucm.maude.bindings">Equation</a>&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set a vector position value.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Size of the vector.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#swap(es.ucm.maude.bindings.EquationVector)" class="member-name-link">swap</a><wbr>(<a href="EquationVector.html" title="class in es.ucm.maude.bindings">EquationVector</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Swap this vector's contents with another.<br>
+ <br></div>
+</div>
+</div>
+</div>
+</div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<li>
+<section class="constructor-details" id="constructor-detail">
+<h2>Constructor Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="&lt;init&gt;(long)">
+<h3>EquationVector</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">EquationVector</span><wbr><span class="parameters">(long&nbsp;length)</span></div>
+<div class="block">Construct a vector.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>length</code> - The initial length.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;()">
+<h3>EquationVector</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">EquationVector</span>()</div>
+<div class="block">Construct a vector.<br>
+ <br></div>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="delete()">
+<h3>delete</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">delete</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="empty()">
+<h3>empty</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">empty</span>()</div>
+<div class="block">Is the vector empty?</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="size()">
+<h3>size</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">size</span>()</div>
+<div class="block">Size of the vector.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="capacity()">
+<h3>capacity</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">capacity</span>()</div>
+<div class="block">Reserved capacity of the vector.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="swap(es.ucm.maude.bindings.EquationVector)">
+<h3>swap</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">swap</span><wbr><span class="parameters">(<a href="EquationVector.html" title="class in es.ucm.maude.bindings">EquationVector</a>&nbsp;other)</span></div>
+<div class="block">Swap this vector's contents with another.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>other</code> - The other vector.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="get(long)">
+<h3>get</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Equation.html" title="class in es.ucm.maude.bindings">Equation</a></span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(long&nbsp;n)</span></div>
+<div class="block">Get a vector position value.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>n</code> - Vector position from zero.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="set(long,es.ucm.maude.bindings.Equation)">
+<h3>set</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(long&nbsp;n,
+ <a href="Equation.html" title="class in es.ucm.maude.bindings">Equation</a>&nbsp;value)</span></div>
+<div class="block">Set a vector position value.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>n</code> - Vector position from zero.<br></dd>
+<dd><code>value</code> - Value to be set.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="append(es.ucm.maude.bindings.Equation)">
+<h3>append</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">append</span><wbr><span class="parameters">(<a href="Equation.html" title="class in es.ucm.maude.bindings">Equation</a>&nbsp;value)</span></div>
+<div class="block">Append a new element to the vector.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="clear()">
+<h3>clear</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clear</span>()</div>
+<div class="block">Set the vector length to zero.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="resize(long)">
+<h3>resize</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resize</span><wbr><span class="parameters">(long&nbsp;new_size)</span></div>
+<div class="block">Resize the vector.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>new_size</code> - New size.</dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+</ul>
+</section>
+<!-- ========= END OF CLASS DATA ========= -->
+</main>
+</div>
+</body>
+</html>

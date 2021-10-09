@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Maude bindings for other languages &#8212; Maude bindings  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=279e0f84" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Maude bindings documentation" href="index.html" />
+<style>
+div.body p {
+	text-align: justify;
+}
+</style>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Maude bindings documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Maude bindings  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Maude bindings for other languages</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="maude-bindings-for-other-languages">
+<h1>Maude bindings for other languages<a class="headerlink" href="#maude-bindings-for-other-languages" title="Link to this heading">¶</a></h1>
+<p id="other-languages">The <a class="reference internal" href="index.html#module-maude" title="maude"><code class="xref py py-mod docutils literal notranslate"><span class="pre">maude</span></code></a> library is implemented using the Simple Wrapper and Interface Generator (<a class="reference external" href="https://www.swig.org/">SWIG</a>), which allows generating bindings for some more languages other than Python. All the functionality of the Python library documented <a class="reference internal" href="index.html#main"><span class="std std-ref">here</span></a> is available through the same API to the other languages, although the Python instance includes several adaptations to its specific features and conventions (iterators, automatic conversion of data structures, default arguments, and so on) that may not match or not be implemented in the other targets. Furthermore, only the Python version has been extensively used and tested for the moment.</p>
+<p>For building the library in a specific language, you should pass the appropriate value of the <code class="docutils literal notranslate"><span class="pre">LANGUAGE</span></code> variable to the CMake <a class="reference external" href="https://github.com/fadoss/maude-bindings/blob/master/CMakeLists.txt">build script</a>. For example, to build the Java binding in the <code class="docutils literal notranslate"><span class="pre">java-build</span></code> subdirectory of the source tree you should write:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>java-build
+<span class="gp">$ </span>cmake<span class="w"> </span>..<span class="w"> </span>-DLANGUAGE<span class="o">=</span>java
+<span class="gp">$ </span>make
+</pre></div>
+</div>
+<p>In general, this would generate some language-specific code and a binary plugin. For simplicity, we will use Linux file names like <code class="docutils literal notranslate"><span class="pre">maude.so</span></code> for the plugin in the following explanations, but the extension would be <code class="docutils literal notranslate"><span class="pre">dll</span></code> in Windows, <code class="docutils literal notranslate"><span class="pre">dylib</span></code> in macOS, etc.</p>
+<p>To avoid building Maude itself by reusing an already compiled version of Maude as a library, the option <code class="docutils literal notranslate"><span class="pre">-DBUILD_LIBMAUDE=OFF</span></code> may be useful. More information is available in the <a class="reference external" href="https://github.com/fadoss/maude-bindings/">repository</a>.</p>
+<section id="java">
+<h2>Java<a class="headerlink" href="#java" title="Link to this heading">¶</a></h2>
+<p>For building the Java binding, pass <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=java</span></code> to CMake and make the generated project. This yields a shared library <code class="docutils literal notranslate"><span class="pre">libmaudejni.so</span></code> and a JAR file <code class="docutils literal notranslate"><span class="pre">maudejni.jar</span></code> including all the Java classes in the bindings. When running Java, <code class="docutils literal notranslate"><span class="pre">maudejni.jar</span></code> should be included in the class path and <code class="docutils literal notranslate"><span class="pre">libmaudejni.so</span></code> in the library path. For example, to run the following piece of code with <code class="docutils literal notranslate"><span class="pre">libmaudejni.so</span></code> in the current directory in Linux, run</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>javac<span class="w"> </span>-cp<span class="w"> </span>maudejni.jar<span class="w"> </span>Example.java
+<span class="gp">$ </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>.<span class="w"> </span>java<span class="w"> </span>-cp<span class="w"> </span>libmaude.jar:.<span class="w"> </span>Example
+</pre></div>
+</div>
+<p>The method <code class="docutils literal notranslate"><span class="pre">System.loadLibrary</span></code> should be called before using any function in the language bindings.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">es.ucm.maude.bindings.*</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Example</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">             </span><span class="n">System</span><span class="p">.</span><span class="na">loadLibrary</span><span class="p">(</span><span class="s">&quot;maudejni&quot;</span><span class="p">);</span>
+
+<span class="w">             </span><span class="n">maude</span><span class="p">.</span><span class="na">init</span><span class="p">();</span>
+<span class="w">             </span><span class="kd">var</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">maude</span><span class="p">.</span><span class="na">getModule</span><span class="p">(</span><span class="s">&quot;NAT&quot;</span><span class="p">);</span>
+<span class="w">             </span><span class="n">Term</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="na">parseTerm</span><span class="p">(</span><span class="s">&quot;2 * 3&quot;</span><span class="p">);</span>
+<span class="w">             </span><span class="n">t</span><span class="p">.</span><span class="na">reduce</span><span class="p">();</span>
+<span class="w">             </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Unless you have set the <code class="docutils literal notranslate"><span class="pre">JAVA_PACKAGE_NAME</span></code> CMake variable otherwise, all classes in the library will belong to the <code class="docutils literal notranslate"><span class="pre">es.maude.ucm.bindings</span></code> package.</p>
+</section>
+<section id="c">
+<h2>C#<a class="headerlink" href="#c" title="Link to this heading">¶</a></h2>
+<p>For building the C# binding, pass <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=chsarp</span></code> to CMake, build the project, and then compile the generated <code class="docutils literal notranslate"><span class="pre">.cs</span></code> with the C# implementation of choice. The machine-code library <code class="docutils literal notranslate"><span class="pre">libmaudecs.so</span></code> is generated by the build system. The user may also generate a .NET assembly out of the C# code to better distribute the bindings. For example, the following code works with <a class="reference external" href="https://www.mono-project.com/">Mono</a></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake<span class="w"> </span>..<span class="w"> </span>-DLANGUAGE<span class="o">=</span>csharp
+<span class="gp">$ </span>make
+<span class="gp">$ </span>mcs<span class="w"> </span>*.cs<span class="w"> </span>-target:library<span class="w"> </span>-out:maudecs.dll
+</pre></div>
+</div>
+<p>and produces an assembly <code class="docutils literal notranslate"><span class="pre">maudecs.dll</span></code> that should be referenced when compiling the desired C# program and will be used when running it.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mcs<span class="w"> </span>-r:maudecs.dll<span class="w"> </span>elsewhere/Main.cs
+<span class="gp">$ </span>mono<span class="w"> </span>Main.exe
+</pre></div>
+</div>
+<p>All classes of the Maude library are gathered in the <code class="docutils literal notranslate"><span class="pre">Maude</span></code> namespace.</p>
+<div class="highlight-c# notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">Maude</span><span class="p">;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Example</span>
+<span class="p">{</span>
+<span class="w">     </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">Main</span><span class="p">()</span>
+<span class="w">     </span><span class="p">{</span>
+<span class="w">             </span><span class="n">maude</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+<span class="w">             </span><span class="kt">var</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">maude</span><span class="p">.</span><span class="n">getModule</span><span class="p">(</span><span class="s">&quot;NAT&quot;</span><span class="p">);</span>
+<span class="w">             </span><span class="kt">var</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">parseTerm</span><span class="p">(</span><span class="s">&quot;2 * 3&quot;</span><span class="p">);</span>
+<span class="w">             </span><span class="n">t</span><span class="p">.</span><span class="n">reduce</span><span class="p">();</span>
+<span class="w">             </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="guile">
+<h2>Guile<a class="headerlink" href="#guile" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://www.gnu.org/software/guile">Guile</a> is an implementation of Scheme, a dialect of Lisp.</p>
+<p>For building the binding, pass <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=guile</span></code> to CMake. Native module linkage is used by default, but this can be changed in the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file. Generating an object-oriented module with <a class="reference external" href="https://www.gnu.org/software/guile/manual/html_node/GOOPS.html">GOOPS</a> is also possible, see Swig’s <a class="reference external" href="http://www.swig.org/Doc4.0/Guile.html">documentation on Guile</a> for the details.</p>
+<p>Finally, load the generated module as shown below within Guile (<code class="docutils literal notranslate"><span class="pre">maude.so</span></code> is assumed to be in the current working directory).</p>
+<div class="highlight-scheme notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">load-extension</span><span class="w"> </span><span class="s">&quot;./maude&quot;</span><span class="w"> </span><span class="s">&quot;scm_init_maude_module&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="k">use-modules</span><span class="w"> </span><span class="p">(</span><span class="nf">maude</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">init</span><span class="p">)</span>
+<span class="p">(</span><span class="k">define</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="p">(</span><span class="nf">getModule</span><span class="w"> </span><span class="s">&quot;NAT&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="k">define</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="p">(</span><span class="nf">Module-parseTerm</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="s">&quot;2 * 3&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">Term-reduce</span><span class="w"> </span><span class="nv">t</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">display</span><span class="w"> </span><span class="p">(</span><span class="nf">Term-toString</span><span class="w"> </span><span class="nv">t</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">newline</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="javascript">
+<h2>Javascript<a class="headerlink" href="#javascript" title="Link to this heading">¶</a></h2>
+<p>Javascript modules can be generated for Node, JavaScriptCore, and V8. The CMake build script only supports the first two, with <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=node</span></code> and <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=jsc</span></code> respectively. Moreover, the second case requires some manual intervention. Swig does not work out of the box with the most recent versions of Node.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">maude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;maude&#39;</span><span class="p">)</span>
+
+<span class="nx">maude</span><span class="p">.</span><span class="nx">init</span><span class="p">()</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">maude</span><span class="p">.</span><span class="nx">getModule</span><span class="p">(</span><span class="s1">&#39;NAT&#39;</span><span class="p">)</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">parseTerm</span><span class="p">(</span><span class="s1">&#39;2 * 3&#39;</span><span class="p">)</span>
+<span class="nx">t</span><span class="p">.</span><span class="nx">reduce</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">toString</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="lua">
+<h2>Lua<a class="headerlink" href="#lua" title="Link to this heading">¶</a></h2>
+<p>For building the binding as a dynamic Lua module, simply pass <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=lua</span></code> to CMake. For building a Lua interpreter statically linked to the bindings, see Swig’s <a class="reference external" href="http://www.swig.org/Doc4.0/Lua.html#Lua_nn4">documentation on Lua</a>.</p>
+<p>Finally, run Lua with the generated <code class="docutils literal notranslate"><span class="pre">maude.so</span></code> in the package path, and load it with <code class="docutils literal notranslate"><span class="pre">require(&quot;maude&quot;)</span></code>.</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;maude&quot;</span><span class="p">)</span>
+
+<span class="n">maude</span><span class="p">.</span><span class="n">init</span><span class="p">()</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">maude</span><span class="p">.</span><span class="n">getModule</span><span class="p">(</span><span class="s2">&quot;NAT&quot;</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">m</span><span class="p">:</span><span class="n">parseTerm</span><span class="p">(</span><span class="s2">&quot;2 * 3&quot;</span><span class="p">)</span>
+<span class="n">t</span><span class="p">:</span><span class="n">reduce</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="r">
+<h2>R<a class="headerlink" href="#r" title="Link to this heading">¶</a></h2>
+<p>For building the R binding, simply pass <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=r</span></code> to CMake. Two files are produced, <code class="docutils literal notranslate"><span class="pre">maude.so</span></code> and <code class="docutils literal notranslate"><span class="pre">maude.R</span></code>. The library is loaded into R as shown below.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">dyn.load</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;maude&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">.Platform</span><span class="o">$</span><span class="n">dynlib.ext</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">))</span>
+<span class="nf">source</span><span class="p">(</span><span class="s">&quot;maude.R&quot;</span><span class="p">)</span>
+<span class="nf">cacheMetaData</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+
+<span class="nf">init</span><span class="p">()</span>
+<span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">getCurrentModule</span><span class="p">()</span>
+<span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="o">$</span><span class="nf">parseTerm</span><span class="p">(</span><span class="s">&#39;1 + 2&#39;</span><span class="p">)</span>
+<span class="n">t</span><span class="o">$</span><span class="nf">reduce</span><span class="p">()</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">t</span><span class="o">$</span><span class="nf">show</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="tcl">
+<h2>Tcl<a class="headerlink" href="#tcl" title="Link to this heading">¶</a></h2>
+<p>For building the Tcl binding as a dynamic module, simply pass <code class="docutils literal notranslate"><span class="pre">-DLANGUAGE=tcl</span></code> to CMake. The generated <code class="docutils literal notranslate"><span class="pre">maude.so</span></code> should be loaded with <code class="docutils literal notranslate"><span class="pre">load</span></code> in Tcl.</p>
+<div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="nb">load</span><span class="w"> </span>.<span class="o">/</span>maude.so
+
+<span class="nv">init</span>
+<span class="k">set</span><span class="w"> </span>m<span class="w"> </span><span class="k">[</span><span class="nv">getModule</span><span class="w"> </span><span class="s2">&quot;NAT&quot;</span><span class="k">]</span>
+<span class="k">set</span><span class="w"> </span>t<span class="w"> </span><span class="k">[</span><span class="nv">$m</span><span class="w"> </span><span class="nv">parseTerm</span><span class="w"> </span><span class="s2">&quot;2 * 3&quot;</span><span class="k">]</span>
+<span class="nv">$t</span><span class="w"> </span><span class="nv">reduce</span>
+<span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nv">$t</span><span class="w"> </span><span class="nv">toString</span><span class="k">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Maude bindings for other languages</a><ul>
+<li><a class="reference internal" href="#java">Java</a></li>
+<li><a class="reference internal" href="#c">C#</a></li>
+<li><a class="reference internal" href="#guile">Guile</a></li>
+<li><a class="reference internal" href="#javascript">Javascript</a></li>
+<li><a class="reference internal" href="#lua">Lua</a></li>
+<li><a class="reference internal" href="#r">R</a></li>
+<li><a class="reference internal" href="#tcl">Tcl</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Maude bindings documentation</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Maude bindings documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Maude bindings  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Maude bindings for other languages</a></li> 
+      </ul>
+    </div>
+
+  </body>
+</html>

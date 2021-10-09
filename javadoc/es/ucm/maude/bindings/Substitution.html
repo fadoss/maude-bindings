@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+<title>Substitution</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="dc.created" content="2025-01-02">
+<meta name="description" content="declaration: package: es.ucm.maude.bindings, class: Substitution">
+<meta name="generator" content="javadoc/ClassWriter">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../resource-files/stylesheet.css" title="Style">
+<script type="text/javascript" src="../../../../script-files/script.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-files/jquery-ui.min.js"></script>
+</head>
+<body class="class-declaration-page">
+<script type="text/javascript">const pathtoroot = "../../../../";
+loadScripts(document, 'script');</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<header role="banner">
+<nav role="navigation">
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="top-nav" id="navbar-top">
+<div class="nav-content">
+<div class="nav-menu-button"><button id="navbar-toggle-button" aria-controls="navbar-top" aria-expanded="false" aria-label="Toggle navigation links"><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span><span class="nav-bar-toggle-icon">&nbsp;</span></button></div>
+<div class="skip-nav"><a href="#skip-navbar-top" title="Skip navigation links">Skip navigation links</a></div>
+<ul id="navbar-top-firstrow" class="nav-list" title="Navigation">
+<li><a href="package-summary.html">Package</a></li>
+<li class="nav-bar-cell1-rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+<li><a href="../../../../search.html">Search</a></li>
+<li><a href="../../../../help-doc.html#class">Help</a></li>
+</ul>
+</div>
+</div>
+<div class="sub-nav">
+<div class="nav-content">
+<ol class="sub-nav-list">
+<li><a href="package-summary.html">es.ucm.maude.bindings</a></li>
+<li><a href="Substitution.html" class="current-selection">Substitution</a></li>
+</ol>
+<div class="nav-list-search">
+<input type="text" id="search-input" disabled placeholder="Search" aria-label="Search in documentation" autocomplete="off">
+<input type="reset" id="reset-search" disabled value="Reset">
+</div>
+</div>
+</div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<span class="skip-nav" id="skip-navbar-top"></span></nav>
+</header>
+<div class="main-grid">
+<nav role="navigation" class="toc" aria-label="Table of contents">
+<div class="toc-header">Contents&nbsp;
+<input type="text" class="filter-input" disabled placeholder="Filter" aria-label="Filter table of contents" autocomplete="off">
+<input type="reset" class="reset-filter" disabled value="Reset">
+</div>
+<button class="hide-sidebar"><span>Hide sidebar&nbsp;</span>&#10094;</button><button class="show-sidebar">&#10095;<span>&nbsp;Show sidebar</span></button>
+<ol class="toc-list">
+<li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
+<li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
+<ol class="toc-list">
+<li><a href="#%3Cinit%3E(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.TermVector)" tabindex="0">Substitution(TermVector, TermVector)</a></li>
+</ol>
+</li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#delete()" tabindex="0">delete()</a></li>
+<li><a href="#size()" tabindex="0">size()</a></li>
+<li><a href="#value(es.ucm.maude.bindings.Term)" tabindex="0">value(Term)</a></li>
+<li><a href="#matchedPortion()" tabindex="0">matchedPortion()</a></li>
+<li><a href="#find(java.lang.String,es.ucm.maude.bindings.Sort)" tabindex="0">find(String, Sort)</a></li>
+<li><a href="#find(java.lang.String)" tabindex="0">find(String)</a></li>
+<li><a href="#instantiate(es.ucm.maude.bindings.Term)" tabindex="0">instantiate(Term)</a></li>
+<li><a href="#iterator()" tabindex="0">iterator()</a></li>
+<li><a href="#toString()" tabindex="0">toString()</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+<main role="main">
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<h1 title="Class Substitution" class="title">Class Substitution</h1>
+</div>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance">es.ucm.maude.bindings.Substitution</div>
+</div>
+<section class="class-description" id="class-description">
+<div class="horizontal-scroll">
+<hr>
+<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Substitution</span>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Substitution (mapping from variables to terms).</div>
+</div>
+</section>
+<section class="summary">
+<ul class="summary-list">
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<li>
+<section class="constructor-summary" id="constructor-summary">
+<h2>Constructor Summary</h2>
+<div class="caption"><span>Constructors</span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.TermVector)" class="member-name-link">Substitution</a><wbr>(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;vars,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;values)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Create a substitution with the given variables and values.<br>
+ <br></div>
+</div>
+</div>
+</section>
+</li>
+<!-- ========== METHOD SUMMARY =========== -->
+<li>
+<section class="method-summary" id="method-summary">
+<h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delete()" class="member-name-link">delete</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#find(java.lang.String)" class="member-name-link">find</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Find the value of a given variable by name.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#find(java.lang.String,es.ucm.maude.bindings.Sort)" class="member-name-link">find</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="Sort.html" title="class in es.ucm.maude.bindings">Sort</a>&nbsp;sort)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Find the value of a given variable by name.<br>
+ <br></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#instantiate(es.ucm.maude.bindings.Term)" class="member-name-link">instantiate</a><wbr>(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Instantiate a term with this substitution.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Iterator.html" title="class in es.ucm.maude.bindings">Iterator</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#iterator()" class="member-name-link">iterator</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get an iterator to the substitution assignments.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#matchedPortion()" class="member-name-link">matchedPortion</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the matched portion when matching with extension.<br>
+ <br></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the number of variables in the substitution.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#value(es.ucm.maude.bindings.Term)" class="member-name-link">value</a><wbr>(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;variable)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the value of a given variable.<br>
+ <br></div>
+</div>
+</div>
+</div>
+</div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<li>
+<section class="constructor-details" id="constructor-detail">
+<h2>Constructor Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="&lt;init&gt;(es.ucm.maude.bindings.TermVector,es.ucm.maude.bindings.TermVector)">
+<h3>Substitution</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Substitution</span><wbr><span class="parameters">(<a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;vars,
+ <a href="TermVector.html" title="class in es.ucm.maude.bindings">TermVector</a>&nbsp;values)</span></div>
+<div class="block">Create a substitution with the given variables and values.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>vars</code> - Variables in the substitution.<br></dd>
+<dd><code>values</code> - values Values for these variables in the substitution.</dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="delete()">
+<h3>delete</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">delete</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="size()">
+<h3>size</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">size</span>()</div>
+<div class="block">Get the number of variables in the substitution.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="value(es.ucm.maude.bindings.Term)">
+<h3>value</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">value</span><wbr><span class="parameters">(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;variable)</span></div>
+<div class="block">Get the value of a given variable.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>variable</code> - The variable whose value is looked up.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="matchedPortion()">
+<h3>matchedPortion</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">matchedPortion</span>()</div>
+<div class="block">Get the matched portion when matching with extension.<br>
+ <br></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The matched portion or null if the<br>
+ whole term matched.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="find(java.lang.String,es.ucm.maude.bindings.Sort)">
+<h3>find</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">find</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="Sort.html" title="class in es.ucm.maude.bindings">Sort</a>&nbsp;sort)</span></div>
+<div class="block">Find the value of a given variable by name.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - Variable name (without sort).<br></dd>
+<dd><code>sort</code> - Sort of the variable (optional).<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The value of the variable or null if not found.<br>
+ If the sort of the variable is not given, multiple results<br>
+ are possible.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="find(java.lang.String)">
+<h3>find</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">find</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="block">Find the value of a given variable by name.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - Variable name (without sort).<br>
+ <br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The value of the variable or null if not found.<br>
+ If the sort of the variable is not given, multiple results<br>
+ are possible.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="instantiate(es.ucm.maude.bindings.Term)">
+<h3>instantiate</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Term.html" title="class in es.ucm.maude.bindings">Term</a></span>&nbsp;<span class="element-name">instantiate</span><wbr><span class="parameters">(<a href="Term.html" title="class in es.ucm.maude.bindings">Term</a>&nbsp;term)</span></div>
+<div class="block">Instantiate a term with this substitution.<br>
+ <br></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>term</code> - The term to be instantiated.<br>
+ <br></dd>
+<dt>Returns:</dt>
+<dd>The instantiated term.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="iterator()">
+<h3>iterator</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Iterator.html" title="class in es.ucm.maude.bindings">Iterator</a></span>&nbsp;<span class="element-name">iterator</span>()</div>
+<div class="block">Get an iterator to the substitution assignments.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toString()">
+<h3>toString</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+</ul>
+</section>
+<!-- ========= END OF CLASS DATA ========= -->
+</main>
+</div>
+</body>
+</html>
