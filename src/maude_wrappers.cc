@@ -141,6 +141,7 @@ init(bool readPrelude, int randomSeed, bool advise, bool handleInterrupts)
 
 	createRootBuffer(fp, false);
 	directoryManager.initialize();
+	ioManager.setAutoWrap(false);
 
 	// Take the path of the binary as a search directory
 	#ifdef _WIN32

@@ -24,8 +24,10 @@
 #define REPR_METHOD show
 #elif defined(SWIGJAVASCRIPT)
 #define REPR_METHOD toString
+#elif defined(SWIGCSHARP)
+#define REPR_METHOD ToString
 #else
-#warning Unsupported language
+#warning This language is not explicitly supported
 #endif
 
 // Extend the class with an object representation function

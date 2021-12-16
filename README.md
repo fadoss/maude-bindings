@@ -14,7 +14,7 @@ t.reduce()
 print(t)
 ```
 
-Bindings for other languages supported by SWIG can be built from this repository, but they have not been given specific support and testing.
+Bindings for other languages supported by SWIG can be built from this repository, but they have not been given specific support and testing. Specific instructions for some of them are available [here](https://fadoss.github.io/maude-bindings/babel.html).
 
 
 Building
@@ -39,7 +39,7 @@ cmake <srcdir> -DLANGUAGE=<language>
 cmake --build .
 ```
 
-For some of them this will be enough, but additional steps could be expected for others.
+For some language targets this will be enough, but additional steps could be expected for others.
 
 
 Documentation

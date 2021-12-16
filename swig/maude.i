@@ -56,6 +56,8 @@ namespace std {
 %include specific/lua.i
 #elif defined(SWIGJAVA)
 %include specific/java.i
+#elif defined(SWIGCSHARP)
+%include specific/csharp.i
 #else
 %include specific/fallback.i
 #endif
