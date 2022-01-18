@@ -87,7 +87,7 @@ All classes of the Maude library are gathered in the ``Maude`` namespace.
 Guile
 -----
 
-`Guile <https://gnu.org/software/guile>`_ is an implementation of Scheme, a dialect of Lisp.
+`Guile <https://www.gnu.org/software/guile>`_ is an implementation of Scheme, a dialect of Lisp.
 
 For building the binding, pass ``-DLANGUAGE=guile`` to CMake. Native module linkage is used by default, but this can be changed in the ``CMakeLists.txt`` file. Generating an object-oriented module with `GOOPS <https://www.gnu.org/software/guile/manual/html_node/GOOPS.html>`_ is also possible, see Swig's `documentation on Guile <http://www.swig.org/Doc4.0/Guile.html>`_ for the details.
 

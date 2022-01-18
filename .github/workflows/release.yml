@@ -28,36 +28,12 @@ jobs:
         body: "Python wheels"
         files: dist/*.whl
 
-  manylinux1:
-    name: Linux packages (manylinux1)
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Check out repository code
-      uses: actions/checkout@v2
-      with:
-        submodules: true
-
-    - name: Build Python packages
-      run: |
-        docker run dockcross/manylinux1-x64 > ./dockcross
-        chmod +x dockcross
-        ./dockcross ./build/build_manylinux.sh 1
-
-    - name: Upload Python wheels
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        body: "Python wheels"
-        files: dist/*.whl
-
   macos:
     name: MacOS packages
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
 
     - name: Check out repository code
@@ -85,7 +61,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
 
     - name: Check out repository code
