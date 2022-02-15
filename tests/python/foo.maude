@@ -1,0 +1,14 @@
+mod FOO-MODULE is
+	sorts Foo Bar .
+	subsort Bar < Foo .
+
+	ops a b c : -> Bar [ctor] .
+	op f : Foo Foo -> Foo [ctor] .
+	op g : Foo -> Foo [ctor] .
+
+	vars X Y : Foo .
+
+	rl [swap] : f(X, Y) => f(Y, X) .
+	rl [next] : a => b .
+	rl [next] : b => c .
+endm
