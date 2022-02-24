@@ -32,6 +32,8 @@ nvmach_initial1 = nvmach.parseTerm('< M:Money >')
 nvmach_target1  = nvmach.parseTerm('< a c >')
 nvmach_initial2 = nvmach.parseTerm('< C1:Coin C2:Coin C3:Coin C4:Coin >')
 nvmach_target2  = nvmach.parseTerm('< M:Money a c >')
+nvmach_initial3 = nvmach.parseTerm('< $ q q q M1:Money >')
+nvmach_target3  = nvmach.parseTerm('< a c M2:Money >')
 
 print(nvmach_initial1, '=>*', nvmach_target1)
 
@@ -51,6 +53,21 @@ for term, subs, unifier in nvmach_initial2.vu_narrow(maude.NORMAL_FORM, nvmach_t
 print(nvmach_initial1, '=>*', nvmach_target1, 'with folding')
 
 for solution in itertools.islice(nvmach_initial1.vu_narrow(maude.ANY_STEPS, nvmach_target1, -1, True), 1):
+	print_solution(*solution)
+
+print(nvmach_initial3, '=>*', nvmach_target3, 'with depth bound to 2')
+
+for solution in nvmach_initial3.vu_narrow(maude.ANY_STEPS, nvmach_target3, depth=2):
+	print_solution(*solution)
+
+print(nvmach_initial3, '=>*', nvmach_target3, 'with depth bound to 5 and filter')
+
+for solution in nvmach_initial3.vu_narrow(maude.ANY_STEPS, nvmach_target3, depth=5, filter=True):
+	print_solution(*solution)
+
+print(nvmach_initial3, '=>*', nvmach_target3, 'with depth bound to 5 and delay')
+
+for solution in nvmach_initial3.vu_narrow(maude.ANY_STEPS, nvmach_target3, depth=5, delay=True, filter=True):
 	print_solution(*solution)
 
 

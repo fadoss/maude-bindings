@@ -5,7 +5,7 @@ with open("build/PythonPkgDescription.md", "r") as fh:
 
 setup(
     name='maude',
-    version='1.0.1',
+    version='1.1.0',
     author='ningit',
     author_email='ningit@users.noreply.github.com',
     description='Python bindings for Maude',
@@ -20,7 +20,6 @@ setup(
     license='GPLv2',
     packages=['maude'],
     classifiers=[
-         'Development Status :: 3 - Alpha',
          'Intended Audience :: Science/Research',
          'Programming Language :: Python',
          'Programming Language :: Python :: 3',

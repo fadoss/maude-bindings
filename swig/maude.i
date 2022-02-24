@@ -182,16 +182,23 @@ struct ModuleHeader {
 /**
  * Allow or disallow running arbitrary executables from Maude code.
  *
- * @param flag Whether file access should be allowed.
+ * @param flag Whether process creation should be allowed.
  */
 void setAllowProcesses(bool flag);
 
 /**
  * Allow or disallow operations on files from Maude code.
  *
- * @param flag Whether processes should be allowed.
+ * @param flag Whether file access should be allowed.
  */
 void setAllowFiles(bool flag);
+
+/**
+ * Allow or disallow operations on directories from Maude code.
+ *
+ * @param flag Whether directory access should be allowed.
+ */
+void setAllowDir(bool flag);
 
 /**
  * Set the pseudorandom number generator seed.
@@ -199,6 +206,13 @@ void setAllowFiles(bool flag);
  * @param seed New pseudorandom number generator seed.
  */
 void setRandomSeed(int randomSeed);
+
+/**
+ * Set depth multiplier for associative unification.
+ *
+ * @param seed New depth multiplier (between 0 and 1e6).
+ */
+bool setAssocUnifDepth(float m);
 
 // Global constants
 constexpr int UNBOUNDED = INT_MAX;

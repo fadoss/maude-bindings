@@ -24,6 +24,7 @@
 #include "metaLevel.hh"
 #include "metaLevelOpSymbol.hh"
 #include "randomOpSymbol.hh"
+#include "pigPug.hh"
 
 // To retrieve the module path (dladdr, non-standard)
 #if defined(_WIN32)
@@ -327,6 +328,15 @@ void setRandomSeed(int seed) {
 	#ifdef WITH_PROBABILISTIC_SLANG
 	setChoiceSeed(seed);
 	#endif
+}
+
+bool setAssocUnifDepth(float m) {
+	if (isfinite(m) && m >= 0.0 && m <= 1e6) {
+		PigPug::setDepthBoundMultiplier(m);
+		return true;
+	}
+
+	return false;
 }
 
 MetaLevel*

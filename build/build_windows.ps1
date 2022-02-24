@@ -75,7 +75,7 @@ $pseudoThreadPath = "subprojects\maudesmc\src\ObjectSystem\pseudoThread.hh"
 ## Install required build tools
 
 Invoke-NativeCommand python -m pip install --upgrade pip
-Invoke-NativeCommand python -m pip install --upgrade scikit-build
+Invoke-NativeCommand python -m pip install scikit-build==0.12.0
 
 #
 ## Build the extension

@@ -140,7 +140,16 @@ class InteractiveRewriter(cmd.Cmd):
 	def do_reduce(self, _):
 		"""Reduce the current term"""
 
-		print(f'Reduced in {self.term.reduce()} rewrites.')
+		nrew = self.term.reduce()
+		print(f'Reduced to {self.term} in {nrew} rewrites.')
+
+	@needs_term
+	def do_srewrite(self, text):
+		"""Reduce the current term with a strategy"""
+
+		strategy = self.module.parseStrategy(text)
+		for result, nrew in self.term.srewrite(strategy):
+			print(f'{result} in {nrew} rewrites')
 
 	@needs_term
 	def do_step(self, label):

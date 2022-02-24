@@ -241,11 +241,14 @@ public:
 	 * @param target The pattern that has to be reached.
 	 * @param depth Depth bound (@c -1 for unbounded).
 	 * @param fold Whether to activate folding (@c fvu-narrow command).
+	 * @param filter Whether to activate filtered variant unification (@c filter option in the command).
+	 * @param delay Whether variant unifiers are filtered before using the first one for narrowing (@c delay option in the command).
 	 *
 	 * @return An object to iterate through solutions.
 	 */
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
-					    int depth = -1, bool fold = false);
+					    int depth = -1, bool fold = false,
+					    bool filter = false, bool delay = false);
 
 	/**
 	 * Apply any rule with the given label.

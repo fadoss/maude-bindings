@@ -153,6 +153,13 @@ public:
 		bool equal(ConnectedComponent* other) {
 			return $self == other;
 		}
+
+		/**
+		 * Get the hash value of the kind.
+		 */
+		unsigned int hash() const {
+			return (unsigned int) (uintptr_t) $self;
+		}
 	}
 
 	%streamBasedPrint;

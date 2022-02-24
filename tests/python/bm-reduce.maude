@@ -1,0 +1,96 @@
+***
+*** TCP server that replies the terms that it is sent reduced
+***
+*** The module where terms are interpreted is hardcoded to CONVERSION and each
+*** term is assumed to coincide with a piece of text returned by the received
+*** message, although this is not guaranteed by the protocol. The purpose of
+*** this specification is comparing the performance of the language bindings
+*** with alternative approaches.
+***
+
+sload socket
+
+mod REDUCER is
+	protecting SOCKET .
+	protecting META-LEVEL .
+	protecting LEXICAL .
+
+	op Red : -> Cid [ctor] .
+	op red : -> Oid [ctor] .
+
+	sort State .
+	ops start wait-server wait-client active end : -> State [ctor] .
+
+	op state:_ : State -> Attribute [ctor] .
+	op ssock:_ : Oid -> Attribute [ctor] .
+	op sock:_  : Oid -> Attribute [ctor] .
+
+	vars S C : Oid .
+	var  T   : String .
+	var  U   : Term .
+
+	rl
+		< red : Red | state: start >
+	=>
+		< red : Red | state: wait-server >
+		createServerTcpSocket(socketManager, red, 1234, 1)
+	.
+
+	rl
+		< red : Red | state: wait-server >
+		createdSocket(red, socketManager, S)
+	=>
+		< red : Red | state: wait-client, ssock: S >
+		acceptClient(S, red)
+	.
+
+	rl
+		< red : Red | state: wait-client, ssock: S >
+		acceptedClient(red, S, T, C)
+	=>
+		< red : Red | state: active, ssock: S, sock: C >
+		receive(C, red)
+	.
+
+	crl
+		< red : Red | state: active, ssock: S, sock: C >
+		received(red, C, T)
+	=>
+		< red : Red | state: active, ssock: S, sock: C >
+		send(C, red, printTokens(metaPrettyPrint(['CONVERSION], U) '\n))
+
+	if U := getTerm(metaReduce(['CONVERSION], getTerm(metaParse(['CONVERSION], tokenize(T), anyType)))) .
+
+	rl
+		< red : Red | state: active, ssock: S, sock: C >
+		sent(red, C)
+	=>
+		< red : Red | state: active, ssock: S, sock: C >
+		receive(C, red)
+	.
+
+	rl
+		< red : Red | state: active, ssock: S, sock: C >
+		received(red, C, "c\n")
+	=>
+		< red : Red | state: active, ssock: S, sock: C >
+		closeSocket(C, red)
+	.
+
+	rl
+		< red : Red | state: active, ssock: S, sock: C >
+		closedSocket(red, C, T)
+	=>
+		< red : Red | state: active, ssock: S >
+		closeSocket(S, red)
+	.
+
+	rl
+		< red : Red | state: active, ssock: S >
+		closedSocket(red, S, T)
+	=>
+		< red : Red | state: end >
+	.
+endm
+
+erew <> < red : Red | state: start > .

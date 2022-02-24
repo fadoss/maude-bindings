@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 %}
 
 %define %makeIterable(CLASS)
@@ -305,6 +305,7 @@ __version__ = '1.0.1'
 
 	__getitem__ = sort
 	__len__ = nrSorts
+	__hash__ = hash
 
 	def __eq__(self, other):
 		return other is not None and self.equal(other)

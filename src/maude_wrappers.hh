@@ -16,6 +16,7 @@
 #include "visibleModule.hh"
 #include "fileManagerSymbol.hh"
 #include "processManagerSymbol.hh"
+#include "directoryManagerSymbol.hh"
 #include "specialHubSymbol.hh"
 
 #include <vector>
@@ -162,11 +163,27 @@ inline void setAllowFiles(bool flag) {
 }
 
 /**
+ * Allow or disallow operations on directories from Maude code.
+ *
+ * @param flag Whether directory access should be allowed.
+ */
+inline void setAllowDir(bool flag) {
+	DirectoryManagerSymbol::setAllowDir(flag);
+}
+
+/**
  * Set the pseudorandom number generator seed.
  *
  * @param seed New pseudorandom number generator seed.
  */
 void setRandomSeed(int seed);
+
+/**
+ * Set depth multiplier for associative unification.
+ *
+ * @param seed New depth multiplier (between 0 and 1e6).
+ */
+bool setAssocUnifDepth(float m);
 
 /**
  * Data associated to a hook and passed to its callback.

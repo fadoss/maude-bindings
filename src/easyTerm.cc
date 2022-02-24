@@ -531,7 +531,9 @@ NarrowingSequenceSearch3*
 EasyTerm::vu_narrow(SearchType type,
 		    EasyTerm* target,
 		    int depth,
-		    bool fold)
+		    bool fold,
+		    bool filter,
+		    bool delay)
 {
 	if (this == target) {
 		IssueWarning("the target of the search cannot be the initial term itself.");
@@ -541,12 +543,19 @@ EasyTerm::vu_narrow(SearchType type,
 	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
 	startUsingModule(vmod);
 
+	int variantFlags = fold ? NarrowingSequenceSearch3::FOLD : 0;
+
+	if (delay)
+		variantFlags |= VariantSearch::IRREDUNDANT_MODE;
+	if (filter)
+		variantFlags |= VariantUnificationProblem::FILTER_VARIANT_UNIFIERS;
+
 	return new NarrowingSequenceSearch3(new UserLevelRewritingContext(getDag()),
 			static_cast<NarrowingSequenceSearch::SearchType>(type),
 			target->getDag(),
 			depth,
 			new FreshVariableSource(vmod),
-			fold ? NarrowingSequenceSearch3::FOLD : 0);
+			variantFlags);
 }
 
 RewriteSearchState*

@@ -10,5 +10,5 @@ mod FOO-MODULE is
 
 	rl [swap] : f(X, Y) => f(Y, X) .
 	rl [next] : a => b .
-	rl [next] : b => c .
+***	rl [next] : b => c .
 endm
