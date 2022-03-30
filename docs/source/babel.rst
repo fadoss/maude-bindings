@@ -165,7 +165,7 @@ For building the Tcl binding as a dynamic module, simply pass ``-DLANGUAGE=tcl``
    load ./maude.so
 
    init
-   set m [getModule "fNAT"]
+   set m [getModule "NAT"]
    set t [$m parseTerm "2 * 3"]
    $t reduce
    puts [$t toString]

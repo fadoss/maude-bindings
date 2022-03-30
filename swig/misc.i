@@ -206,6 +206,8 @@ public:
 	%rename (domainKind) domainComponent;
 	%rename (hash) getHashValue;
 
+	%newobject makeTerm;
+
 	/**
 	 * Get the number of arguments.
 	 */

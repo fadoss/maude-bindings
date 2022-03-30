@@ -196,9 +196,11 @@ install(FILES
 	"${MAUDESMC_PATH}/src/Main/machine-int.maude"
 	"${MAUDESMC_PATH}/src/Main/metaInterpreter.maude"
 	"${MAUDESMC_PATH}/src/Main/model-checker.maude"
+	"${MAUDESMC_PATH}/src/Main/process.maude"
 	"${MAUDESMC_PATH}/src/Main/smt.maude"
 	"${MAUDESMC_PATH}/src/Main/socket.maude"
 	"${MAUDESMC_PATH}/src/Main/term-order.maude"
+	"${MAUDESMC_PATH}/src/Main/time.maude"
 	${EXTRA_INSTALL_FILES}
 	DESTINATION maude
 )
