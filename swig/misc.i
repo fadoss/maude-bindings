@@ -140,11 +140,21 @@ public:
 	int nrSorts() const;
 
 	/**
+	 * Get the number of maximal sorts in this kind.
+	 */
+	int nrMaximalSorts() const;
+
+	/**
 	 * Get the sort with a given index in this kind.
 	 *
 	 * @param index Sort index.
 	 */
 	Sort* sort(int index) const;
+
+	/**
+	 * Whether the kind contains error terms.
+	 */
+	bool errorFree() const;
 
 	%extend {
 		/**
@@ -189,6 +199,14 @@ public:
 	 * Get the sort of the membership axiom.
 	 */
 	Sort* getSort() const;
+	/**
+	 * Get the condition of the membership axiom.
+	 */
+	const Vector<ConditionFragment*>& getCondition() const;
+	/**
+	 * Whether the membership axiom has the @c nonexec attribute.
+	 */
+	bool isNonexec() const;
 
 	%labeledObject;
 	%streamBasedPrint;
