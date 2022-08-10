@@ -211,6 +211,7 @@ bool input(const char * name)
 	YY_BUFFER_STATE yy_scan_string(const char*);
 	void yy_delete_buffer(YY_BUFFER_STATE);
 	void yy_switch_to_buffer(YY_BUFFER_STATE);
+	void cleanUpParser();
 	// The top buffer we should come back to
 	extern YY_BUFFER_STATE inStack[];
 
@@ -219,8 +220,10 @@ bool input(const char * name)
 
 	UserLevelRewritingContext::ParseResult parseResult = UserLevelRewritingContext::NORMAL;
 	while (parseResult == UserLevelRewritingContext::NORMAL) {
-		if (yyparse(&parseResult))
+		if (yyparse(&parseResult)) {
+			cleanUpParser();
 			return false;
+		}
 	}
 
 	yy_delete_buffer(new_state);

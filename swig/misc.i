@@ -72,6 +72,7 @@ public:
 	%streamBasedPrint;
 	%getMetadataItem(EQUATION);
 	%getLineNumber;
+	%addressIdentifiable(Equation, equation);
 };
 
 /**
@@ -98,13 +99,6 @@ public:
 
 	%extend {
 		/**
-		 * Check whether two sorts are the same.
-		 */
-		bool equal(Sort* other) {
-			return $self == other;
-		}
-
-		/**
 		 * Check if this sort is a subsort of the given sort.
 		 *
 		 * @param rhs The right-hand side of the comparison.
@@ -112,17 +106,11 @@ public:
 		bool leq(Sort* rhs) const {
 			return $self->component() == rhs->component() && leq($self, rhs);
 		}
-
-		/**
-		 * Get the hash value of the sort.
-		 */
-		unsigned int hash() const {
-			return (unsigned int) (uintptr_t) $self;
-		}
 	}
 
 	%streamBasedPrint;
 	%getLineNumber;
+	%addressIdentifiable(Sort, sort);
 };
 
 %rename (Kind) ConnectedComponent;
@@ -156,23 +144,8 @@ public:
 	 */
 	bool errorFree() const;
 
-	%extend {
-		/**
-		 * Check whether two kinds are the same.
-		 */
-		bool equal(ConnectedComponent* other) {
-			return $self == other;
-		}
-
-		/**
-		 * Get the hash value of the kind.
-		 */
-		unsigned int hash() const {
-			return (unsigned int) (uintptr_t) $self;
-		}
-	}
-
 	%streamBasedPrint;
+	%addressIdentifiable(ConnectedComponent, kind);
 };
 
 %rename (MembershipAxiom) SortConstraint;
@@ -180,7 +153,7 @@ public:
 /**
  * A sort membership axiom.
  */
-class SortConstraint {
+class SortConstraint : public ModuleItem {
 public:
 	SortConstraint() = delete;
 
@@ -212,6 +185,7 @@ public:
 	%streamBasedPrint;
 	%getMetadataItem(MEMB_AX);
 	%getLineNumber;
+	%addressIdentifiable(SortConstraint, membership axiom);
 };
 
 /**
@@ -314,7 +288,7 @@ public:
 	/**
 	 * Is the declared operator marked as a data constructor?
 	 */
-	 bool isConstructor() const;
+	bool isConstructor() const;
 };
 
 /**
@@ -347,6 +321,7 @@ public:
 	%streamBasedPrint;
 	%getMetadataItem(RULE);
 	%getLineNumber;
+	%addressIdentifiable(Rule, rule);
 };
 
 /**
@@ -395,6 +370,7 @@ public:
 	%streamBasedPrint;
 	%getMetadataItem(STRAT_DECL);
 	%getLineNumber;
+	%addressIdentifiable(RewriteStrategy, strategy);
 };
 
 /**
@@ -442,6 +418,7 @@ public:
 	%streamBasedPrint;
 	%getMetadataItem(STRAT_DEF);
 	%getLineNumber;
+	%addressIdentifiable(StrategyDefinition, strategy definition);
 };
 
 /**

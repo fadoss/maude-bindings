@@ -60,6 +60,7 @@ public:
 	// methods of this class to avoid writing unnecessary arguments
 
 	%feature("kwargs") variant_unify;
+	%feature("kwargs") parseStrategy;
 
 	/**
 	 * Get the module type.
@@ -206,11 +207,33 @@ public:
 		 *
 		 * @param term_str A term represented as a string.
 		 * @param kind Restrict parsing to terms of the given kind.
+		 * @param vars Variables that may appear without explicit type
+		 * annotation in the strategy.
 		 */
-		EasyTerm* parseTerm(const char* term_str, ConnectedComponent* kind = nullptr) {
+		EasyTerm* parseTerm(const char* term_str, ConnectedComponent* kind = nullptr, const std::vector<EasyTerm*> &vars = {}) {
 			Vector<Token> tokens;
 			tokenize(term_str, tokens);
+
+			MixfixModule::AliasMap aliasMap;
+			MixfixParser* parser = nullptr;
+
+			if (!vars.empty()) {
+				for (EasyTerm* term : vars) {
+					if (VariableDagNode* var = dynamic_cast<VariableDagNode*>(term->getDag()))
+						aliasMap.insert({var->id(), var->symbol()->getRangeSort()});
+					else {
+						IssueWarning("the given list of variables contains terms that are not variables.");
+						return nullptr;
+					}
+				}
+				$self->swapVariableAliasMap(aliasMap, parser);
+			}
+
 			Term* term = $self->parseTerm(tokens, kind);
+
+			if (!vars.empty())
+				$self->swapVariableAliasMap(aliasMap, parser);
+
 			return term != nullptr ? new EasyTerm(term) : nullptr;
 		}
 
@@ -218,11 +241,34 @@ public:
 		 * Parse a strategy expression.
 		 *
 		 * @param term_str A strategy represented as a string.
+		 * @param vars Variables that may appear without explicit type
+		 * annotation in the strategy.
 		 */
-		StrategyExpression* parseStrategy(const char* strat_str) {
+		StrategyExpression* parseStrategy(const char* strat_str, const std::vector<EasyTerm*> &vars = {}) {
 			Vector<Token> tokens;
 			tokenize(strat_str, tokens);
-			return $self->parseStrategyExpr(tokens);
+
+			MixfixModule::AliasMap aliasMap;
+			MixfixParser* parser = nullptr;
+
+			if (!vars.empty()) {
+				for (EasyTerm* term : vars) {
+					if (VariableDagNode* var = dynamic_cast<VariableDagNode*>(term->getDag()))
+						aliasMap.insert({var->id(), var->symbol()->getRangeSort()});
+					else {
+						IssueWarning("the given list of variables contains terms that are not variables.");
+						return nullptr;
+					}
+				}
+				$self->swapVariableAliasMap(aliasMap, parser);
+			}
+
+			StrategyExpression* expr = $self->parseStrategyExpr(tokens);
+
+			if (!vars.empty())
+				$self->swapVariableAliasMap(aliasMap, parser);
+
+			return expr;
 		}
 
 		/**

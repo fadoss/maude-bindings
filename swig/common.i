@@ -44,6 +44,25 @@
 	#endif
 %enddef
 
+// Extend the class with equal and hash methods based on the object address
+%define %addressIdentifiable(classname, docname)
+	%extend {
+		/**
+		 * Get the hash value of the docname.
+		 */
+		unsigned int hash() const {
+			return (unsigned int) (uintptr_t) $self;
+		}
+		/**
+		 * Check whether two docnames are the same.
+		 */
+		bool equal(classname* other) {
+			return $self == other;
+		}
+	}
+%enddef
+
+
 // Extend the class with an object representation function
 // for named entities
 %define %namedEntityPrint

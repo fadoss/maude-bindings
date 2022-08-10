@@ -61,3 +61,5 @@ Documentation for the Python package is available [here](https://fadoss.github.i
 * Loading files and input raw text in `loading.py`.
 * Metalevel manipulations in `metalevel.py`.
 * Custom special operators in `hooks.py`.
+
+Moreover, a tutorial on the library is available in the article [*Maude as a library: an efficient all-purpose programming interface*](https://doi.org/10.1007/978-3-031-12441-9_14), along with a description of its design and implementation.

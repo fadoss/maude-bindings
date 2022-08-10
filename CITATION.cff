@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+authors:
+- family-names: Rubio
+  given-names: Rubén
+  orcid: https://orcid.org/0000-0003-2983-3404
+title: Language bindings for Maude
+version: 1.2.0
+date-released: 2022-08-10
+url: https://github.com/fadoss/maude-bindings
+preferred-citation:
+  type: conference-paper
+  doi: 10.1007/978-3-031-12441-9_14
+  authors:
+    - family-names: Rubio
+      given-names: Rubén
+      orcid: https://orcid.org/0000-0003-2983-3404
+  title: "Maude as a Library: An Efficient All-Purpose Programming Interface"
+  conference:
+    name: 14th International Workshop on Rewriting Logic and Applications (WRLA) 2022
+    date-end: 2022-04-03
+  year: 2022
+  month: 7
+  start: 274
+  end: 294
+  volume: 13252
+  collection-title: Lecture Notes in Computer Science
+  publisher:
+    name: Springer

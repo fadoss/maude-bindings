@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 %}
 
 %define %makeIterable(CLASS)
@@ -331,6 +331,51 @@ __version__ = '1.1.0'
 		return other is not None and self.equal(other)
 
 	__hash__ = hash
+%}
+}
+
+%extend SortConstraint {
+%pythoncode %{
+	__hash__ = hash
+
+	def __eq__(self, other):
+		return other is not None and self.equal(other)
+%}
+}
+
+%extend Equation {
+%pythoncode %{
+	__hash__ = hash
+
+	def __eq__(self, other):
+		return other is not None and self.equal(other)
+%}
+}
+
+%extend Rule {
+%pythoncode %{
+	__hash__ = hash
+
+	def __eq__(self, other):
+		return other is not None and self.equal(other)
+%}
+}
+
+%extend StrategyDefinition {
+%pythoncode %{
+	__hash__ = hash
+
+	def __eq__(self, other):
+		return other is not None and self.equal(other)
+%}
+}
+
+%extend RewriteStrategy {
+%pythoncode %{
+	__hash__ = hash
+
+	def __eq__(self, other):
+		return other is not None and self.equal(other)
 %}
 }
 
