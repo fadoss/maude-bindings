@@ -29,6 +29,7 @@ public:
 	%newobject unify;
 	%newobject variant_unify;
 	%newobject variant_match;
+	%newobject getParameterTheory;
 
 	%extend {
 		~VisibleModule() {
@@ -562,6 +563,10 @@ public:
 								&$self->getVariableInfo())
 					 : nullptr;
 		}
+
+		~UnificationProblem() {
+			getModule($self)->unprotect();
+		}
 	}
 };
 
@@ -590,4 +595,6 @@ public:
 	 * @return The next unifier or null if there is no more.
 	 */
 	EasySubstitution* __next();
+
+	%unprotectDestructor(VariantUnifierSearch);
 };

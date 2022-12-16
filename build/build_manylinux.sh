@@ -4,20 +4,16 @@
 
 set -xe
 
-AUXFILES_PKG="https://github.com/fadoss/maude-bindings/releases/download/0.1/manylinux$1-auxfiles.tar.xz"
-LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-manylinux$1.tar.xz"
+AUXFILES_PKG="https://github.com/fadoss/maude-bindings/releases/download/0.1/manylinux_2_28-auxfiles.tar.xz"
+LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-manylinux_2_28.tar.xz"
 
 #
 ## Install required libraries
 
-# Fix a bug in the dockcross2010 image
-if [ "$1" = "2010" ]; then
-	sudo sed 's/\/lib\//\/lib64\//' -i /usr/local/bin/yum
-fi
+sudo yum install -y xz
+# already installed: swig cmake ninja
 
-sudo yum install -y xz libsigsegv-devel gmp-devel
-
-# A prebuilt package that includes Swig 4 and Buddy and Yices2 headers
+# A prebuilt package with the headers of the libraries (GMP, Buddy, Yices2, libsigsegv)
 curl -L "$AUXFILES_PKG" -O
 xz -cd $(basename "$AUXFILES_PKG") | sudo tar -xC /
 
@@ -39,21 +35,15 @@ mv libmaude-pkg/libmaude.so subprojects/maudesmc/installdir/lib
 ## Install required build tools and overwrite defaults
 
 /opt/python/cp38-cp38/bin/python -m pip install --upgrade pip
-/opt/python/cp38-cp38/bin/python -m pip install --upgrade ninja cmake scikit-build wheel auditwheel
-
-sudo ln -sf /opt/python/cp38-cp38/bin/ninja /usr/bin/ninja
-sudo ln -sf /opt/python/cp38-cp38/bin/cmake /usr/bin/cmake
+/opt/python/cp38-cp38/bin/python -m pip install --upgrade wheel auditwheel
 
 #
 ## Build for each Python version
 
-if [ "$1" = "1" ]; then
-	versions=(cp27-cp27m cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39)
-else
-	versions=(cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39 cp310-cp310)
-fi
+versions=(cp38-cp38 cp39-cp39 cp310-cp310 cp311-cp311)
 
 for version in "${versions[@]}"; do
+	/opt/python/${version}/bin/python -m pip install --upgrade scikit-build
 	/opt/python/${version}/bin/python setup.py bdist_wheel -- -DBUILD_LIBMAUDE=OFF
 done
 

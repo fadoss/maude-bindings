@@ -5,6 +5,7 @@
 set -xe
 
 LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-osx.tar.xz"
+LIBMAUDE_ARM_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmaude-osx_arm64.tar.xz"
 YICES_HEADERS_URL="https://raw.githubusercontent.com/SRI-CSL/yices2/Yices-2.6.1/src/include"
 
 #
@@ -77,3 +78,16 @@ python test.py > test.out
 cmp test.out test.expected
 
 popd
+
+#
+## Build the extension for ARM (without testing)
+
+wget "$LIBMAUDE_ARM_PKG"
+mkdir libmaude-arm-pkg
+tar -xf $(basename "$LIBMAUDE_ARM_PKG") -C libmaude-arm-pkg
+
+mv libmaude-arm-pkg/config.h subprojects/maudesmc/build
+mv libmaude-arm-pkg/libmaude.dylib subprojects/maudesmc/installdir/lib
+
+python setup.py bdist_wheel -p 'macosx-11.0-arm64' -- \
+	-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/usr/local/include

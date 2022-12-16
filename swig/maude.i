@@ -25,6 +25,11 @@
 #include "maude_wrappers.hh"
 #include "easyTerm.hh"
 #include "narrowing.hh"
+
+#include "equation.hh"
+#include "rule.hh"
+#include "sortConstraint.hh"
+#include "strategyDefinition.hh"
 %}
 
 %include std_vector.i
@@ -41,6 +46,7 @@ namespace std {
 	%template (TermIntPair) pair<EasyTerm*, int>;
 	%template (TermVector) vector<EasyTerm*>;
 	%template (StringVector) vector<std::string>;
+	%template (StringVectorVector) vector<vector<std::string>>;
 	%template (TermPair) pair<EasyTerm*, EasyTerm*>;
 	%template (TermSubstitutionPair) pair<EasyTerm*, EasySubstitution*>;
 	%template (TermPairVector) vector<pair<EasyTerm*, EasyTerm*>>;
@@ -83,6 +89,10 @@ namespace std {
 //	High-level functions
 //	(defined in maude_wrappers)
 //
+
+%newobject getCurrentModule;
+%newobject getModule;
+%newobject downModule;
 
 /**
  * Init Maude.

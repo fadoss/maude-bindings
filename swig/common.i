@@ -54,7 +54,7 @@
 			return (unsigned int) (uintptr_t) $self;
 		}
 		/**
-		 * Check whether two docnames are the same.
+		 * Check whether two docname are the same.
 		 */
 		bool equal(classname* other) {
 			return $self == other;
@@ -189,12 +189,137 @@
 	#endif
 %enddef
 
-// Destructor of SearchState that removes the protection
+//
+// Module protection: typemaps to protect a module while
+// some objects belonging to it are alive
+//
+
+// Destructor for SearchState that removes the protection
 // added to the module before the search
 %define %unprotectDestructor(name)
 	%extend {
 		~name() {
 			dynamic_cast<ImportModule*>($self->getContext()->root()->symbol()->getModule())->unprotect();
+			delete $self;
+		}
+	}
+%enddef
+
+// Extend a type so that it protects its module when an instance is created
+// and removes that protection when it is deleted
+%define %otherItemProtection(name, prefix)
+	%newobject Vector<name*>::GETTER_METHOD;
+
+	%typemap (newfree) name* {
+		dynamic_cast<ImportModule*>($1 prefix->getModule())->protect();
+	}
+
+	%extend name {
+		~name() {
+			dynamic_cast<ImportModule*>($self prefix->getModule())->unprotect();
+		}
+	}
+%enddef
+
+// Particularization of the previous definition for ModuleItem subclasses
+%define %moduleItemProtection(name)
+	%otherItemProtection(name, )
+%enddef
+
+// Extend a Maude vector with module protection during its lifetime
+// (this only works for non-empty vectors since we obtain the module
+// from the initial element, so memory errors are possible otherwise)
+%define %vectorProtection(name, prefix)
+	%typemap (newfree) const Vector<name*>& {
+		if (!$1->empty())
+			dynamic_cast<ImportModule*>((*$1)[0] prefix->getModule())->protect();
+	}
+
+	%extend Vector<name*> {
+		~Vector<name*>() {
+			if (!$self->empty())
+				dynamic_cast<ImportModule*>((*$self)[0] prefix->getModule())->unprotect();
+		}
+	}
+%enddef
+
+// Sorts
+%newobject EasyTerm::getSort;
+%newobject ConnectedComponent::sort;
+%newobject SortConstraint::getSort;
+%newobject Symbol::getRangeSort;
+%newobject RewriteStrategy::getSubjectSort;
+%newobject SortTestConditionFragment::getSort;
+%moduleItemProtection(Sort);
+
+// Symbols
+%newobject HookData::getSymbol;
+%newobject VisibleModule::findSymbol;
+%newobject VisibleModule::findSort;
+%newobject EasyTerm::symbol;
+%moduleItemProtection(Symbol);
+
+// Other module items
+%moduleItemProtection(SortConstraint);
+%moduleItemProtection(Equation);
+%moduleItemProtection(Rule);
+%moduleItemProtection(RewriteStrategy);
+%moduleItemProtection(StrategyDefinition);
+
+// Kinds
+%newobject Sort::component;
+%newobject Symbol::domainComponent;
+%otherItemProtection(ConnectedComponent, ->sort(0));
+
+// Operator declarations
+%otherItemProtection(OpDeclaration, ->getDomainAndRange()[0]);
+
+// Protection for Maude vectors returned from the module
+// (they are references to the internal vectors held by the module and its
+// elements are not objects in the target language until accessed) (this is
+// optional since in some languages vectors can also be created by the user
+// and we cannot distinguish these situations without adding an extra field)
+%define %vectorProtections
+	%newobject VisibleModule::getSorts;
+	%newobject Sort::getSubsorts;
+	%newobject Sort::getSupersorts;
+	%newobject RewriteStrategy::getDomain;
+	%newobject OpDeclaration::getDomainAndRange;
+	%vectorProtection(Sort, );
+
+	%newobject VisibleModule::getSymbols;
+	%vectorProtection(Symbol, );
+
+	%newobject VisibleModule::getConnectedComponents;
+	%vectorProtection(ConnectedComponent, );
+
+	%newobject VisibleModule::getSortConstraints;
+	%vectorProtection(SortConstraint, );
+
+	%newobject VisibleModule::getEquations;
+	%vectorProtection(Equation, );
+
+	%newobject VisibleModule::getRules;
+	%vectorProtection(Rule, );
+
+	%newobject VisibleModule::getStrategies;
+	%vectorProtection(RewriteStrategy, );
+
+	%newobject VisibleModule::getStrategyDefinitions;
+	%newobject RewriteStrategy::getDefinitions;
+	%vectorProtection(StrategyDefinition, );
+
+	// Protection for strategy definitions (this vector itself
+	// should also be released)
+	%typemap (newfree) Vector<const OpDeclaration*> {
+		if (!$1.empty())
+			dynamic_cast<ImportModule*>($1[0]->getDomainAndRange()[0]->getModule())->protect();
+	}
+
+	%extend Vector<const OpDeclaration*> {
+		~Vector<const OpDeclaration*>() {
+			if (!$self->empty())
+				dynamic_cast<ImportModule*>((*$self)[0]->getDomainAndRange()[0]->getModule())->unprotect();
 			delete $self;
 		}
 	}

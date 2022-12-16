@@ -34,6 +34,8 @@ class ModuleItem {
 public:
 	ModuleItem() = delete;
 
+	%newobject getModule;
+
 	%extend {
 		/**
 		 * Get the module where this item is defined.
@@ -189,6 +191,32 @@ public:
 };
 
 /**
+ * Symbol attributes
+ * (as global constants since scoped ones are not supported by SWIG)
+ */
+%{
+constexpr int OP_ASSOC = SymbolType::Flags::ASSOC;
+constexpr int OP_COMM = SymbolType::Flags::COMM;
+constexpr int OP_ITER = SymbolType::Flags::ITER;
+constexpr int OP_IDEM = SymbolType::Flags::IDEM;
+constexpr int OP_LEFT_ID = SymbolType::Flags::LEFT_ID;
+constexpr int OP_RIGHT_ID = SymbolType::Flags::RIGHT_ID;
+constexpr int OP_MEMO = SymbolType::Flags::MEMO;
+constexpr int OP_SPECIAL = -1;
+%}
+
+enum SymbolAttribute {
+	OP_ASSOC,		///< associative
+	OP_COMM,		///< commutative
+	OP_ITER,		///< iterable
+	OP_IDEM,		///< idempotent
+	OP_LEFT_ID,		///< with left identity element
+	OP_RIGHT_ID,		///< with right identity element
+	OP_MEMO,		///< with memoization
+	OP_SPECIAL,		///< special
+};
+
+/**
  * A Maude symbol (operator at the kind level).
  */
 class Symbol : public ModuleItem {
@@ -199,6 +227,7 @@ public:
 	%rename (hash) getHashValue;
 
 	%newobject makeTerm;
+	%newobject getOpDeclarations;
 
 	/**
 	 * Get the number of arguments.
@@ -265,9 +294,117 @@ public:
 
 		/**
 		 * Whether the symbol is associative.
+		 *
+		 * @deprecated use @c hasAttr(OP_ASSOC) instead.
 		 */
 		bool isAssoc() const {
-			return dynamic_cast<const AssociativeSymbol*>($self) != 0;
+			return safeCast(MixfixModule*, $self->getModule())
+				// getSymbolType only uses const methods of Symbol
+				->getSymbolType(const_cast<Symbol*>($self))
+				.hasFlag(SymbolType::ASSOC);
+		}
+
+		/**
+		 * Whether the symbol has the given attribute.
+		 *
+		 * @param attr One of the @c OP_* constants for operator attributes.
+		 */
+		bool hasAttr(int attr) const {
+			SymbolType st = safeCast(MixfixModule*, $self->getModule())
+				->getSymbolType(const_cast<Symbol*>($self));
+
+			switch (attr) {
+				case OP_SPECIAL:
+					return st.hasSpecial();
+				default:
+					return st.hasFlag(attr);
+			}
+		}
+
+		/**
+		 * Get the identity element for this symbol (if any).
+		 */
+		EasyTerm* getIdentity() const {
+			SymbolType st = safeCast(MixfixModule*, $self->getModule())
+				->getSymbolType(const_cast<Symbol*>($self));
+
+			if (st.hasFlag(SymbolType::LEFT_ID) || st.hasFlag(SymbolType::RIGHT_ID))
+				return new EasyTerm(safeCast(const BinarySymbol*, $self)->getIdentity(), false);
+
+			return nullptr;
+		}
+
+		/**
+		 * Get the reduction strategy of the symbol.
+		 */
+		std::vector<int> getStrategy() const {
+			const Vector<int>& strat = $self->getStrategy();
+			return std::vector(strat.begin(), strat.end());
+		}
+
+		/**
+		 * Get the frozen attribute of the symbol.
+		 */
+		std::vector<int> getFrozen() const {
+			const NatSet& frozen = $self->getFrozen();
+			std::vector<int> output;
+			for (int index : frozen)
+				output.push_back(index + 1);
+			return output;
+		}
+
+		/**
+		 * Get the format attribute of the symbol.
+		 *
+		 * @return The sequence of instruction words of the format
+		 * specification, each of them a string.
+		 */
+		std::vector<std::string> getFormat() const {
+			const Vector<int>& format = safeCast(MixfixModule*, $self->getModule())
+				->getFormat(const_cast<Symbol*>($self));
+			std::vector<std::string> output;
+			for (int index : format)
+				output.push_back(Token::name(index));
+			return output;
+		}
+
+		/**
+		 * Get the syntactic precedence of the symbol.
+		 */
+		int getPrec() const {
+			return safeCast(MixfixModule*, $self->getModule())
+				->getPrec(const_cast<Symbol*>($self));
+		}
+
+		/**
+		 * Get the id-hooks of the special operator (or an empty sequence otherwise).
+		 *
+		 * @return A sequence of string sequences representing each an id-hook of
+		 * the operator with its name followed by its arguments.
+		 */
+		std::vector<std::vector<std::string>> getIdHooks() {
+			MixfixModule* mod = safeCast(MixfixModule*, $self->getModule());
+
+			// Ensure that the operator is special
+			if (!mod->getSymbolType(const_cast<Symbol*>($self)).hasSpecial()
+			    || $self->getOpDeclarations().empty())
+				return {};
+
+			// getDataAttachment gives ids in purposes and arguments in data
+			Vector<const char*> purposes;
+			Vector<Vector<const char*>> data;
+			mod->getDataAttachments($self, $self->getOpDeclarations()[0].getDomainAndRange(), purposes, data);
+
+			// We return purposes and arguments in the same vector, one per hook
+			std::vector<std::vector<std::string>> output(purposes.length());
+
+			for (int i = 0; i < purposes.length(); ++i) {
+				output[i].reserve(1 + data[i].length());
+				output[i].push_back(purposes[i]);
+				output[i].insert(output[i].end(), data[i].begin(), data[i].end());
+			}
+
+			return output;
 		}
 	}
 

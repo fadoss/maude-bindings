@@ -2,12 +2,15 @@
 //	Interface to Maude special operators
 //
 
+%immutable HookData;
+
 /**
  * Data associated to a hook and passed to its callback.
  */
 struct HookData {
-	%inmutable;
 	HookData() = delete;
+
+	%newobject getTerm;
 
 	/**
 	 * Get the data associated to the hook.

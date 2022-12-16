@@ -301,6 +301,11 @@ public:
 	const char* getVarName() const;
 
 	/**
+	 * Get the exponent of an iterable symbol or zero otherwise.
+	 */
+	unsigned long int getIterExponent() const;
+
+	/**
 	 * Get the hash value of the term.
 	 */
 	size_t hash() const;
@@ -489,6 +494,8 @@ public:
 			return new EasyTerm($self->rebuildDag(term->getDag()).first);
 		}
 	}
+
+	%unprotectDestructor(MatchSearchState);
 };
 
 /**
@@ -565,6 +572,8 @@ public:
 	 * @return The number of the parent or -1 for the root.
 	 */
 	int getStateParent(int stateNr) const;
+
+	%unprotectDestructor(RewriteSequenceSearch);
 };
 
 /**

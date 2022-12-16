@@ -10,6 +10,8 @@
 #include "variantSearch.hh"
 #include "substitution.hh"
 #include "filteredVariantUnifierSearch.cc"
+#include "visibleModule.hh"
+#include "unificationProblem.hh"
 
 VariantUnifierSearch::VariantUnifierSearch(VariantSearch * search, Command cmd)
  : search(search), command(cmd)  {
@@ -63,4 +65,36 @@ VariantUnifierSearch::__next() {
 		subs.bind(i, unifier[i]);
 
 	return new EasySubstitution(&subs, &search->getVariableInfo());
+}
+
+RewritingContext*
+VariantUnifierSearch::getContext() const {
+	return search->getContext();
+}
+
+// Dirty hacks to access some private members
+// (not to modify Maude for the moment)
+
+template<typename Tag, typename Tag::type M>
+struct PrivateHack {
+	friend typename Tag::type get(Tag) {
+		return M;
+	}
+};
+
+struct HackUnificationProblem {
+	typedef Vector<Term*> UnificationProblem::* type;
+	friend type get(HackUnificationProblem);
+};
+
+template struct PrivateHack<HackUnificationProblem, &UnificationProblem::leftHandSides>;
+
+VisibleModule*
+getModule(UnificationProblem* problem) {
+	const auto &leftHandSides = problem->*get(HackUnificationProblem());
+
+	if (leftHandSides.empty())
+		return nullptr;
+
+	return dynamic_cast<VisibleModule*>(leftHandSides[0]->symbol()->getModule());
 }

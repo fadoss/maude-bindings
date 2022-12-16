@@ -276,6 +276,11 @@ public:
 	const char* getVarName() const;
 
 	/**
+	 * Get the exponent of an iterable symbol or zero otherwise.
+	 */
+	unsigned long int getIterExponent() const;
+
+	/**
 	 * Get the hash value of the term.
 	 */
 	size_t hash() const;
@@ -312,6 +317,7 @@ public:
 private:
 	void dagify();
 	void termify();
+	void protect();
 
 	bool is_dag;
 	bool is_own;

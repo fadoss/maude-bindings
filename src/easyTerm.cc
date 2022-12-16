@@ -44,6 +44,9 @@
 #include "minusSymbol.hh"
 #include "SMT_NumberDagNode.hh"
 #include "SMT_NumberTerm.hh"
+#include "S_Theory.hh"
+#include "S_DagNode.hh"
+#include "S_Term.hh"
 
 using namespace std;
 
@@ -52,15 +55,20 @@ const Vector<ConditionFragment*> EasyTerm::NO_CONDITION;
 EasyTerm::EasyTerm(Term* term, bool owned)
  : is_dag(false), is_own(owned), term(term)
 {
+	protect();
 }
 
 EasyTerm::EasyTerm(DagNode* dagNode)
  : is_dag(true), is_own(false), dagNode(dagNode)
 {
+	protect();
 	link();
 }
 
 EasyTerm::~EasyTerm() {
+	// Unprotect the module this object belongs to
+	dynamic_cast<ImportModule*>(symbol()->getModule())->unprotect();
+
 	if (is_dag)
 		unlink();
 	else if (is_own)
@@ -211,6 +219,20 @@ EasyTerm::getVarName() const {
 	return nullptr;
 }
 
+unsigned long int
+EasyTerm::getIterExponent() const {
+	if (is_dag) {
+		if (S_DagNode* sdag = dynamic_cast<S_DagNode*>(dagNode))
+			return sdag->getNumber().get_ui();
+	}
+	else {
+		if (S_Term* sterm = dynamic_cast<S_Term*>(term))
+			return sterm->getNumber().get_ui();
+	}
+
+	return 0;
+}
+
 size_t
 EasyTerm::hash() const {
 	if (is_dag) {
@@ -243,6 +265,13 @@ EasyTerm::termify() {
 	is_own = true;
 	term = termified;
 	unlink();
+}
+
+inline void
+EasyTerm::protect() {
+	// Since its module must stay alive during the lifetime of term,
+	// we protect it so that it is not garbage collected by Maude
+	dynamic_cast<ImportModule*>(symbol()->getModule())->protect();
 }
 
 EasyTerm*
@@ -411,6 +440,9 @@ MatchSearchState*
 EasyTerm::match(EasyTerm* target, const Vector<ConditionFragment*>& condition,
                 bool withExtension, int minDepth, int maxDepth)
 {
+	// Protect the module to avoid its deletion while the search is active
+	dynamic_cast<VisibleModule*>(symbol()->getModule())->protect();
+
 	if (!is_dag)
 		dagify();
 
@@ -443,6 +475,9 @@ EasyTerm::search(SearchType type,
 		IssueWarning("the target of the search cannot be the initial term itself.");
 		return nullptr;
 	}
+
+	// Protect the module to avoid its deletion while the search is active
+	dynamic_cast<VisibleModule*>(symbol()->getModule())->protect();
 
 	if (target->is_dag)
 		target->termify();

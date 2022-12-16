@@ -129,7 +129,7 @@ endif()
 #
 ## Build the SWIG extension module and wrappers
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 
 include_directories(

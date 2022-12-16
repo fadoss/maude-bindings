@@ -4,8 +4,8 @@ on:
     tags:
       - 'v*'
 jobs:
-  manylinux2010:
-    name: Linux packages (manylinux2010)
+  manylinux_2_28:
+    name: Linux packages (manylinux_2_28)
     runs-on: ubuntu-latest
     steps:
 
@@ -16,9 +16,9 @@ jobs:
 
     - name: Build Python packages
       run: |
-        docker run dockcross/manylinux2010-x64 > ./dockcross
+        docker run dockcross/manylinux_2_28-x64 > ./dockcross
         chmod +x dockcross
-        ./dockcross ./build/build_manylinux.sh 2010
+        ./dockcross ./build/build_manylinux.sh
 
     - name: Upload Python wheels
       uses: softprops/action-gh-release@v1
@@ -33,7 +33,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
 
     - name: Check out repository code
@@ -61,7 +61,7 @@ jobs:
     runs-on: windows-2019
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
 
     - name: Check out repository code

@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+:tocdepth: 3
+
 Maude bindings documentation
 ============================
 
@@ -253,32 +255,66 @@ Module items
 .. autoclass:: Sort
    :members:
    :undoc-members:
+   :exclude-members: hash, equal, thisown
 
 .. autoclass:: Kind
    :members:
    :undoc-members:
+   :exclude-members: hash, equal, thisown
 
    This is an iterable object over its sorts.
 
 .. autoclass:: MembershipAxiom
    :members:
    :undoc-members:
+   :exclude-members: hash, equal, thisown
 
 .. autoclass:: Equation
    :members:
    :undoc-members:
+   :exclude-members: hash, equal, thisown
 
 .. autoclass:: Rule
    :members:
    :undoc-members:
+   :exclude-members: hash, equal, thisown
 
 .. autoclass:: RewriteStrategy
    :members:
    :undoc-members:
+   :exclude-members: hash, equal, thisown
 
 .. autoclass:: StrategyDefinition
    :members:
    :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+Operator attributes
+...................
+
+.. autodata:: OP_ASSOC
+   :annotation:
+
+.. autodata:: OP_COMM
+   :annotation:
+
+.. autodata:: OP_ITER
+   :annotation:
+
+.. autodata:: OP_IDEM
+   :annotation:
+
+.. autodata:: OP_LEFT_ID
+   :annotation:
+
+.. autodata:: OP_RIGHT_ID
+   :annotation:
+
+.. autodata:: OP_MEMO
+   :annotation:
+
+.. autodata:: OP_SPECIAL
+   :annotation:
 
 
 Rewriting graphs and model checking

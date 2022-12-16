@@ -44,9 +44,19 @@ public:
 	 * @return The next unifier or null if there is no more.
 	 */
 	EasySubstitution* __next();
+
+	/**
+	 * Rewriting context of the search.
+	 */
+	RewritingContext* getContext() const;
 private:
 	VariantSearch* search;
 	Command command;
 };
+
+/**
+ * Get the module of a unification problem.
+ */
+VisibleModule* getModule(UnificationProblem* problem);
 
 #endif // NARROWING_H

@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 %}
 
 %define %makeIterable(CLASS)
@@ -493,6 +493,12 @@ bool convertVector(PyObject* input, Vector<T*>* &vect, swig_type_info* swig_elem
 
 %factory(ConditionFragment*, EqualityConditionFragment, AssignmentConditionFragment,
          SortTestConditionFragment, RewriteConditionFragment);
+
+
+//
+// Module protection for vectors
+
+%vectorProtections;
 
 //
 // Signal handlers
