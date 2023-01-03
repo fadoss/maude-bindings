@@ -41,15 +41,20 @@
 namespace std {
 	%template (TokenVector) vector<Token>;
 	%template (ModuleHeaderVector) vector<ModuleHeader>;
+	%template (TermVector) vector<EasyTerm*>;
+	%template (StringVector) vector<std::string>;
+	%template (TermPair) pair<EasyTerm*, EasyTerm*>;
+	%template (TermPairVector) vector<pair<EasyTerm*, EasyTerm*>>;
+
+#ifndef SWIGPYTHON
+	// In Python, avoid generating the full implementation of vectors
+	// when they are only used as return values in functions
 	%template (ViewVector) vector<View*>;
 	%template (IntVector) vector<int>;
 	%template (TermIntPair) pair<EasyTerm*, int>;
-	%template (TermVector) vector<EasyTerm*>;
-	%template (StringVector) vector<std::string>;
-	%template (StringVectorVector) vector<vector<std::string>>;
-	%template (TermPair) pair<EasyTerm*, EasyTerm*>;
 	%template (TermSubstitutionPair) pair<EasyTerm*, EasySubstitution*>;
-	%template (TermPairVector) vector<pair<EasyTerm*, EasyTerm*>>;
+	%template (StringVectorVector) vector<vector<std::string>>;
+#endif
 }
 
 //

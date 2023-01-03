@@ -344,12 +344,15 @@ public:
 
 		/**
 		 * Get the frozen attribute of the symbol.
+		 *
+		 * @return The sequence of indices in the frozen attribute,
+		 * where arguments are numbered from 0 instead of 1.
 		 */
 		std::vector<int> getFrozen() const {
 			const NatSet& frozen = $self->getFrozen();
 			std::vector<int> output;
 			for (int index : frozen)
-				output.push_back(index + 1);
+				output.push_back(index);
 			return output;
 		}
 

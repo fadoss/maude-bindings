@@ -211,7 +211,8 @@
 	%newobject Vector<name*>::GETTER_METHOD;
 
 	%typemap (newfree) name* {
-		dynamic_cast<ImportModule*>($1 prefix->getModule())->protect();
+		if ($1 != nullptr)
+			dynamic_cast<ImportModule*>($1 prefix->getModule())->protect();
 	}
 
 	%extend name {

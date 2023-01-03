@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 %}
 
 %define %makeIterable(CLASS)
@@ -265,7 +265,7 @@ __version__ = '1.2.1'
 		nxt = self.__next()
 		if nxt is None:
 			raise StopIteration
-		return nxt.first, nxt.second
+		return nxt
 %}
 }
 
@@ -385,6 +385,59 @@ __version__ = '1.2.1'
 	$result = SWIG_FromCharPtrAndSize(($1 ? $1 + 1 : 0), ($1 ? strlen($1) - 2 : 0));
 }
 
+// Methods for obtaining the operator and term hooks as dictionaries
+// (they are implemented using the Python C API in the typemaps, the
+// extension methods themselves only pass the symbol to the typemap)
+
+%typemap(out) Symbol* getOpHooks {
+	Vector<const char*> purposes;
+	Vector<Symbol*> symbols;
+	VisibleModule* mod = dynamic_cast<VisibleModule*>($1->getModule());
+	mod->getSymbolAttachments($1, purposes, symbols);
+
+	$result = PyDict_New();
+	size_t nrHooks = purposes.size();
+	for (size_t k = 0; k < nrHooks; ++k) {
+		PyObject* elem = SWIG_NewPointerObj(SWIG_as_voidptr(symbols[k]),
+		                                    SWIGTYPE_p_Symbol, SWIG_POINTER_OWN);
+		PyDict_SetItemString($result, purposes[k], elem);
+		Py_XDECREF(elem);
+	}
+}
+
+%typemap(out) Symbol* getTermHooks {
+	Vector<const char*> purposes;
+	Vector<Term*> terms;
+	VisibleModule* mod = dynamic_cast<VisibleModule*>($1->getModule());
+	mod->getTermAttachments($1, purposes, terms);
+
+	$result = PyDict_New();
+	size_t nrHooks = purposes.size();
+	for (size_t k = 0; k < nrHooks; ++k) {
+		EasyTerm* eterm = new EasyTerm(terms[k], false);
+		PyObject* elem = SWIG_NewPointerObj(SWIG_as_voidptr(eterm),
+		                                    SWIGTYPE_p_EasyTerm, SWIG_POINTER_OWN);
+		PyDict_SetItemString($result, purposes[k], elem);
+		Py_XDECREF(elem);
+	}
+}
+
+%extend Symbol {
+	/**
+	 * Get the operator hooks of the symbol as a dictionary.
+	 */
+	Symbol* getOpHooks() {
+		return $self;
+	}
+
+	/**
+	 * Get the term hooks of the symbol as a dictionary.
+	 */
+	Symbol* getTermHooks() {
+		return $self;
+	}
+}
+
 
 //
 // Defined in vector.i
@@ -484,6 +537,38 @@ bool convertVector(PyObject* input, Vector<T*>* &vect, swig_type_info* swig_elem
 		if ($1 != &EasyTerm::NO_CONDITION)
 			delete $1;
 	}
+}
+
+// Typemap to avoid the generation of vectors
+
+%{
+#include "specific/python.cc"
+%}
+
+%typemap(out) std::pair<EasyTerm*, int> {
+	return &$1 == nullptr ? Py_None : convert2Py(*&$1);
+}
+
+%typemap(out) std::pair<EasyTerm*, EasySubstitution*>* {
+	PyObject* obj = *&$1 == nullptr ? Py_None : convert2Py(**&$1);
+	delete *&$1;
+	return obj;
+}
+
+%typemap(out) std::vector<std::vector<std::string>> {
+	return &$1 == nullptr ? Py_None : convert2Py(*&$1);
+}
+
+%typemap(out) std::vector<int> {
+	return &$1 == nullptr ? Py_None : convert2Py(*&$1);
+}
+
+%typemap(out) std::vector<int>* {
+	return *&$1 == nullptr ? Py_None : convert2Py(**&$1);
+}
+
+%typemap(out) std::vector<View*> {
+	return &$1 == nullptr ? Py_None : convert2Py(*&$1);
 }
 
 // Instruction so that ConditionFragments returned by functions are
