@@ -230,7 +230,7 @@ void setRandomSeed(int randomSeed);
 bool setAssocUnifDepth(float m);
 
 // Global constants
-constexpr int UNBOUNDED = INT_MAX;
+%constant int UNBOUNDED = INT_MAX;
 
 %include misc.i
 %include term.i

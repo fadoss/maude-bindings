@@ -9,6 +9,7 @@
 #include "freshVariableSource.hh"
 #include "filteredVariantUnifierSearch.hh"
 #include "irredundantUnificationProblem.hh"
+#include "pointerMap.hh"
 %}
 
 %rename (Module) VisibleModule;

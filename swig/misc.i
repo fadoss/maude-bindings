@@ -63,6 +63,14 @@ public:
 	 */
 	bool isNonexec() const;
 	/**
+	 * Whether the equation has the @c owise attribute.
+	 */
+	bool isOwise() const;
+	/**
+	 * Whether the equation has the @c variant attribute.
+	 */
+	bool isVariant() const;
+	/**
 	 * Whether the equation has a condition.
 	 */
 	bool hasCondition() const;
