@@ -51,8 +51,11 @@ public:
 		SYSTEM_MODULE = SYSTEM,				///< System module (<code>mod</code>)
 		STRATEGY_MODULE = SYSTEM | STRATEGY,		///< Strategy module (<code>smod</code>)
 		FUNCTIONAL_THEORY = THEORY,			///< Functional theory (<code>fth</code>)
-		SYSTEM_THEORY = SYSTEM | THEORY,		///< System module (<code>th</code>)
-		STRATEGY_THEORY = SYSTEM | STRATEGY | THEORY	///< Strategy module (<code>sth</code>)
+		SYSTEM_THEORY = SYSTEM | THEORY,		///< System theory (<code>th</code>)
+		STRATEGY_THEORY = SYSTEM | STRATEGY | THEORY,	///< Strategy theory (<code>sth</code>)
+
+		OBJECT_ORIENTED_MODULE = SYSTEM | OBJECT_ORIENTED,		///< Object-oriented module (<code>omod</code>)
+		OBJECT_ORIENTED_THEORY = SYSTEM | OBJECT_ORIENTED | THEORY	///< Object-oriented theory (<code>oth</code>)
 	};
 
 	%rename (getKinds) getConnectedComponents;

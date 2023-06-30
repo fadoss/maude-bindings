@@ -26,14 +26,16 @@
 #define REPR_METHOD toString
 #elif defined(SWIGCSHARP)
 #define REPR_METHOD ToString
+#elif defined(SWIGOCAML)
+#define REPR_METHOD to_string
 #else
+#define REPR_METHOD toString
 #warning This language is not explicitly supported
 #endif
 
 // Extend the class with an object representation function
 // defined by operator<<
 %define %streamBasedPrint
-	#if defined(REPR_METHOD)
 	%extend {
 		std::string REPR_METHOD() {
 			std::ostringstream stream;
@@ -41,7 +43,6 @@
 			return stream.str();
 		}
 	}
-	#endif
 %enddef
 
 // Extend the class with equal and hash methods based on the object address
@@ -66,13 +67,11 @@
 // Extend the class with an object representation function
 // for named entities
 %define %namedEntityPrint
-	#if defined(REPR_METHOD)
 	%extend {
 		const char * REPR_METHOD() {
 			return Token::name($self->id());
 		}
 	}
-	#endif
 %enddef
 
 // Extend the class with name getter
@@ -156,7 +155,6 @@
 %enddef
 
 %define %vectorPrint
-	#if defined(REPR_METHOD)
 	%extend Vector {
 		std::string REPR_METHOD() {
 			std::ostringstream stream;
@@ -164,11 +162,9 @@
 			return stream.str();
 		}
 	}
-	#endif
 %enddef
 
 %define %substitutionPrint
-	#if defined(REPR_METHOD)
 	%extend EasySubstitution {
 		std::string REPR_METHOD() {
 			Vector<Term*> variables;
@@ -186,7 +182,6 @@
 			return stream.str();
 		}
 	}
-	#endif
 %enddef
 
 //
