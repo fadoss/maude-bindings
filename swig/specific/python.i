@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.2.3'
+__version__ = '1.3.0'
 %}
 
 %define %makeIterable(CLASS)
@@ -193,7 +193,7 @@ __version__ = '1.2.3'
 %}
 }
 
-%extend DagArgumentIterator {
+%extend EasyArgumentIterator {
 %pythoncode %{
 	def __iter__(self):
 		return self

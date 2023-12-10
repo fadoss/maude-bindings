@@ -487,6 +487,25 @@ public:
 	 */
 	bool equal(const StrategyExpression& other) const;
 
+	%extend {
+		/**
+		 * Obtain the LaTeX representation of this strategy expression.
+		 */
+		std::string toLatex() const {
+			VisibleModule* vmod = dynamic_cast<VisibleModule*>(getModule($self));
+			// If the strategy expression is module independent
+			if (vmod == nullptr)
+				vmod = getCurrentModule();
+			// This should not happen
+			if (vmod == nullptr)
+				return "<errror>";
+
+			std::ostringstream stream;
+			vmod->latexPrintStrategy(stream, const_cast<StrategyExpression*>($self));
+			return stream.str();
+		}
+	}
+
 	%streamBasedPrint;
 };
 

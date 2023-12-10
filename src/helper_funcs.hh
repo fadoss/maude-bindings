@@ -38,6 +38,6 @@ MetaLevel* getMetaLevel(VisibleModule* mod);
  * Get the module a strategy expression belongs to or null
  * if it is module-independent.
  */
-Module* getModule(StrategyExpression* expr);
+Module* getModule(const StrategyExpression* expr);
 
 #endif // HELPER_FUNCS_HH

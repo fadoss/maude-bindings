@@ -30,21 +30,21 @@
 #include "choiceStrategy.hh"
 #include "sampleStrategy.hh"
 
-Module* getModule(StrategyExpression* expr) {
+Module* getModule(const StrategyExpression* expr) {
 
-	if (dynamic_cast<TrivialStrategy*>(expr) != nullptr)
+	if (dynamic_cast<const TrivialStrategy*>(expr) != nullptr)
 		return nullptr;
 
-	else if (TestStrategy* t = dynamic_cast<TestStrategy*>(expr))
+	else if (const TestStrategy* t = dynamic_cast<const TestStrategy*>(expr))
 		return t->getPatternTerm()->symbol()->getModule();
 
-	else if (SubtermStrategy* s = dynamic_cast<SubtermStrategy*>(expr))
+	else if (const SubtermStrategy* s = dynamic_cast<const SubtermStrategy*>(expr))
 		return s->getPatternTerm()->symbol()->getModule();
 
-	else if (CallStrategy* c = dynamic_cast<CallStrategy*>(expr))
+	else if (const CallStrategy* c = dynamic_cast<const CallStrategy*>(expr))
 		return c->getStrategy()->getModule();
 
-	else if (ApplicationStrategy* a = dynamic_cast<ApplicationStrategy*>(expr)) {
+	else if (const ApplicationStrategy* a = dynamic_cast<const ApplicationStrategy*>(expr)) {
 		if (!a->getVariables().empty())
 			return a->getVariables()[0]->symbol()->getModule();
 
@@ -55,10 +55,10 @@ Module* getModule(StrategyExpression* expr) {
 				break;
 		return md;
 	}
-	else if (OneStrategy* o = dynamic_cast<OneStrategy*>(expr))
+	else if (const OneStrategy* o = dynamic_cast<const OneStrategy*>(expr))
 		return getModule(o->getStrategy());
 
-	else if (ConcatenationStrategy* c = dynamic_cast<ConcatenationStrategy*>(expr)) {
+	else if (const ConcatenationStrategy* c = dynamic_cast<const ConcatenationStrategy*>(expr)) {
 		Module* md = nullptr;
 
 		for (StrategyExpression* e : c->getStrategies())
@@ -66,7 +66,7 @@ Module* getModule(StrategyExpression* expr) {
 				break;
 		return md;
 	}
-	else if (UnionStrategy* u = dynamic_cast<UnionStrategy*>(expr)) {
+	else if (const UnionStrategy* u = dynamic_cast<const UnionStrategy*>(expr)) {
 		Module* md = nullptr;
 
 		for (StrategyExpression* e : u->getStrategies())
@@ -74,10 +74,10 @@ Module* getModule(StrategyExpression* expr) {
 				break;
 		return md;
 	}
-	else if (IterationStrategy* i = dynamic_cast<IterationStrategy*>(expr))
+	else if (const IterationStrategy* i = dynamic_cast<const IterationStrategy*>(expr))
 		return getModule(i->getStrategy());
 
-	else if (BranchStrategy* b = dynamic_cast<BranchStrategy*>(expr)) {
+	else if (const BranchStrategy* b = dynamic_cast<const BranchStrategy*>(expr)) {
 		Module* md = nullptr;
 
 		if (b->getInitialStrategy() != nullptr)
@@ -90,10 +90,10 @@ Module* getModule(StrategyExpression* expr) {
 		return md;
 	}
 #if WITH_PROBABILISTIC_SLANG
-	else if (ChoiceStrategy* c = dynamic_cast<ChoiceStrategy*>(expr))
+	else if (const ChoiceStrategy* c = dynamic_cast<const ChoiceStrategy*>(expr))
 		return c->getWeights()[0].getTerm()->symbol()->getModule();
 
-	else if (SampleStrategy* s = dynamic_cast<SampleStrategy*>(expr))
+	else if (const SampleStrategy* s = dynamic_cast<const SampleStrategy*>(expr))
 		return s->getVariable()->symbol()->getModule();
 #endif
 

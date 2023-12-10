@@ -18,9 +18,13 @@
 #include "rootContainer.hh"
 #include "vector.hh"
 #include "interpreter.hh"
+#include "term.hh"
+#include "argumentIterator.hh"
+#include "dagArgumentIterator.hh"
 
 #include <iostream>
 #include <vector>
+#include <variant>
 
 /**
  * Search types (number of steps).
@@ -33,9 +37,11 @@ enum SearchType {
 };
 
 /*
- * Forward declaration of EasySubstititon to be used in EasyTerm.
+ * Forward declaration of EasySubstitution and
+ * EasyArgumentIterator to be used in EasyTerm.
  */
 class EasySubstitution;
+class EasyArgumentIterator;
 
 /**
  * Maude term with its associated operations.
@@ -87,6 +93,11 @@ public:
 	 * Get the sort of this term.
 	 */
 	Sort* getSort() const;
+
+	/**
+	 * Normalize this term modulo axioms.
+	 */
+	void normalize(bool full = false);
 
 	/**
 	 * Reduce this term.
@@ -235,7 +246,7 @@ public:
 	/**
 	 * Iterate over the arguments of this term.
 	 */
-	DagArgumentIterator* arguments();
+	EasyArgumentIterator* arguments();
 
 	/**
 	 * Pretty prints this term.
@@ -304,6 +315,11 @@ public:
 	 * Set the internal DAG node.
 	 */
 	void setDag(DagNode* node);
+
+	/*
+	 * Get the LaTeX representation of the term.
+	 */
+	std::string toLatex() const;
 
 	/**
 	 * An empty condition to be used as a placeholder.
@@ -412,6 +428,17 @@ private:
 
 	Mapping mapping;
 	const ExtensionInfo* extension;
+};
+
+class EasyArgumentIterator : private std::variant<DagArgumentIterator, ArgumentIterator>
+{
+public:
+	EasyArgumentIterator(Term& term);
+	EasyArgumentIterator(DagNode* dag);
+
+	bool valid() const;
+	EasyTerm* argument() const;
+	void next();
 };
 
 inline

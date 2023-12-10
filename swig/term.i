@@ -23,7 +23,7 @@
 
 %rename (Term) EasyTerm;
 %rename (Substitution) EasySubstitution;
-%rename (ArgumentIterator) DagArgumentIterator;
+%rename (ArgumentIterator) EasyArgumentIterator;
 %rename (NarrowingSequenceSearch) NarrowingSequenceSearch3;
 
 
@@ -124,6 +124,13 @@ public:
 	Sort* getSort() const;
 
 	// Maude operations following Maude commands
+
+	/**
+	 * Normalize this term modulo axioms.
+	 *
+	 * @param full Whether to normalize in depth.
+	 */
+	void normalize(bool full = true);
 
 	/**
 	 * Reduce this term.
@@ -275,7 +282,7 @@ public:
 	/**
 	 * Iterate over the arguments of this term.
 	 */
-	DagArgumentIterator* arguments();
+	EasyArgumentIterator* arguments();
 
 	/**
 	 * Get the floating-point number represented by the given term or
@@ -332,6 +339,11 @@ public:
 			return stream.str();
 		}
 	}
+
+	/**
+	 * Obtain the LaTeX representation of this term.
+	 */
+	std::string toLatex();
 
 	%streamBasedPrint;
 };
@@ -828,30 +840,25 @@ public:
 /**
  * An iterator through the arguments of a term.
  */
-class DagArgumentIterator {
+class EasyArgumentIterator {
 public:
-	DagArgumentIterator() = delete;
+	EasyArgumentIterator() = delete;
 
 	%newobject argument;
+	%rename(__next) next;
 
 	/**
 	 * Is this iterator pointing to a valid argument?
 	 */
 	bool valid() const;
 
-	%rename(__next) next;
-
 	/**
 	 * Advance the iterator to the next argument.
 	 */
 	void next();
 
-	%extend {
-		/**
-		 * Get the argument pointed by this iterator.
-		 */
-		EasyTerm* argument() const {
-			return new EasyTerm($self->argument());
-		}
-	}
+	/**
+	 * Get the argument pointed by this iterator.
+	 */
+	EasyTerm* argument() const;
 };

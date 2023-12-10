@@ -28,7 +28,6 @@
 #include "freshVariableSource.hh"
 #include "pattern.hh"
 #include "extensionInfo.hh"
-#include "dagArgumentIterator.hh"
 #include "variableDagNode.hh"
 #include "metaLevel.hh"
 #include "userLevelRewritingContext.hh"
@@ -47,6 +46,8 @@
 #include "S_Theory.hh"
 #include "S_DagNode.hh"
 #include "S_Term.hh"
+
+#include <sstream>
 
 using namespace std;
 
@@ -127,14 +128,17 @@ EasyTerm::print(std::ostream &out, Interpreter::PrintFlags flags) const {
 	//
 	// Temporarily set the print flags (a variable of the interpreter)
 	//
-	int oldFlags = interpreter.getPrintFlags();
+	uint_fast32_t oldFlags = 0;
 	// Set the selected print flags
-	for (int mask = 0x1; mask <= Interpreter::PRINT_RAT; mask <<= 1)
+	for (uint_fast32_t mask = 0x1; mask <= Interpreter::PRINT_COMBINE_VARS; mask <<= 1) {
+		if (interpreter.getPrintFlag(Interpreter::PrintFlags(mask)))
+			oldFlags |= mask;
 		if ((flags & mask) != (oldFlags & mask))
 			interpreter.setPrintFlag(Interpreter::PrintFlags(mask), flags & mask);
+	}
 	is_dag ? (out << dagNode) : (out << term);
 	// Recover the old print flags
-	for (int mask = 0x1; mask <= Interpreter::PRINT_RAT; mask <<= 1)
+	for (uint_fast32_t mask = 0x1; mask <= Interpreter::PRINT_COMBINE_VARS; mask <<= 1)
 		if ((flags & mask) != (oldFlags & mask))
 			interpreter.setPrintFlag(Interpreter::PrintFlags(mask), oldFlags & mask);
 }
@@ -313,6 +317,12 @@ EasyTerm::startUsingModule(VisibleModule* vmod) {
 	if (interpreter.getFlag(Interpreter::AUTO_CLEAR_PROFILE))
 		vmod->clearProfile();
 	vmod->protect();
+}
+
+void
+EasyTerm::normalize(bool full) {
+	if (!is_dag)
+		term->normalize(full);
 }
 
 int
@@ -650,18 +660,30 @@ EasyTerm::check()
 }
 #endif
 
-DagArgumentIterator*
+EasyArgumentIterator*
 EasyTerm::arguments() {
-	if (!is_dag)
-		dagify();
-
-	return new DagArgumentIterator(dagNode);
+	// Converting the EasyTerm to DAG while iterating over
+	// a term will cause memory errors.
+	return is_dag ? new EasyArgumentIterator(dagNode)
+	              : new EasyArgumentIterator(*term);
 }
 
 void
 EasyTerm::markReachableNodes() {
 	if (is_dag)
 		dagNode->mark();
+}
+
+string
+EasyTerm::toLatex() const {
+	ostringstream stream;
+
+	if (is_dag)
+		MixfixModule::latexPrettyPrint(stream, dagNode);
+	else
+		MixfixModule::latexPrettyPrint(stream, term);
+
+	return stream.str();
 }
 
 //
@@ -840,6 +862,47 @@ EasySubstitution::Iterator::getValue() const {
 		return new EasyTerm(it->second);
 
 	return nullptr;
+}
+
+//
+//	EasyArgumentIterator
+//
+
+EasyArgumentIterator::EasyArgumentIterator(Term& term)
+ : variant(term) {
+}
+
+EasyArgumentIterator::EasyArgumentIterator(DagNode* dagNode)
+ : variant(dagNode) {
+}
+
+// For compatibility with macOS <10.16
+#ifdef __APPLE__
+#define getFromVariant(T, obj) (*get_if<T>(obj))
+#else
+#define getFromVariant(T, obj) get<T>(*obj)
+#endif
+
+bool
+EasyArgumentIterator::valid() const {
+	return holds_alternative<DagArgumentIterator>(*this)
+		? getFromVariant(DagArgumentIterator, this).valid()
+		: getFromVariant(ArgumentIterator, this).valid();
+}
+
+EasyTerm*
+EasyArgumentIterator::argument() const {
+	return holds_alternative<DagArgumentIterator>(*this)
+		? new EasyTerm(getFromVariant(DagArgumentIterator, this).argument())
+		: new EasyTerm(getFromVariant(ArgumentIterator, this).argument(), false);
+}
+
+void
+EasyArgumentIterator::next() {
+	if (holds_alternative<DagArgumentIterator>(*this))
+		getFromVariant(DagArgumentIterator, this).next();
+	else
+		getFromVariant(ArgumentIterator, this).next();
 }
 
 VisibleModule* downModule(EasyTerm* term) {

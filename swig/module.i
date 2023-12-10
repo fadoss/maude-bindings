@@ -543,6 +543,19 @@ public:
 		}
 	}
 
+	%extend {
+		/**
+	 	 * Obtain the LaTeX representation of this module.
+		 *
+		 * @param all Whether to show all statements by transitivity.
+		 */
+		std::string toLatex(bool all = false) {
+			std::ostringstream stream;
+			$self->latexShowModule(stream, all);
+			return stream.str();
+		}
+	}
+
 	%namedEntityPrint;
 };
 

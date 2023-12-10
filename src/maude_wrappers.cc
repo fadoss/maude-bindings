@@ -120,6 +120,14 @@ init(bool readPrelude, int randomSeed, bool advise, bool handleInterrupts)
 	void createRootBuffer(FILE* fp, bool forceInteractive);
 	void checkForPending();
 
+	// init should only be executed once
+	static bool alreadyInitialized = false;
+
+	if (alreadyInitialized)
+		return false;
+	else
+		alreadyInitialized = true;
+
 	// The root buffer is the null file
 	FILE* fp = fopen("/dev/null", "r");
 

@@ -10,12 +10,12 @@ LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmau
 #
 ## Install required libraries
 
-sudo yum install -y xz
+yum install -y xz
 # already installed: swig cmake ninja
 
 # A prebuilt package with the headers of the libraries (GMP, Buddy, Yices2, libsigsegv)
 curl -L "$AUXFILES_PKG" -O
-xz -cd $(basename "$AUXFILES_PKG") | sudo tar -xC /
+xz -cd $(basename "$AUXFILES_PKG") | tar -xC /
 
 # Get the extended version of Maude from its repository
 # and copies Maude's config.h and libmaude.so to the
@@ -40,7 +40,7 @@ mv libmaude-pkg/libmaude.so subprojects/maudesmc/installdir/lib
 #
 ## Build for each Python version
 
-versions=(cp38-cp38 cp39-cp39 cp310-cp310 cp311-cp311)
+versions=(cp38-cp38 cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312)
 
 for version in "${versions[@]}"; do
 	/opt/python/${version}/bin/python -m pip install --upgrade scikit-build

@@ -16,9 +16,7 @@ jobs:
 
     - name: Build Python packages
       run: |
-        docker run dockcross/manylinux_2_28-x64 > ./dockcross
-        chmod +x dockcross
-        ./dockcross ./build/build_manylinux.sh
+        docker run -v $(pwd):/work -w /work quay.io/pypa/manylinux_2_28_x86_64 ./build/build_manylinux.sh
 
     - name: Upload Python wheels
       uses: softprops/action-gh-release@v1
@@ -33,7 +31,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
     steps:
 
     - name: Check out repository code
