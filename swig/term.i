@@ -34,7 +34,8 @@ enum SearchType {
 	ONE_STEP,		///< ->1
 	AT_LEAST_ONE_STEP,	///< ->+
 	ANY_STEPS,		///< ->*
-	NORMAL_FORM		///< ->!
+	NORMAL_FORM,		///< ->!
+        BRANCH			///< ->#
 };
 
 %{
@@ -281,8 +282,10 @@ public:
 
 	/**
 	 * Iterate over the arguments of this term.
+	 *
+	 * @param normalize Whether to normalize before iterating over its arguments.
 	 */
-	EasyArgumentIterator* arguments();
+	EasyArgumentIterator* arguments(bool normalize = true);
 
 	/**
 	 * Get the floating-point number represented by the given term or

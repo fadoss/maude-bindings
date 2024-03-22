@@ -10,7 +10,7 @@ LIBMAUDE_PKG="https://github.com/fadoss/maudesmc/releases/download/latest/libmau
 #
 ## Install required libraries
 
-yum install -y xz
+yum install -y xz swig
 # already installed: swig cmake ninja
 
 # A prebuilt package with the headers of the libraries (GMP, Buddy, Yices2, libsigsegv)
@@ -34,8 +34,10 @@ mv libmaude-pkg/libmaude.so subprojects/maudesmc/installdir/lib
 #
 ## Install required build tools and overwrite defaults
 
-/opt/python/cp38-cp38/bin/python -m pip install --upgrade pip
-/opt/python/cp38-cp38/bin/python -m pip install --upgrade wheel auditwheel
+refversion=cp311-cp311
+
+/opt/python/${refversion}/bin/python -m pip install --upgrade pip
+/opt/python/${refversion}/bin/python -m pip install --upgrade wheel auditwheel
 
 #
 ## Build for each Python version
@@ -43,13 +45,12 @@ mv libmaude-pkg/libmaude.so subprojects/maudesmc/installdir/lib
 versions=(cp38-cp38 cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312)
 
 for version in "${versions[@]}"; do
-	/opt/python/${version}/bin/python -m pip install --upgrade scikit-build
-	/opt/python/${version}/bin/python setup.py bdist_wheel -- -DBUILD_LIBMAUDE=OFF
+	/opt/python/${version}/bin/python -m pip install --upgrade scikit-build-core
+	CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF" /opt/python/${version}/bin/python -m build
 done
 
 for whl in dist/*linux_*.whl; do
-	/opt/python/cp38-cp38/bin/auditwheel repair $whl -w /work/dist/
-	rm -f $whl
+	/opt/python/${refversion}/bin/auditwheel repair $whl -w /work/dist/
 done
 
 #

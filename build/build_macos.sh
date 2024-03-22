@@ -48,13 +48,14 @@ popd
 ## Install required build tools
 
 python -m pip install --upgrade pip
-python -m pip install --upgrade scikit-build
+python -m pip install --upgrade scikit-build-core
 
 #
 ## Build the extension
 
-python setup.py bdist_wheel -p 'macosx-10.9-x86_64' -- \
-	-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/usr/local/include
+CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/usr/local/include" \
+ARCHFLAGS="-arch x86_64" \
+	python -m pip wheel -w dist .
 
 #
 ## Test the generated packages
@@ -81,6 +82,7 @@ popd
 
 #
 ## Build the extension for ARM (without testing)
+## (although GitHub has macos-14 runners with arm64 processor)
 
 wget "$LIBMAUDE_ARM_PKG"
 mkdir libmaude-arm-pkg
@@ -89,5 +91,6 @@ tar -xf $(basename "$LIBMAUDE_ARM_PKG") -C libmaude-arm-pkg
 mv libmaude-arm-pkg/config.h subprojects/maudesmc/build
 mv libmaude-arm-pkg/libmaude.dylib subprojects/maudesmc/installdir/lib
 
-python setup.py bdist_wheel -p 'macosx-11.0-arm64' -- \
-	-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/usr/local/include
+CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/usr/local/include" \
+ARCHFLAGS="-arch arm64" \
+	python -m pip wheel -w dist .

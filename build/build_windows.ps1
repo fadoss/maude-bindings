@@ -75,7 +75,7 @@ $pseudoThreadPath = "subprojects\maudesmc\src\ObjectSystem\pseudoThread.hh"
 ## Install required build tools
 
 Invoke-NativeCommand python -m pip install --upgrade pip
-Invoke-NativeCommand python -m pip install scikit-build==0.12.0
+Invoke-NativeCommand python -m pip install --upgrade scikit-build-core
 
 #
 ## Build the extension
@@ -84,7 +84,8 @@ Invoke-NativeCommand python -m pip install scikit-build==0.12.0
 $mingwDllPath = (Get-Item "libmaude-pkg").FullName
 $mingwDlls = "$mingwDllPath\libstdc++-6.dll;$mingwDllPath\libwinpthread-1.dll;$mingwDllPath\libgcc_s_seh-1.dll"
 
-Invoke-NativeCommand python setup.py bdist_wheel "--" -DBUILD_LIBMAUDE=OFF "-DEXTRA_INSTALL_FILES=$mingwDlls"
+$Env:CMAKE_ARGS = "-DBUILD_LIBMAUDE=OFF -DEXTRA_INSTALL_FILES=$mingwDlls -G Ninja"
+Invoke-NativeCommand python -m pip wheel -w dist .
 
 #
 ## Test the generated packages

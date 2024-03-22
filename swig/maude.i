@@ -231,6 +231,7 @@ bool setAssocUnifDepth(float m);
 
 // Global constants
 %constant int UNBOUNDED = INT_MAX;
+%constant const char* MAUDE_VERSION = PACKAGE_VERSION;
 
 %include misc.i
 %include term.i

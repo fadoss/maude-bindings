@@ -59,7 +59,7 @@ jobs:
     runs-on: windows-2019
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
     steps:
 
     - name: Check out repository code
@@ -70,8 +70,8 @@ jobs:
     - name: Apply the changes of the windows branch
       run: |
         pushd subprojects/maudesmc
-        git fetch --depth=1 origin +branching:branching +windows:windows
-        git diff branching windows | patch -p1
+        git fetch --depth=1 origin +probabilistic:probabilistic +windows:windows
+        git diff probabilistic windows | patch -p1
         popd
 
     - name: Set up Python ${{ matrix.python-version }}

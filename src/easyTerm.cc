@@ -661,9 +661,12 @@ EasyTerm::check()
 #endif
 
 EasyArgumentIterator*
-EasyTerm::arguments() {
+EasyTerm::arguments(bool normalize) {
 	// Converting the EasyTerm to DAG while iterating over
-	// a term will cause memory errors.
+	// a term will cause memory errors
+	if (!is_dag && normalize)
+		dagify();
+
 	return is_dag ? new EasyArgumentIterator(dagNode)
 	              : new EasyArgumentIterator(*term);
 }
@@ -679,7 +682,7 @@ EasyTerm::toLatex() const {
 	ostringstream stream;
 
 	if (is_dag)
-		MixfixModule::latexPrettyPrint(stream, dagNode);
+		MixfixModule::latexPrintDagNode(stream, dagNode);
 	else
 		MixfixModule::latexPrettyPrint(stream, term);
 

@@ -1,7 +1,7 @@
 Language bindings for Maude
 ===========================
 
-Language bindings for the [Maude](http://maude.cs.illinois.edu) specification language using [SWIG](http://www.swig.org). They make use of a [modified version](https://github.com/fadoss/maudesmc) of Maude extended with a model checker for system controlled by strategies, which is also accessible through the bindings.
+Language bindings for the [Maude](https://maude.cs.illinois.edu) specification language using [SWIG](https://www.swig.org). They make use of a [modified version](https://github.com/fadoss/maudesmc) of Maude extended with a model checker for system controlled by strategies, which is also accessible through the bindings.
 
 The Python package is available at [PyPI](https://pypi.org/project/maude). After installing it using `pip install maude`, it can be directly used since Maude is embedded in the package:
 
@@ -20,17 +20,18 @@ Bindings for other languages supported by SWIG can be built from this repository
 Building
 --------
 
-This repository includes the extended version of Maude as a submodule, which has to be cloned first with  `git submodule update --init` or an equivalent Git command. To build the Python package, [scikit-build](https://scikit-build.org) is used:
+This repository includes the extended version of Maude as a submodule, which has to be cloned first with `git submodule update --init` or an equivalent Git command. To build the Python package, [scikit-build-core](https://scikit-build-core.readthedocs.io/) is used through any of the standard commands:
 
 ```
-python setup.py bdist_wheel
+python -m build  # or
+pip wheel .
 ```
 
 This will cause Maude to be built in the `subprojects` directory, for which the [Meson](https://mesonbuild.com/) build system, [Ninja](https://ninja-build.org/), and various external libraries and tools are required, as described in [its repository](https://github.com/fadoss/maudesmc). Alternatively, compiled versions of Maude as a library can be downloaded from its [releases section](https://github.com/fadoss/maudesmc/releases) and placed in their expected locations:
 * `subprojects/maudesmc/installdir/lib` for the libraries, and
 * `subprojects/maudesmc/build` for the `config.h` header file.
 
-In this case or when building Maude directly from its subdirectory, `-- -DBUILD_LIBMAUDE=OFF` should be added to the previous command.
+In this case or when building Maude directly from its subdirectory, `CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF"` should be added before the previous command.
 
 Bindings for other languages can also be build using CMake directly, where `srcdir` is the directory where the repository has been cloned, and `language` is one of the languages supported by SWIG:
 

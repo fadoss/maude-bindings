@@ -33,7 +33,8 @@ enum SearchType {
 	ONE_STEP,		///< ->1
 	AT_LEAST_ONE_STEP,	///< ->+
 	ANY_STEPS,		///< ->*
-	NORMAL_FORM		///< ->!
+	NORMAL_FORM,		///< ->!
+	BRANCH			///< ->#
 };
 
 /*
@@ -246,7 +247,7 @@ public:
 	/**
 	 * Iterate over the arguments of this term.
 	 */
-	EasyArgumentIterator* arguments();
+	EasyArgumentIterator* arguments(bool normalize = true);
 
 	/**
 	 * Pretty prints this term.

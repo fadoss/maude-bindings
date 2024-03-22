@@ -1,2 +1,31 @@
+[project]
+name            = 'maude'
+version         = '1.4.0'
+description     = 'Python bindings for Maude'
+license.text    = 'GPLv2'
+classifiers     = [
+	'Intended Audience :: Science/Research',
+	'Programming Language :: Python',
+	'Programming Language :: Python :: 3',
+	'Topic :: Scientific/Engineering',
+	'Operating System :: OS Independent',
+]
+project.readme.file = 'build/PythonPkgDescription.md'
+
+[[project.authors]]
+name  = 'ningit'
+email = 'ningit@users.noreply.github.com'
+
+[project.urls]
+"Homepage"      = 'https://github.com/fadoss/maude-bindings'
+"Bug Tracker"   = 'https://github.com/fadoss/maude-bindings/issues'
+"Documentation" = 'https://fadoss.github.io/maude-bindings'
+"Source Code"   = 'https://github.com/fadoss/maude-bindings'
+
 [build-system]
-requires = ["setuptools", "wheel", "scikit-build", "cmake", "ninja", "meson"]
+requires = ['scikit-build-core', 'swig']
+build-backend = 'scikit_build_core.build'
+
+#[tool.scikit-build]
+#packages.find.include = ['umaudemc*']
+#package-data.umaudemc = ['data/*']

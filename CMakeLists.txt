@@ -39,9 +39,9 @@ include(UseSWIG)
 ## Language-specific actions
 
 if (${LANGUAGE} STREQUAL python)
-	find_package(PythonExtensions REQUIRED)
+	find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 	list(APPEND EXTRA_SWIG_OPTIONS -doxygen)
-	set(BINDING_OUTPUT_NAME "_maude")
+	set(BINDING_OUTPUT_NAME "maude")
 elseif (${LANGUAGE} STREQUAL java)
 	find_package(Java REQUIRED)
 	find_package(JNI REQUIRED)
@@ -160,7 +160,7 @@ include_directories(
 
 set_property(SOURCE swig/maude.i PROPERTY CPLUSPLUS ON)
 
-swig_add_library(_maude
+swig_add_library(maude
 	TYPE MODULE
 	LANGUAGE ${LANGUAGE}
 	SOURCES swig/maude.i src/easyTerm.cc src/maude_wrappers.cc
@@ -168,26 +168,26 @@ swig_add_library(_maude
 	        src/strategy_language.cc
 )
 
-set_property(TARGET _maude PROPERTY SWIG_COMPILE_OPTIONS ${EXTRA_SWIG_OPTIONS})
-set_property(TARGET _maude PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H)
-set_property(TARGET _maude PROPERTY SWIG_COMPILE_DEFINITIONS HAVE_CONFIG_H)
-set_property(TARGET _maude PROPERTY SWIG_GENERATED_COMPILE_DEFINITIONS HAVE_CONFIG_H)
-set_property(TARGET _maude PROPERTY OUTPUT_NAME ${BINDING_OUTPUT_NAME})
+set_property(TARGET maude PROPERTY SWIG_COMPILE_OPTIONS ${EXTRA_SWIG_OPTIONS})
+set_property(TARGET maude PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H)
+set_property(TARGET maude PROPERTY SWIG_COMPILE_DEFINITIONS HAVE_CONFIG_H)
+set_property(TARGET maude PROPERTY SWIG_GENERATED_COMPILE_DEFINITIONS HAVE_CONFIG_H)
+set_property(TARGET maude PROPERTY OUTPUT_NAME ${BINDING_OUTPUT_NAME})
 
 if (BUILD_LIBMAUDE)
-	add_dependencies(_maude maudesmc)
+	add_dependencies(maude maudesmc)
 endif()
 
 if (${LANGUAGE} STREQUAL python)
-	python_extension_module(_maude)
+	target_link_libraries(maude PRIVATE Python::Module)
 endif()
 
-swig_link_libraries(_maude libmaude)
+swig_link_libraries(maude PRIVATE libmaude)
 
 #
 ## Install all the components
 
-install(TARGETS _maude LIBRARY DESTINATION maude)
+install(TARGETS maude LIBRARY DESTINATION maude)
 install(FILES
 	"${MAUDESMC_PATH}/installdir/lib/libmaude${CMAKE_SHARED_LIBRARY_SUFFIX}"
 	"${MAUDESMC_PATH}/src/Main/prelude.maude"
@@ -207,12 +207,12 @@ install(FILES
 
 if (${LANGUAGE} STREQUAL python)
 	# The SWIG_SUPPORT_FILES property is only accurate for Python
-	get_property(wrapper_file TARGET _maude PROPERTY SWIG_SUPPORT_FILES)
+	get_property(wrapper_file TARGET maude PROPERTY SWIG_SUPPORT_FILES)
 	install(FILES "${wrapper_file}" RENAME __init__.py DESTINATION maude)
 
 elseif (${LANGUAGE} STREQUAL java)
 	include(UseJava)
-	get_property(support_files TARGET _maude PROPERTY SWIG_SUPPORT_FILES)
+	get_property(support_files TARGET maude PROPERTY SWIG_SUPPORT_FILES)
 
 	# javac is executed by add_jar in the source dir, but
 	# support_files are relative to the binary dir
