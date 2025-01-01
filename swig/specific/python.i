@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 %}
 
 %define %makeIterable(CLASS)
@@ -253,6 +253,9 @@ __version__ = '1.4.0'
 		self.nextAssignment()
 
 		return variable, value
+
+	def __iter__(self):
+		return self
 %}
 }
 

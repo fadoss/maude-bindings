@@ -35,6 +35,13 @@
 #include <link.h>
 #endif
 
+// Platform-dependent null file
+#if defined(_WIN32)
+#define NULL_FILE "nul"
+#else
+#define NULL_FILE "/dev/null"
+#endif
+
 #include "maude_wrappers.hh"
 
 #include <vector>
@@ -129,7 +136,7 @@ init(bool readPrelude, int randomSeed, bool advise, bool handleInterrupts)
 		alreadyInitialized = true;
 
 	// The root buffer is the null file
-	FILE* fp = fopen("/dev/null", "r");
+	FILE* fp = fopen(NULL_FILE, "r");
 
 	// Set the random seed and the advisory flag
 	RandomOpSymbol::setGlobalSeed(randomSeed);

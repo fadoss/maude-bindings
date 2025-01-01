@@ -51,10 +51,25 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade scikit-build-core
 
 #
-## Build the extension
+## Build the extension for x86_64 (without testing)
 
-CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/usr/local/include" \
+CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/opt/homebrew/include" \
 ARCHFLAGS="-arch x86_64" \
+	python -m pip wheel -w dist .
+
+
+#
+## Build the extension for ARM
+
+wget "$LIBMAUDE_ARM_PKG"
+mkdir libmaude-arm-pkg
+tar -xf $(basename "$LIBMAUDE_ARM_PKG") -C libmaude-arm-pkg
+
+mv libmaude-arm-pkg/config.h subprojects/maudesmc/build
+mv libmaude-arm-pkg/libmaude.dylib subprojects/maudesmc/installdir/lib
+
+CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/opt/homebrew/include" \
+ARCHFLAGS="-arch arm64" \
 	python -m pip wheel -w dist .
 
 #
@@ -74,23 +89,8 @@ cat > test.expected <<ExpectedFileHERE
 CONVERSION
 ExpectedFileHERE
 
-python -m pip install "$builddir"/dist/*.whl
+python -m pip install "$builddir"/dist/*arm*.whl
 python test.py > test.out
 cmp test.out test.expected
 
 popd
-
-#
-## Build the extension for ARM (without testing)
-## (although GitHub has macos-14 runners with arm64 processor)
-
-wget "$LIBMAUDE_ARM_PKG"
-mkdir libmaude-arm-pkg
-tar -xf $(basename "$LIBMAUDE_ARM_PKG") -C libmaude-arm-pkg
-
-mv libmaude-arm-pkg/config.h subprojects/maudesmc/build
-mv libmaude-arm-pkg/libmaude.dylib subprojects/maudesmc/installdir/lib
-
-CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF -DEXTRA_INCLUDE_DIRS=/usr/local/include" \
-ARCHFLAGS="-arch arm64" \
-	python -m pip wheel -w dist .

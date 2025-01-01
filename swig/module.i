@@ -30,6 +30,7 @@ public:
 	%newobject unify;
 	%newobject variant_unify;
 	%newobject variant_match;
+	%newobject vu_narrow;
 	%newobject getParameterTheory;
 
 	%extend {
@@ -66,6 +67,7 @@ public:
 
 	%feature("kwargs") variant_unify;
 	%feature("kwargs") parseStrategy;
+	%feature("kwargs") vu_narrow;
 
 	/**
 	 * Get the module type.
@@ -540,6 +542,22 @@ public:
 			}
 
 			return new VariantUnifierSearch(vs, VariantUnifierSearch::MATCH);
+		}
+
+		/**
+		 * Narrowing-based search of terms that unify with the given target
+		 * with multiple initial states.
+		 *
+		 * @param subject Subject terms where to start the search.
+		 * @param type Type of the search (number of steps).
+		 * @param target Term that found states must unify with.
+		 * @param depth Depth bound (@c -1 for unbounded)
+		 * @param flags Narrowing search flags (@c fold, @c vfold, @c path, @c delay, or @c filter flag).
+		 */
+		NarrowingSequenceSearch3* vu_narrow(const std::vector<EasyTerm*>& subject, SearchType type,
+							   EasyTerm* target, int depth = -1, int flags = 0) {
+
+			return EasyTerm::vu_narrow(subject, type, target, depth, flags);
 		}
 	}
 

@@ -33,7 +33,7 @@ This will cause Maude to be built in the `subprojects` directory, for which the 
 
 In this case or when building Maude directly from its subdirectory, `CMAKE_ARGS="-DBUILD_LIBMAUDE=OFF"` should be added before the previous command.
 
-Bindings for other languages can also be build using CMake directly, where `srcdir` is the directory where the repository has been cloned, and `language` is one of the languages supported by SWIG:
+Bindings for other languages can also be built using CMake directly, where `srcdir` is the directory where the repository has been cloned, and `language` is one of the languages supported by SWIG:
 
 ```
 cmake <srcdir> -DLANGUAGE=<language>

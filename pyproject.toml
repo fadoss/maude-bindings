@@ -1,6 +1,6 @@
 [project]
 name            = 'maude'
-version         = '1.4.0'
+version         = '1.5.0'
 description     = 'Python bindings for Maude'
 license.text    = 'GPLv2'
 classifiers     = [
@@ -10,7 +10,7 @@ classifiers     = [
 	'Topic :: Scientific/Engineering',
 	'Operating System :: OS Independent',
 ]
-project.readme.file = 'build/PythonPkgDescription.md'
+readme = 'build/PythonPkgDescription.md'
 
 [[project.authors]]
 name  = 'ningit'
@@ -25,7 +25,3 @@ email = 'ningit@users.noreply.github.com'
 [build-system]
 requires = ['scikit-build-core', 'swig']
 build-backend = 'scikit_build_core.build'
-
-#[tool.scikit-build]
-#packages.find.include = ['umaudemc*']
-#package-data.umaudemc = ['data/*']

@@ -8,7 +8,7 @@ import gc
 
 class ModuleLifeTest:
 	# Based on https://github.com/fadoss/maude-bindings/issues/3
-	MODULE_TEMPLATE = '''smod ONE is
+	MODULE_TEMPLATE = r'''smod ONE is
 		protecting NAT .
 		op value : -> Nat .
 		eq value = {value} .

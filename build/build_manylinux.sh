@@ -42,7 +42,7 @@ refversion=cp311-cp311
 #
 ## Build for each Python version
 
-versions=(cp38-cp38 cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312)
+versions=(cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312 cp313-cp313)
 
 for version in "${versions[@]}"; do
 	/opt/python/${version}/bin/python -m pip install --upgrade scikit-build-core

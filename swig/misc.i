@@ -203,14 +203,16 @@ public:
  * (as global constants since scoped ones are not supported by SWIG)
  */
 %{
-constexpr int OP_ASSOC = SymbolType::Flags::ASSOC;
-constexpr int OP_COMM = SymbolType::Flags::COMM;
-constexpr int OP_ITER = SymbolType::Flags::ITER;
-constexpr int OP_IDEM = SymbolType::Flags::IDEM;
-constexpr int OP_LEFT_ID = SymbolType::Flags::LEFT_ID;
-constexpr int OP_RIGHT_ID = SymbolType::Flags::RIGHT_ID;
-constexpr int OP_MEMO = SymbolType::Flags::MEMO;
-constexpr int OP_SPECIAL = -1;
+enum SymbolAttribute {
+	OP_ASSOC = SymbolType::Flags::ASSOC,
+	OP_COMM = SymbolType::Flags::COMM,
+	OP_ITER = SymbolType::Flags::ITER,
+	OP_IDEM = SymbolType::Flags::IDEM,
+	OP_LEFT_ID = SymbolType::Flags::LEFT_ID,
+	OP_RIGHT_ID = SymbolType::Flags::RIGHT_ID,
+	OP_MEMO = SymbolType::Flags::MEMO,
+	OP_SPECIAL = -1,
+};
 %}
 
 enum SymbolAttribute {

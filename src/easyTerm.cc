@@ -576,26 +576,45 @@ NarrowingSequenceSearch3*
 EasyTerm::vu_narrow(SearchType type,
 		    EasyTerm* target,
 		    int depth,
-		    bool fold,
-		    bool filter,
-		    bool delay)
+		    int variantFlags)
 {
 	if (this == target) {
 		IssueWarning("the target of the search cannot be the initial term itself.");
 		return nullptr;
 	}
 
-	VisibleModule* vmod = dynamic_cast<VisibleModule*>(symbol()->getModule());
+	// Delegates on the general method
+	return EasyTerm::vu_narrow({this}, type, target, depth, variantFlags);
+}
+
+NarrowingSequenceSearch3*
+EasyTerm::vu_narrow(const vector<EasyTerm*>& subject,
+                    SearchType type,
+		    EasyTerm* target,
+		    int depth,
+		    int variantFlags)
+{
+	if ((variantFlags & NarrowingSequenceSearch3::FOLD) &&
+            (variantFlags & NarrowingSequenceSearch3::VFOLD)) {
+		IssueWarning("fold and vfold option cannot be used together");
+		return nullptr;
+	}
+
+	if (subject.empty()) {
+		IssueWarning("empty list of initial states");
+		return nullptr;
+	}
+
+	VisibleModule* vmod = dynamic_cast<VisibleModule*>(subject[0]->symbol()->getModule());
 	startUsingModule(vmod);
 
-	int variantFlags = fold ? NarrowingSequenceSearch3::FOLD : 0;
+        Vector<DagNode*> subjectDags(subject.size());
 
-	if (delay)
-		variantFlags |= VariantSearch::IRREDUNDANT_MODE;
-	if (filter)
-		variantFlags |= VariantUnificationProblem::FILTER_VARIANT_UNIFIERS;
+	for (size_t i = 0; i < subject.size(); ++i)
+		subjectDags[i] = subject[i]->getDag();
 
-	return new NarrowingSequenceSearch3(new UserLevelRewritingContext(getDag()),
+	return new NarrowingSequenceSearch3(new UserLevelRewritingContext(subjectDags[0]),
+	                subjectDags,
 			static_cast<NarrowingSequenceSearch::SearchType>(type),
 			target->getDag(),
 			depth,

@@ -17,7 +17,7 @@ import sys
 # -- Project information -----------------------------------------------------
 
 project = 'Maude bindings'
-copyright = '2022'
+copyright = '2025'
 author = 'github.com/fadoss'
 
 

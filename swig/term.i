@@ -71,6 +71,22 @@ enum PrintFlags {
 };
 
 /**
+ * NarrowingFlags
+ */
+enum NarrowingFlags {
+	/// Whether to activate folding (@c fold option or @c fvu-narrow command).
+	FOLD = NarrowingSequenceSearch3::FOLD,
+	/// Whether to activate variant folding (@c vfold option).
+	VFOLD = NarrowingSequenceSearch3::VFOLD,
+	/// Whether to allow for narrowing trace reconstruction (expensive).
+	PATH = NarrowingSequenceSearch3::KEEP_PATHS,
+	/// Whether variant unifiers are filtered before using the first one for narrowing (@c delay option in the command).
+	DELAY = VariantSearch::IRREDUNDANT_MODE,
+	/// Whether to activate filtered variant unification (@c filter option in the command).
+	FILTER = VariantUnificationProblem::FILTER_VARIANT_UNIFIERS,
+};
+
+/**
  * Maude term with its associated operations.
  */
 class EasyTerm {
@@ -248,15 +264,12 @@ public:
 	 * @param type Type of the search (number of steps).
 	 * @param target The pattern that has to be reached.
 	 * @param depth Depth bound (@c -1 for unbounded).
-	 * @param fold Whether to activate folding (@c fvu-narrow command).
-	 * @param filter Whether to activate filtered variant unification (@c filter option in the command).
-	 * @param delay Whether variant unifiers are filtered before using the first one for narrowing (@c delay option in the command).
+	 * @param flags Narrowing search flags (@c fold, @c vfold, @c path, @c delay, or @c filter flag).
 	 *
 	 * @return An object to iterate through solutions.
 	 */
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
-					    int depth = -1, bool fold = false,
-					    bool filter = false, bool delay = false);
+					    int depth = -1, NarrowingFlags flags = 0);
 
 	/**
 	 * Apply any rule with the given label.
@@ -698,6 +711,15 @@ public:
 	 */
 	bool isIncomplete() const;
 
+	/**
+	 * Get the parent state.
+	 *
+	 * @param stateNr The number of state in the search graph.
+	 *
+	 * @return The number of the parent or -1 for the root.
+	 */
+	int getStateParent(int stateNr);
+
 	%extend {
 		/**
 		 * Get the next solution of the narrowing search.
@@ -706,11 +728,11 @@ public:
 			if (!$self->findNextUnifier())
 				return nullptr;
 
-			DagNode* stateDag;
+			DagNode *stateDag, *dummy;
 			int variableFamily;
 			Substitution* substitution;
 
-			$self->getStateInfo(stateDag, variableFamily, substitution);
+			$self->getStateInfo(stateDag, variableFamily, dummy, substitution);
 			return new EasyTerm(stateDag);
 		}
 
@@ -718,11 +740,11 @@ public:
 		 * Get the accumulated substitution.
 		 */
 		EasySubstitution* getSubstitution() const {
-			DagNode* stateDag;
+			DagNode *stateDag, *dummy;
 			int variableFamily;
 			Substitution* substitution;
 
-			$self->getStateInfo(stateDag, variableFamily, substitution);
+			$self->getStateInfo(stateDag, variableFamily, dummy, substitution);
 			return new EasySubstitution(substitution, &$self->getInitialVariableInfo());
 		}
 
@@ -739,6 +761,35 @@ public:
 				subs.bind(i, (*unifier)[i]);
 
 			return new EasySubstitution(&subs, &$self->getUnifierVariableInfo());
+		}
+
+		/**
+		 * Get the frontier states.
+		 */
+		std::vector<EasyTerm*> getFrontierStates() {
+			std::vector<EasyTerm*> frontier;
+
+			bool partiallyExpanded; // this information is not returned
+
+			for (DagNode* d : $self->getUnexpandedStates(partiallyExpanded))
+				frontier.push_back(new EasyTerm(d));
+
+			for (DagNode* d : $self->getUnvisitedStates())
+				frontier.push_back(new EasyTerm(d));
+
+			return frontier;
+		}
+
+		/**
+		 * Get the most general states.
+		 */
+		std::vector<EasyTerm*> getMostGeneralStates() const {
+			std::vector<EasyTerm*> states;
+
+			for (DagNode* d : $self->getMostGeneralStates())
+				states.push_back(new EasyTerm(d));
+
+			return states;
 		}
 	}
 

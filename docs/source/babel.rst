@@ -3,7 +3,7 @@ Maude bindings for other languages
 
 .. _other-languages:
 
-The :mod:`maude` library is implemented using the Simple Wrapper and Interface Generator (`SWIG <http://www.swig.org/>`_), which allows generating bindings for some more languages other than Python. All the functionality of the Python library documented :ref:`here <main>` is available through the same API to the other languages, although the Python instance includes several adaptations to its specific features and conventions (iterators, automatic conversion of data structures, default arguments, and so on) that may not match or not be implemented in the other targets. Furthermore, only the Python version has been extensively used and tested for the moment.
+The :mod:`maude` library is implemented using the Simple Wrapper and Interface Generator (`SWIG <https://www.swig.org/>`_), which allows generating bindings for some more languages other than Python. All the functionality of the Python library documented :ref:`here <main>` is available through the same API to the other languages, although the Python instance includes several adaptations to its specific features and conventions (iterators, automatic conversion of data structures, default arguments, and so on) that may not match or not be implemented in the other targets. Furthermore, only the Python version has been extensively used and tested for the moment.
 
 For building the library in a specific language, you should pass the appropriate value of the ``LANGUAGE`` variable to the CMake `build script <https://github.com/fadoss/maude-bindings/blob/master/CMakeLists.txt>`_. For example, to build the Java binding in the ``java-build`` subdirectory of the source tree you should write:
 

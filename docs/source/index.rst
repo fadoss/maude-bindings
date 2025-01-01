@@ -1,5 +1,4 @@
-.. Maude bindings documentation master file, created by
-   sphinx-quickstart on Fri Apr  3 19:22:46 2020.
+.. Maude bindings documentation master file
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -14,7 +13,7 @@ Maude bindings documentation
 
 The :mod:`maude` package allows manipulating terms, modules, and other entities of the Maude_ specification language as Python objects, whose methods expose the operations available as commands in the Maude interpreter. This documentation describes the Python bindings, but most of the API is available for other languages supported by SWIG_. These bindings are based on the latest Maude release extended with a `model checker`_ for systems controlled by the Maude `strategy language`_, which is accessible via the :py:meth:`StrategyRewriteGraph.modelCheck` method.
 
-.. seealso:: `Maude 3.3.1 manual <https://maude.lcc.uma.es/maude-manual/>`_ · `Source code <https://github.com/fadoss/maude-bindings>`_ ·  `Package at PyPI <https://pypi.org/project/maude>`_ · :ref:`Bindings for other languages <other-languages>`
+.. seealso:: `Maude 3.5 manual <https://maude.lcc.uma.es/maude-manual/>`_ · `Source code <https://github.com/fadoss/maude-bindings>`_ ·  `Package at PyPI <https://pypi.org/project/maude>`_ · :ref:`Bindings for other languages <other-languages>`
 
 .. toctree::
    :maxdepth: 2
@@ -177,6 +176,9 @@ Search types
 .. autodata:: NORMAL_FORM
    :annotation:
 
+.. autodata:: BRANCH
+   :annotation:
+
 
 Print flags
 ...........
@@ -206,6 +208,25 @@ Print flags
    :annotation:
 
 .. autodata:: PRINT_RAT
+   :annotation:
+
+
+Narrowing flags
+...............
+
+.. autodata:: FOLD
+   :annotation:
+
+.. autodata:: VFOLD
+   :annotation:
+
+.. autodata:: PATH
+   :annotation:
+
+.. autodata:: DELAY
+   :annotation:
+
+.. autodata:: FILTER
    :annotation:
 
 
@@ -403,8 +424,8 @@ Indices and tables
 
 .. :ref:`modindex`
 
-.. _SWIG: http://www.swig.org/
+.. _SWIG: https://www.swig.org/
 .. _PyPI: https://pypi.org/project/maude/
-.. _Maude: http://maude.cs.illinois.edu/
+.. _Maude: https://maude.cs.illinois.edu/
 .. _`model checker`: https://github.com/fadoss/maudesmc
-.. _`strategy language`: http://maude.ucm.es/strategies
+.. _`strategy language`: https://maude.ucm.es/strategies

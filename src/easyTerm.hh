@@ -21,6 +21,7 @@
 #include "term.hh"
 #include "argumentIterator.hh"
 #include "dagArgumentIterator.hh"
+#include "narrowingSequenceSearch3.hh"
 
 #include <iostream>
 #include <vector>
@@ -35,6 +36,22 @@ enum SearchType {
 	ANY_STEPS,		///< ->*
 	NORMAL_FORM,		///< ->!
 	BRANCH			///< ->#
+};
+
+/**
+ * Flags for narrowing search options.
+ */
+enum NarrowingFlags {
+	/// Whether to activate folding (@c fold option or @c fvu-narrow command).
+	FOLD = NarrowingSequenceSearch3::FOLD,
+	/// Whether to activate variant folding (@c vfold option).
+	VFOLD = NarrowingSequenceSearch3::VFOLD,
+	/// Whether to allow for narrowing trace reconstruction (expensive).
+	PATH = NarrowingSequenceSearch3::KEEP_PATHS,
+	/// Whether variant unifiers are filtered before using the first one for narrowing (@c delay option in the command).
+	DELAY = VariantSearch::IRREDUNDANT_MODE,
+	/// Whether to activate filtered variant unification (@c filter option in the command).
+	FILTER = VariantUnificationProblem::FILTER_VARIANT_UNIFIERS,
 };
 
 /*
@@ -209,18 +226,28 @@ public:
 	                            const std::vector<EasyTerm*> &irreducible = {});
 
 	/**
-	 * Narrowing-based search of terms that unify with the given target.
+	 * Narrowing-based search of terms that unify with the given target
+	 * (equivalent to the static method with a single subject term).
 	 *
 	 * @param type Type of the search (number of steps).
 	 * @param target Term that found states must unify with.
 	 * @param depth Depth bound (@c -1 for unbounded)
-	 * @param fold Whether to activate folding (@c fvu-narrow command).
-	 * @param filter Whether to activate filtered variant unification (@c filter option in the command).
-	 * @param delay Whether variant unifiers are filtered before using the first one for narrowing (@c delay option in the command).
+	 * @param flags Narrowing search flags (@c fold, @c vfold, @c path, @c delay, or @c filter flag).
 	 */
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
-					    int depth = -1, bool fold = false,
-					    bool filter = false, bool delay = false);
+					    int depth = -1, int flags = 0);
+
+	/**
+	 * Narrowing-based search of terms that unify with the given target.
+	 *
+	 * @param subject Subject terms where to start the search.
+	 * @param type Type of the search (number of steps).
+	 * @param target Term that found states must unify with.
+	 * @param depth Depth bound (@c -1 for unbounded)
+	 * @param flags Narrowing search flags (@c fold, @c vfold, @c path, @c delay, or @c filter flag).
+	 */
+	static NarrowingSequenceSearch3* vu_narrow(const std::vector<EasyTerm*>& subject, SearchType type,
+						   EasyTerm* target, int depth = -1, int flags = 0);
 
 	/**
 	 * Apply any rule with the given label.
