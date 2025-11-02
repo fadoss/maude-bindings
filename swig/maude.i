@@ -88,6 +88,7 @@ namespace std {
 %template (RuleVector) Vector<Rule*>;
 %template (StratVector) Vector<RewriteStrategy*>;
 %template (StratDefVector) Vector<StrategyDefinition*>;
+%template (StratExprVector) Vector<StrategyExpression*>;
 %template (Condition) Vector<ConditionFragment*>;
 
 //
@@ -237,4 +238,5 @@ bool setAssocUnifDepth(float m);
 %include term.i
 %include module.i
 %include view.i
+%include strategy.i
 %include hook.i

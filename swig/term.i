@@ -269,7 +269,7 @@ public:
 	 * @return An object to iterate through solutions.
 	 */
 	NarrowingSequenceSearch3* vu_narrow(SearchType type, EasyTerm* target,
-					    int depth = -1, NarrowingFlags flags = 0);
+					    int depth = -1, int flags = 0);
 
 	/**
 	 * Apply any rule with the given label.

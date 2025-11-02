@@ -28,6 +28,8 @@
 #define REPR_METHOD ToString
 #elif defined(SWIGOCAML)
 #define REPR_METHOD to_string
+#elif defined(SWIGC)
+#define REPR_METHOD to_string
 #else
 #define REPR_METHOD toString
 #warning This language is not explicitly supported

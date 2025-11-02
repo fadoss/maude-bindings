@@ -555,7 +555,7 @@ public:
 		 * @param flags Narrowing search flags (@c fold, @c vfold, @c path, @c delay, or @c filter flag).
 		 */
 		NarrowingSequenceSearch3* vu_narrow(const std::vector<EasyTerm*>& subject, SearchType type,
-							   EasyTerm* target, int depth = -1, int flags = 0) {
+		                                    EasyTerm* target, int depth = -1, int flags = 0) {
 
 			return EasyTerm::vu_narrow(subject, type, target, depth, flags);
 		}

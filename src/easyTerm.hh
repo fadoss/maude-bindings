@@ -369,6 +369,7 @@ private:
 		DagNode* dagNode;
 		Term* term;
 	};
+	ImportModule* termModule;
 };
 
 /**

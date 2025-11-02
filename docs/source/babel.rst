@@ -169,3 +169,30 @@ For building the Tcl binding as a dynamic module, simply pass ``-DLANGUAGE=tcl``
    set t [$m parseTerm "2 * 3"]
    $t reduce
    puts [$t toString]
+
+
+C
+-
+
+For building the C binding, simply pass ``-DLANGUAGE=c`` to CMake. A shared library ``maude.so`` and a header file ``maudeC_wrap.h`` are generated. The former should be linked with the program using it. Support for C as a target language is experimental in SWIG.
+
+.. code-block:: console
+
+   $ cc example.c maude.so -o example
+   $ LD_LIBRARY_PATH=. ./example
+
+Global functions become C functions prefixed by ``maude_``, methods are represented as C functions prefixed by their class name, and overloaded functions are disambiguated by means of suffixes.
+
+.. code-block:: c
+
+   #include <stdio.h>
+   #include "maude.h"  // renamed and adapted from maudeC_wrap.h
+
+   int main() {
+      maude_init();
+      Module* m = maude_getModule("NAT");
+      Term* t = Module_parseTerm_pcc(m, "1 + 2");
+      Term_reduce(t);
+      printf("%s\n", Term_to_string(t));
+      return 0;
+   }

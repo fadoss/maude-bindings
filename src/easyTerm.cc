@@ -68,7 +68,7 @@ EasyTerm::EasyTerm(DagNode* dagNode)
 
 EasyTerm::~EasyTerm() {
 	// Unprotect the module this object belongs to
-	dynamic_cast<ImportModule*>(symbol()->getModule())->unprotect();
+	termModule->unprotect();
 
 	if (is_dag)
 		unlink();
@@ -274,8 +274,12 @@ EasyTerm::termify() {
 inline void
 EasyTerm::protect() {
 	// Since its module must stay alive during the lifetime of term,
-	// we protect it so that it is not garbage collected by Maude
-	dynamic_cast<ImportModule*>(symbol()->getModule())->protect();
+	// we protect it so that it is not garbage collected by Maude.
+	// Moreover, we save the Module pointer, because when a non-owned
+	// EasyTerm is deleted by the garbage collector, the wrapped term
+	// may have already been destroyed.
+	termModule = dynamic_cast<ImportModule*>(symbol()->getModule());
+	termModule->protect();
 }
 
 EasyTerm*

@@ -16,6 +16,7 @@
 #include "strategyTransitionGraph.hh"
 #include "userLevelRewritingContext.hh"
 #include "importTranslation.hh"
+#include "callStrategy.hh"
 
 #include "helper_funcs.hh"
 %}
@@ -534,6 +535,28 @@ public:
 	 * Get the number of arguments of the strategy.
 	 */
 	int arity() const;
+
+	%newobject makeCall;
+
+	%extend {
+		/**
+		 * Build a call to this strategy with the given ground terms as arguments.
+		 */
+		StrategyExpression* makeCall(const std::vector<EasyTerm*> &args) {
+			Vector<Term*> dargs(args.size());
+			for (size_t i = 0; i < args.size(); ++i)
+				dargs[i] = args[i]->termCopy();
+
+			CallStrategy* strat = new CallStrategy($self, $self->makeAuxiliaryTerm(dargs));
+
+			VariableInfo dummyVarInfo;
+			TermSet dummyTermSet;
+			if (!strat->check(dummyVarInfo, dummyTermSet))
+				return nullptr;
+			strat->process();
+			return strat;
+		}
+	}
 
 	%namedEntityGetName;
 	%streamBasedPrint;

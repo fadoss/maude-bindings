@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.5.0'
+__version__ = '1.6.0'
 %}
 
 %define %makeIterable(CLASS)
@@ -377,6 +377,9 @@ __version__ = '1.5.0'
 %pythoncode %{
 	__hash__ = hash
 
+	def __call__(self, *args):
+		return self.makeCall(args)
+
 	def __eq__(self, other):
 		return other is not None and self.equal(other)
 %}
@@ -422,6 +425,18 @@ __version__ = '1.5.0'
 		                                    SWIGTYPE_p_EasyTerm, SWIG_POINTER_OWN);
 		PyDict_SetItemString($result, purposes[k], elem);
 		Py_XDECREF(elem);
+	}
+}
+
+// When we return a EasyTerm vector, we want that the pointers are owned
+// because they are objects created on purpose, but they are not by default
+
+%typemap(out) std::vector<EasyTerm*> {
+	$result = PyTuple_New($1.size());
+	for (size_t k = 0; k < $1.size(); ++k) {
+		PyObject* elem = SWIG_NewPointerObj(SWIG_as_voidptr($1[k]),
+		                                    SWIGTYPE_p_EasyTerm, SWIG_POINTER_OWN);
+		PyTuple_SetItem($result, k, elem);
 	}
 }
 
@@ -582,6 +597,9 @@ bool convertVector(PyObject* input, Vector<T*>* &vect, swig_type_info* swig_elem
 %factory(ConditionFragment*, EqualityConditionFragment, AssignmentConditionFragment,
          SortTestConditionFragment, RewriteConditionFragment);
 
+%factory(StrategyExpression*, TrivialStrategy, TestStrategy, ApplicationStrategy, UnionStrategy,
+         ConcatenationStrategy, OneStrategy, IterationStrategy, CallStrategy, BranchStrategy,
+         ChoiceStrategy, SampleStrategy, WeightedSubtermStrategy, SubtermStrategy);
 
 //
 // Module protection for vectors

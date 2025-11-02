@@ -13,7 +13,7 @@ Maude bindings documentation
 
 The :mod:`maude` package allows manipulating terms, modules, and other entities of the Maude_ specification language as Python objects, whose methods expose the operations available as commands in the Maude interpreter. This documentation describes the Python bindings, but most of the API is available for other languages supported by SWIG_. These bindings are based on the latest Maude release extended with a `model checker`_ for systems controlled by the Maude `strategy language`_, which is accessible via the :py:meth:`StrategyRewriteGraph.modelCheck` method.
 
-.. seealso:: `Maude 3.5 manual <https://maude.lcc.uma.es/maude-manual/>`_ · `Source code <https://github.com/fadoss/maude-bindings>`_ ·  `Package at PyPI <https://pypi.org/project/maude>`_ · :ref:`Bindings for other languages <other-languages>`
+.. seealso:: `Maude 3.5.1 manual <https://maude.lcc.uma.es/maude-manual/>`_ · `Source code <https://github.com/fadoss/maude-bindings>`_ ·  `Package at PyPI <https://pypi.org/project/maude>`_ · :ref:`Bindings for other languages <other-languages>`
 
 .. toctree::
    :maxdepth: 2
@@ -335,6 +335,96 @@ Operator attributes
    :annotation:
 
 .. autodata:: OP_SPECIAL
+   :annotation:
+
+
+Strategy expressions
+--------------------
+
+.. autoclass:: TrivialStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: TestStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: ApplicationStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: UnionStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: ConcatenationStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: IterationStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: CallStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: OneStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: SubtermStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: ConditionalStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: ChoiceStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: SampleStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+.. autoclass:: WeightedSubtermStrategy
+   :members:
+   :undoc-members:
+   :exclude-members: hash, equal, thisown
+
+Types for the conditional strategy
+..................................
+
+.. autodata:: CONDITIONAL
+   :annotation:
+
+.. autodata:: OR_ELSE
+   :annotation:
+
+.. autodata:: NORMALIZATION
+   :annotation:
+
+.. autodata:: TRY
+   :annotation:
+
+.. autodata:: TEST
+   :annotation:
+
+.. autodata:: NOT
    :annotation:
 
 
