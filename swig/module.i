@@ -122,6 +122,10 @@ public:
 	 */
 	int getNrImportedSorts() const;
 	/**
+	 * Number of sorts defined by the user.
+	 */
+	int getNrUserSorts() const;
+	/**
 	 * Number of symbols imported from other modules or parameters.
 	 */
 	int getNrImportedSymbols() const;
@@ -133,6 +137,10 @@ public:
 	 * Number of equations from this module.
 	 */
 	int getNrOriginalEquations() const;
+	/**
+	 * Number of membership axioms from this module.
+	 */
+	int getNrOriginalMembershipAxioms() const;
 	/**
 	 * Number of rules from this module.
 	 */

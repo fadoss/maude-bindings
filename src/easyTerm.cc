@@ -96,6 +96,12 @@ EasyTerm::equal(const EasyTerm* other) const {
 		(other->is_dag ? term->equal(other->dagNode) : term->equal(other->term));
 }
 
+int
+EasyTerm::compare(const EasyTerm* other) const {
+	return is_dag ? (other->is_dag ? dagNode->compare(other->dagNode) : other->term->compare(dagNode)) :
+		(other->is_dag ? term->compare(other->dagNode) : term->compare(other->term));
+}
+
 bool
 EasyTerm::leq(const Sort* sort) const {
 	return is_dag ? dagNode->leq(sort) : term->leq(sort);

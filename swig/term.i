@@ -129,6 +129,13 @@ public:
 	bool equal(const EasyTerm* other) const;
 
 	/**
+	 * Compare two terms for relative order.
+	 *
+	 * @param other The second term to be compared.
+	 */
+	int compare(const EasyTerm* other) const;
+
+	/**
 	 * Check whether the sort of this term is a subtype of the given sort.
 	 *
 	 * @param sort The pretended supertype.

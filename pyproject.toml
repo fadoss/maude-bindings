@@ -1,6 +1,6 @@
 [project]
 name            = 'maude'
-version         = '1.6.0'
+version         = '1.6.1'
 description     = 'Python bindings for Maude'
 license.text    = 'GPLv2'
 classifiers     = [

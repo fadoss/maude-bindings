@@ -8,7 +8,7 @@
 
 // Include the version number in the package
 %pythoncode %{
-__version__ = '1.6.0'
+__version__ = '1.6.1'
 %}
 
 %define %makeIterable(CLASS)
@@ -87,6 +87,18 @@ __version__ = '1.6.0'
 	%pythoncode %{
 		def __eq__(self, other):
 			return other is not None and self.equal(other)
+
+		def __lt__(self, other):
+			return self.compare(other) < 0
+
+		def __le__(self, other):
+			return self.compare(other) <= 0
+
+		def __gt__(self, other):
+			return self.compare(other) > 0
+
+		def __ge__(self, other):
+			return self.compare(other) >= 0
 
 		__float__ = toFloat
 		__int__ = toInt
